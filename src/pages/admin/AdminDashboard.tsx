@@ -313,7 +313,12 @@ const AdminDashboard = () => {
             key={action.label}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => navigate(action.path)}
+            onClick={() => {
+              navigate(action.path);
+              if (action.label === "Run Sale") {
+                setTimeout(() => toast({ title: "💡 Tip", description: "Click the % icon next to any product to toggle its sale status" }), 500);
+              }
+            }}
             className={`${action.color} rounded-2xl p-3 flex flex-col items-center gap-1.5 transition-shadow hover:shadow-md`}
           >
             <action.icon size={18} />
