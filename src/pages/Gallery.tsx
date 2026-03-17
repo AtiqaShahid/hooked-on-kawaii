@@ -2,32 +2,32 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
-import aiRoseBouquet from "@/assets/gallery/ai-rose-bouquet.jpg";
-import aiAmigurumiBear from "@/assets/gallery/ai-amigurumi-bear.jpg";
-import aiSunflowerPot from "@/assets/gallery/ai-sunflower-pot.jpg";
-import aiPenguin from "@/assets/gallery/ai-penguin.jpg";
-import aiGajra from "@/assets/gallery/ai-gajra.jpg";
-import aiKeychains from "@/assets/gallery/ai-keychains.jpg";
-import aiTulipBouquet from "@/assets/gallery/ai-tulip-bouquet.jpg";
-import aiBabyRattles from "@/assets/gallery/ai-baby-rattles.jpg";
-import aiCrossbodyBag from "@/assets/gallery/ai-crossbody-bag.jpg";
-import aiSucculents from "@/assets/gallery/ai-succulents.jpg";
-import aiWeddingDecor from "@/assets/gallery/ai-wedding-decor.jpg";
-import aiDinosaur from "@/assets/gallery/ai-dinosaur.jpg";
+import aiRosesNightstand from "@/assets/gallery/ai-roses-nightstand.jpg";
+import aiGajraWear from "@/assets/gallery/ai-gajra-wear.jpg";
+import aiKeychainUse from "@/assets/gallery/ai-keychain-use.jpg";
+import aiNurseryDecor from "@/assets/gallery/ai-nursery-decor.jpg";
+import aiGiftUnbox from "@/assets/gallery/ai-gift-unbox.jpg";
+import aiBagOutdoor from "@/assets/gallery/ai-bag-outdoor.jpg";
+import aiWeddingTable from "@/assets/gallery/ai-wedding-table.jpg";
+import aiDeskSucculents from "@/assets/gallery/ai-desk-succulents.jpg";
+import aiChildToy from "@/assets/gallery/ai-child-toy.jpg";
+import aiWindowsill from "@/assets/gallery/ai-windowsill.jpg";
+import aiCarCharm from "@/assets/gallery/ai-car-charm.jpg";
+import aiFestiveDecor from "@/assets/gallery/ai-festive-decor.jpg";
 
 const galleryItems = [
-  { image: aiRoseBouquet, title: "Rose Bouquet Centerpiece", tags: ["Home Decor", "Wedding"] },
-  { image: aiAmigurumiBear, title: "Lavender Teddy Bear", tags: ["Baby", "Amigurumi"] },
-  { image: aiSunflowerPot, title: "Sunflower Pot Arrangement", tags: ["Seasonal", "Home Decor"] },
-  { image: aiKeychains, title: "Kawaii Keychain Collection", tags: ["Accessories", "Keychains"] },
-  { image: aiGajra, title: "Bridal Gajra Hair Piece", tags: ["Festive", "Wedding"] },
-  { image: aiPenguin, title: "Penguin Amigurumi", tags: ["Amigurumi", "Kids"] },
-  { image: aiTulipBouquet, title: "Pastel Tulip Bouquet", tags: ["Bouquets", "Premium"] },
-  { image: aiBabyRattles, title: "Baby Rattle Duo", tags: ["Baby", "Gift"] },
-  { image: aiCrossbodyBag, title: "Rose Crossbody Bag", tags: ["Accessories", "Bags"] },
-  { image: aiSucculents, title: "Mini Succulent Collection", tags: ["Home Decor", "Pots"] },
-  { image: aiWeddingDecor, title: "Wedding Table Centerpiece", tags: ["Wedding", "Premium"] },
-  { image: aiDinosaur, title: "Dino Stuffie", tags: ["Amigurumi", "Kids"] },
+  { image: aiRosesNightstand, title: "Cozy Nightstand Bouquet", tags: ["Bedroom Decor", "Roses"], desc: "Crochet roses in a glass vase for a warm bedside glow" },
+  { image: aiGajraWear, title: "Festive Gajra Styling", tags: ["Wedding", "Hair Accessory"], desc: "Wearing a crochet floral gajra at a celebration" },
+  { image: aiKeychainUse, title: "Bag Charm Collection", tags: ["Accessories", "Daily Use"], desc: "Cute keychains clipped to your backpack & keys" },
+  { image: aiNurseryDecor, title: "Nursery Shelf Display", tags: ["Baby Room", "Amigurumi"], desc: "Stuffed animals lined up on a nursery shelf" },
+  { image: aiGiftUnbox, title: "Unboxing a Crochet Gift", tags: ["Gifting", "Special Moment"], desc: "The joy of opening a handmade gift box" },
+  { image: aiBagOutdoor, title: "Garden Day with Rose Bag", tags: ["Fashion", "Outdoor"], desc: "Carrying a crochet crossbody bag on a sunny stroll" },
+  { image: aiWeddingTable, title: "Wedding Table Setting", tags: ["Wedding", "Centerpiece"], desc: "Elegant crochet flowers as reception centerpieces" },
+  { image: aiDeskSucculents, title: "Workspace Plant Friends", tags: ["Office Decor", "Desk"], desc: "Mini crochet succulents next to your laptop" },
+  { image: aiChildToy, title: "Toddler's Best Friend", tags: ["Kids", "Playtime"], desc: "A child hugging their favorite crochet penguin" },
+  { image: aiWindowsill, title: "Sunny Windowsill Garden", tags: ["Home Decor", "Plants"], desc: "Crochet flower pots catching golden hour light" },
+  { image: aiCarCharm, title: "Car Mirror Charm", tags: ["Accessories", "Car Decor"], desc: "A crochet flower hanging from the rearview mirror" },
+  { image: aiFestiveDecor, title: "Festive Table Setup", tags: ["Eid", "Celebration"], desc: "Crochet flowers decorating a festive celebration table" },
 ];
 
 const Gallery = () => (
@@ -62,7 +62,8 @@ const Gallery = () => (
                   />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-display font-semibold text-sm mb-2">{item.title}</h3>
+                  <h3 className="font-display font-semibold text-sm mb-1">{item.title}</h3>
+                  <p className="text-xs text-muted-foreground mb-2">{item.desc}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {item.tags.map((t) => (
                       <span key={t} className="px-2.5 py-1 rounded-2xl bg-muted text-xs font-medium text-muted-foreground">
