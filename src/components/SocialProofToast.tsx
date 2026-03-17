@@ -2,7 +2,15 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 
-type ProofItem = { product_name: string; city: string };
+type ProofItem = { product_name: string; city: string; name: string };
+
+const PAKISTANI_NAMES = [
+  "Ayesha", "Fatima", "Hira", "Zainab", "Amna", "Sana", "Mahnoor", "Iqra",
+  "Maryam", "Noor", "Rabia", "Saima", "Sidra", "Anum", "Bushra", "Kiran",
+  "Mehreen", "Nimra", "Urooj", "Areeba", "Laiba", "Rida", "Aliza", "Hania",
+];
+
+const pickName = (idx: number) => PAKISTANI_NAMES[idx % PAKISTANI_NAMES.length];
 
 const SocialProofToast = () => {
   const [current, setCurrent] = useState<ProofItem | null>(null);
@@ -18,9 +26,10 @@ const SocialProofToast = () => {
 
       if (!data?.length) return;
 
-      const items = data.map((d: any) => ({
+      const items = data.map((d: any, i: number) => ({
         product_name: d.product?.name || "a crochet item",
         city: d.city || "somewhere beautiful",
+        name: pickName(i),
       }));
 
       let idx = 0;
@@ -53,7 +62,7 @@ const SocialProofToast = () => {
             <span className="text-2xl">🛍️</span>
             <div>
               <p className="text-sm font-body">
-                Someone from <span className="font-semibold">{current.city}</span> just bought
+                <span className="font-semibold">{current.name}</span> from <span className="font-semibold">{current.city}</span> just bought
               </p>
               <p className="text-sm font-display font-semibold text-foreground">{current.product_name}!</p>
             </div>
