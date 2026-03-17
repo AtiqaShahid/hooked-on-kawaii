@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Star, ShoppingBag, Clock } from "lucide-react";
 import { featuredProduct } from "@/lib/products";
+import heroBouquet from "@/assets/hero-bouquet.jpg";
 
 const CrochetOfTheWeek = () => (
   <section className="py-20 px-6">

@@ -79,6 +79,21 @@ const HeroSection = () => (
             <Sparkles size={18} /> Build Your Own
           </Link>
         </motion.div>
+
+        {/* Hero Image */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.8 }}
+          className="mt-12 max-w-4xl mx-auto"
+        >
+          <img
+            src={heroCollection}
+            alt="Handmade crochet collection featuring amigurumi, flowers, and scrunchies"
+            className="w-full rounded-3xl shadow-float"
+            loading="eager"
+          />
+        </motion.div>
       </motion.div>
 
       {/* Scroll indicator */}
