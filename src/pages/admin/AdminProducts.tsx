@@ -79,6 +79,36 @@ const AdminProducts = () => {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
+  const toggleSaleMutation = useMutation({
+    mutationFn: async ({ id, price, original_price, badges }: any) => {
+      const isOnSale = badges?.includes("Sale");
+      let newBadges: string[];
+      let newOriginalPrice: number | null;
+      if (isOnSale) {
+        // Remove sale
+        newBadges = (badges || []).filter((b: string) => b !== "Sale");
+        newOriginalPrice = null;
+      } else {
+        // Put on sale — set original_price to current price, reduce price by 15%
+        newBadges = [...(badges || []), "Sale"];
+        newOriginalPrice = price;
+      }
+      const payload: any = { badges: newBadges, original_price: newOriginalPrice };
+      if (!isOnSale) {
+        payload.price = Math.round(price * 0.85);
+      } else if (original_price) {
+        payload.price = original_price;
+      }
+      const { error } = await supabase.from("products").update(payload).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      toast({ title: "Sale status updated" });
+    },
+    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
   const resetForm = () => setForm({ name: "", slug: "", price: "", original_price: "", description: "", category_id: "", image_url: "", stock_quantity: "100", is_featured: false, badges: "", colors: "" });
 
   const openEdit = (p: any) => {
