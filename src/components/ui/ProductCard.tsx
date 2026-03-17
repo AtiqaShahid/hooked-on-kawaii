@@ -1,9 +1,9 @@
 import { motion } from "framer-motion";
 import { Heart, ShoppingBag, Star } from "lucide-react";
 import { Link } from "react-router-dom";
-import type { Product } from "@/lib/products";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import type { DbProduct } from "@/hooks/useSupabaseData";
 
 const badgeColors: Record<string, string> = {
   "Bestseller": "bg-pink text-primary-foreground",
@@ -15,22 +15,31 @@ const badgeColors: Record<string, string> = {
 };
 
 const categoryEmojis: Record<string, string> = {
-  bouquets: "💐",
-  keychains: "🔑",
-  toys: "🧸",
-  decor: "🌼",
-  accessories: "🎀",
-  flowers: "🌸",
+  bouquets: "💐", keychains: "🔑", toys: "🧸", decor: "🌼", accessories: "🎀", flowers: "🌸",
 };
 
-const ProductCard = ({ product, index = 0 }: { product: Product; index?: number }) => {
+const ProductCard = ({ product, index = 0 }: { product: DbProduct; index?: number }) => {
   const { addItem } = useCart();
   const { toggleWishlist, isWishlisted } = useWishlist();
+  const catSlug = product.category?.slug || "";
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem(product);
+    // Convert to the cart format
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      originalPrice: product.original_price ?? undefined,
+      image: product.image_url || "",
+      category: catSlug,
+      badges: product.badges || [],
+      description: product.description || "",
+      colors: product.colors || [],
+      rating: product.rating,
+      reviews: product.review_count,
+    });
   };
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
@@ -50,10 +59,10 @@ const ProductCard = ({ product, index = 0 }: { product: Product; index?: number 
         <div className="bg-card rounded-3xl overflow-hidden shadow-soft card-hover">
           <div className="relative aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
             <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-60 group-hover:scale-110 transition-transform duration-500">
-              {categoryEmojis[product.category] || "🧶"}
+              {categoryEmojis[catSlug] || "🧶"}
             </div>
             <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-              {product.badges.map((badge) => (
+              {(product.badges || []).map((badge) => (
                 <span key={badge} className={`px-2.5 py-1 rounded-2xl text-xs font-semibold font-body ${badgeColors[badge] || "bg-muted text-foreground"}`}>
                   {badge}
                 </span>
@@ -84,18 +93,18 @@ const ProductCard = ({ product, index = 0 }: { product: Product; index?: number 
             <div className="flex items-center gap-1 mb-2">
               <Star size={12} className="fill-peach text-peach" />
               <span className="text-xs text-muted-foreground font-medium">
-                {product.rating} ({product.reviews})
+                {product.rating} ({product.review_count})
               </span>
             </div>
             <div className="flex gap-1 mb-3">
-              {product.colors.slice(0, 4).map((color) => (
+              {(product.colors || []).slice(0, 4).map((color) => (
                 <div key={color} className="w-4 h-4 rounded-full border-2 border-card shadow-sm" style={{ backgroundColor: color }} />
               ))}
             </div>
             <div className="flex items-center gap-2">
               <span className="font-display font-bold text-base">${product.price}</span>
-              {product.originalPrice && (
-                <span className="text-xs text-muted-foreground line-through">${product.originalPrice}</span>
+              {product.original_price && (
+                <span className="text-xs text-muted-foreground line-through">${product.original_price}</span>
               )}
             </div>
           </div>

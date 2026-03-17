@@ -1,37 +1,31 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Search, SlidersHorizontal } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
-import { products, categories } from "@/lib/products";
+import { useProducts, useCategories } from "@/hooks/useSupabaseData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ShopPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const initialCat = searchParams.get("cat") || "all";
-  const [activeCategory, setActiveCategory] = useState(initialCat);
+  const activeCategory = searchParams.get("cat") || "all";
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    const cat = searchParams.get("cat");
-    if (cat) setActiveCategory(cat);
-  }, [searchParams]);
+  const { data: products = [], isLoading: loadingProducts } = useProducts();
+  const { data: categories = [], isLoading: loadingCategories } = useCategories();
 
   const handleCategoryChange = (cat: string) => {
-    setActiveCategory(cat);
-    if (cat === "all") {
-      setSearchParams({});
-    } else {
-      setSearchParams({ cat });
-    }
+    if (cat === "all") setSearchParams({});
+    else setSearchParams({ cat });
   };
 
-  const filtered = products.filter((p) => {
-    const matchesCat = activeCategory === "all" || p.category === activeCategory;
+  const filtered = useMemo(() => products.filter((p) => {
+    const catSlug = p.category?.slug;
+    const matchesCat = activeCategory === "all" || catSlug === activeCategory;
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesSearch;
-  });
+  }), [products, activeCategory, searchQuery]);
 
   return (
     <div className="min-h-screen">
@@ -71,9 +65,9 @@ const ShopPage = () => {
             {categories.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => handleCategoryChange(cat.id)}
+                onClick={() => handleCategoryChange(cat.slug)}
                 className={`px-5 py-2.5 rounded-3xl text-sm font-semibold font-body whitespace-nowrap transition-all btn-squish ${
-                  activeCategory === cat.id ? "bg-primary text-primary-foreground shadow-glow" : "bg-card text-foreground/60 shadow-soft"
+                  activeCategory === cat.slug ? "bg-primary text-primary-foreground shadow-glow" : "bg-card text-foreground/60 shadow-soft"
                 }`}
               >
                 {cat.emoji} {cat.name}
@@ -81,13 +75,28 @@ const ShopPage = () => {
             ))}
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {filtered.map((product, i) => (
-              <ProductCard key={product.id} product={product} index={i} />
-            ))}
-          </div>
+          {loadingProducts ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="rounded-3xl overflow-hidden">
+                  <Skeleton className="aspect-square w-full" />
+                  <div className="p-4 space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-3 w-1/2" />
+                    <Skeleton className="h-5 w-1/4" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {filtered.map((product, i) => (
+                <ProductCard key={product.id} product={product} index={i} />
+              ))}
+            </div>
+          )}
 
-          {filtered.length === 0 && (
+          {!loadingProducts && filtered.length === 0 && (
             <div className="text-center py-20">
               <span className="text-5xl block mb-4">🧶</span>
               <p className="font-display text-lg font-semibold mb-2">No products found</p>
