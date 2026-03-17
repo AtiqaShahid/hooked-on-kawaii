@@ -63,21 +63,16 @@ const ProductDetail = () => {
   const badges = product.badges || [];
 
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addItem({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        originalPrice: product.original_price ?? undefined,
-        image: product.image_url || "",
-        category: catSlug,
-        badges,
-        description: product.description || "",
-        colors,
-        rating: product.rating,
-        reviews: product.review_count,
-      });
-    }
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image_url || "",
+      category: catSlug,
+      selectedColor: selectedColor,
+      type: "product",
+      quantity,
+    });
   };
 
   return (

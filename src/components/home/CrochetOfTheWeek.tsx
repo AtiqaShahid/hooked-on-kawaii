@@ -17,14 +17,9 @@ const CrochetOfTheWeek = () => {
       id: featured.id,
       name: featured.name,
       price: featured.price,
-      originalPrice: featured.original_price ?? undefined,
       image: featured.image_url || "",
       category: featured.category?.slug || "",
-      badges: featured.badges || [],
-      description: featured.description || "",
-      colors: featured.colors || [],
-      rating: featured.rating,
-      reviews: featured.review_count,
+      type: "product",
     });
   };
 
