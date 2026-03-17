@@ -165,8 +165,8 @@ const Collections = () => {
                             Rs {item.price.toLocaleString()}
                           </span>
                         </Link>
-                      );
-                    })}
+                    ))}
+
                   </div>
                 </div>
 
