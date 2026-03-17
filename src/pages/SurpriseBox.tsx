@@ -35,13 +35,9 @@ const SurpriseBoxPage = () => {
       id: box.id,
       name: box.name,
       price: box.price,
-      image: "",
+      image: box.image_url || "",
       category: "surprise-box",
-      badges: ["Mystery"],
-      description: box.description || "",
-      colors: [],
-      rating: 5,
-      reviews: 0,
+      type: "surprise",
     });
   };
 

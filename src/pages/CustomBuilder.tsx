@@ -33,6 +33,7 @@ const attachmentPrice: Record<string, number> = {
 };
 
 const CustomBuilder = () => {
+  const { addItem } = useCart();
   const [selectedColors, setSelectedColors] = useState<string[]>(["#FFD1DC"]);
   const [yarn, setYarn] = useState("Cotton");
   const [size, setSize] = useState("Small (5cm)");
@@ -79,28 +80,15 @@ const CustomBuilder = () => {
     }
   };
 
-  const handleOrder = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { error } = await supabase.from("custom_crochet_orders").insert({
-        user_id: user?.id || null,
-        colors: colorNames,
-        yarn_type: yarn,
-        size,
-        attachment,
-        price: totalPrice,
-        preview_url: previewImage || null,
-        status: "pending",
-      });
-      if (error) throw error;
-      toast({
-        title: "Custom order placed! 🎉",
-        description: `Your ${size} ${yarn} crochet with ${attachment.toLowerCase()} attachment has been saved. We'll be in touch!`,
-      });
-    } catch (err: any) {
-      console.error("Order save failed:", err);
-      toast({ title: "Order failed", description: err.message || "Please try again.", variant: "destructive" });
-    }
+  const handleOrder = () => {
+    addItem({
+      id: `custom-${Date.now()}`,
+      name: `Custom ${size} ${yarn} Crochet`,
+      price: totalPrice,
+      image: previewImage || "",
+      type: "custom",
+      meta: { colors: colorNames, yarn, size, attachment, previewUrl: previewImage },
+    });
   };
 
   const handleSaveDesign = async () => {
@@ -292,7 +280,7 @@ const CustomBuilder = () => {
                   onClick={handleOrder}
                   className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2"
                 >
-                  <Sparkles size={18} /> Place Custom Order
+                  <Sparkles size={18} /> Add to Cart
                 </button>
                 <button
                   onClick={handleSaveDesign}

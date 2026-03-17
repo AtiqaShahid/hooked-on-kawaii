@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Gift, Heart, Package, MessageSquare, ArrowRight } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useCart } from "@/contexts/CartContext";
 
 const items = ["🌸 Crochet Rose", "🧸 Mini Bear", "🔑 Flower Keychain", "💐 Tulip Bouquet", "🎀 Scrunchie Set"];
 const colorThemes = [
@@ -19,6 +20,18 @@ const GiftBuilder = () => {
   const [selectedTheme, setSelectedTheme] = useState("");
   const [selectedPackaging, setSelectedPackaging] = useState("");
   const [message, setMessage] = useState("");
+  const { addItem } = useCart();
+
+  const handleOrderGift = () => {
+    addItem({
+      id: `gift-${Date.now()}`,
+      name: `Gift Set: ${selectedItem}`,
+      price: 4500,
+      image: "",
+      type: "gift",
+      meta: { item: selectedItem, theme: selectedTheme, packaging: selectedPackaging, message },
+    });
+  };
 
   const steps = ["Select Item", "Color Theme", "Packaging", "Message"];
 
@@ -120,8 +133,8 @@ const GiftBuilder = () => {
                   <p className="text-sm text-muted-foreground">{selectedItem} · {selectedTheme} · {selectedPackaging}</p>
                   {message && <p className="text-sm text-muted-foreground mt-2 italic">"{message}"</p>}
                 </div>
-                <button className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2">
-                  <Gift size={18} /> Order Gift Set — Rs. 4,500
+                <button onClick={handleOrderGift} className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2">
+                  <Gift size={18} /> Add Gift Set to Cart — Rs. 4,500
                 </button>
               </div>
             )}

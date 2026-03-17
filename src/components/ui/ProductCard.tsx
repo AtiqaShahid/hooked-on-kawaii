@@ -31,14 +31,9 @@ const ProductCard = ({ product, index = 0 }: { product: DbProduct; index?: numbe
       id: product.id,
       name: product.name,
       price: product.price,
-      originalPrice: product.original_price ?? undefined,
       image: product.image_url || "",
       category: catSlug,
-      badges: product.badges || [],
-      description: product.description || "",
-      colors: product.colors || [],
-      rating: product.rating,
-      reviews: product.review_count,
+      type: "product",
     });
   };
 
