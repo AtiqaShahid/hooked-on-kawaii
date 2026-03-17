@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Gift, Heart, Package, MessageSquare, ArrowRight } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { useCart } from "@/contexts/CartContext";
 
 const items = ["🌸 Crochet Rose", "🧸 Mini Bear", "🔑 Flower Keychain", "💐 Tulip Bouquet", "🎀 Scrunchie Set"];
 const colorThemes = [
