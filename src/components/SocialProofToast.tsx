@@ -10,7 +10,14 @@ const PAKISTANI_NAMES = [
   "Mehreen", "Nimra", "Urooj", "Areeba", "Laiba", "Rida", "Aliza", "Hania",
 ];
 
+const PAKISTANI_CITIES = [
+  "Lahore", "Karachi", "Islamabad", "Rawalpindi", "Faisalabad",
+  "Multan", "Peshawar", "Quetta", "Sialkot", "Hyderabad",
+  "Gujranwala", "Bahawalpur", "Sargodha", "Abbottabad", "Mardan",
+];
+
 const pickName = (idx: number) => PAKISTANI_NAMES[idx % PAKISTANI_NAMES.length];
+const pickCity = (idx: number) => PAKISTANI_CITIES[idx % PAKISTANI_CITIES.length];
 
 const SocialProofToast = () => {
   const [current, setCurrent] = useState<ProofItem | null>(null);
@@ -28,7 +35,7 @@ const SocialProofToast = () => {
 
       const items = data.map((d: any, i: number) => ({
         product_name: d.product?.name || "a crochet item",
-        city: d.city || "somewhere beautiful",
+        city: pickCity(i),
         name: pickName(i),
       }));
 
