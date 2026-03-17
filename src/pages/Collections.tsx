@@ -1,21 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { supabase } from "@/integrations/supabase/client";
-
-type Product = {
-  id: string;
-  name: string;
-  slug: string;
-  price: number;
-  image_url: string | null;
-};
-
 type CollectionItem = {
   name: string;
   price: number;
+  image: string;
 };
 
 type CollectionGroup = {
@@ -37,11 +27,11 @@ const HOOKONLOOP_COLLECTIONS: CollectionGroup[] = [
     headerColor: "hsl(var(--peach) / 0.28)",
     buttonColor: "hsl(var(--primary))",
     items: [
-      { name: "Floral Bag - Pink", price: 2500 },
-      { name: "Floral Bag - Pink & White", price: 2500 },
-      { name: "Floral Bag - Red", price: 2500 },
-      { name: "Rose Crossbody Bag", price: 3500 },
-      { name: "Floral Bag - White", price: 2500 },
+      { name: "Floral Bag - Pink", price: 2500, image: "/products/floral-bag-pink.webp" },
+      { name: "Floral Bag - Pink & White", price: 2500, image: "/products/floral-bag-pink-white.webp" },
+      { name: "Floral Bag - Red", price: 2500, image: "/products/floral-bag-red.webp" },
+      { name: "Rose Crossbody Bag", price: 3500, image: "/products/rose-crossbody-bag.webp" },
+      { name: "Floral Bag - White", price: 2500, image: "/products/floral-bag-white.webp" },
     ],
   },
   {
@@ -52,12 +42,12 @@ const HOOKONLOOP_COLLECTIONS: CollectionGroup[] = [
     headerColor: "hsl(var(--lavender) / 0.36)",
     buttonColor: "hsl(var(--primary))",
     items: [
-      { name: "Bracelet", price: 1000 },
-      { name: "Dual Tone Gajra", price: 1500 },
-      { name: "Red Gajra", price: 1500 },
-      { name: "Rose Gajra", price: 1800 },
-      { name: "Sunflower Gajra", price: 1500 },
-      { name: "White Gajra", price: 1500 },
+      { name: "Bracelet", price: 1000, image: "/products/bracelet.webp" },
+      { name: "Dual Tone Gajra", price: 1500, image: "/products/dual-tone-gajra.webp" },
+      { name: "Red Gajra", price: 1500, image: "/products/red-gajra.webp" },
+      { name: "Rose Gajra", price: 1800, image: "/products/rose-gajra.webp" },
+      { name: "Sunflower Gajra", price: 1500, image: "/products/sunflower-gajra.jpg" },
+      { name: "White Gajra", price: 1500, image: "/products/white-gajra.webp" },
     ],
   },
   {
@@ -68,10 +58,10 @@ const HOOKONLOOP_COLLECTIONS: CollectionGroup[] = [
     headerColor: "hsl(var(--mint) / 0.32)",
     buttonColor: "hsl(var(--primary))",
     items: [
-      { name: "Mini Daisy Pot", price: 1200 },
-      { name: "Rose Pot", price: 1200 },
-      { name: "Sun Flower Pot", price: 1500 },
-      { name: "Tulip Pot", price: 1200 },
+      { name: "Mini Daisy Pot", price: 1200, image: "/products/mini-daisy-pot.webp" },
+      { name: "Rose Pot", price: 1200, image: "/products/rose-pot.webp" },
+      { name: "Sun Flower Pot", price: 1500, image: "/products/sunflower-pot.webp" },
+      { name: "Tulip Pot", price: 1200, image: "/products/tulip-pot.webp" },
     ],
   },
   {
@@ -82,12 +72,12 @@ const HOOKONLOOP_COLLECTIONS: CollectionGroup[] = [
     headerColor: "hsl(var(--baby-blue) / 0.34)",
     buttonColor: "hsl(var(--primary))",
     items: [
-      { name: "Crochet Teddy Bear", price: 2500 },
-      { name: "Dino Stuffie", price: 1500 },
-      { name: "Honey Bee Stuffy", price: 1500 },
-      { name: "Penguin Stuffy", price: 1000 },
-      { name: "Rattles", price: 1000 },
-      { name: "Turtle Plushie", price: 1500 },
+      { name: "Crochet Teddy Bear", price: 2500, image: "/products/teddy-bear.webp" },
+      { name: "Dino Stuffie", price: 1500, image: "/products/dino-stuffie.webp" },
+      { name: "Honey Bee Stuffy", price: 1500, image: "/products/honey-bee.webp" },
+      { name: "Penguin Stuffy", price: 1000, image: "/products/penguin-stuffy.webp" },
+      { name: "Rattles", price: 1000, image: "/products/rattles.webp" },
+      { name: "Turtle Plushie", price: 1500, image: "/products/turtle-plushie.jpeg" },
     ],
   },
   {
@@ -98,9 +88,9 @@ const HOOKONLOOP_COLLECTIONS: CollectionGroup[] = [
     headerColor: "hsl(var(--peach) / 0.34)",
     buttonColor: "hsl(var(--primary))",
     items: [
-      { name: "GIFT BOX 1", price: 3900 },
-      { name: "GIFT BOX 2", price: 4600 },
-      { name: "GIFT BOX 3", price: 5650 },
+      { name: "GIFT BOX 1", price: 3900, image: "/products/gift-box-1.jpg" },
+      { name: "GIFT BOX 2", price: 4600, image: "/products/gift-box-2.jpeg" },
+      { name: "GIFT BOX 3", price: 5650, image: "/products/gift-box-3.jpeg" },
     ],
   },
   {
@@ -111,44 +101,17 @@ const HOOKONLOOP_COLLECTIONS: CollectionGroup[] = [
     headerColor: "hsl(var(--mint) / 0.28)",
     buttonColor: "hsl(var(--primary))",
     items: [
-      { name: "Bows", price: 500 },
-      { name: "Car Charm", price: 600 },
-      { name: "Heart Keychain", price: 700 },
-      { name: "Mini Daisy Keychain", price: 350 },
-      { name: "Sunflower Charm", price: 700 },
-      { name: "Sunflower Keychain", price: 700 },
+      { name: "Bows", price: 500, image: "/products/bows.jpeg" },
+      { name: "Car Charm", price: 600, image: "/products/car-charm.webp" },
+      { name: "Heart Keychain", price: 700, image: "/products/heart-keychain.webp" },
+      { name: "Mini Daisy Keychain", price: 350, image: "/products/mini-daisy-keychain.webp" },
+      { name: "Sunflower Charm", price: 700, image: "/products/sunflower-charm.jpg" },
+      { name: "Sunflower Keychain", price: 700, image: "/products/sunflower-keychain.webp" },
     ],
   },
 ];
 
-const normalizeText = (value: string) =>
-  value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim();
-
 const Collections = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    const load = async () => {
-      const { data } = await supabase
-        .from("products")
-        .select("id, name, slug, price, image_url")
-        .eq("is_active", true)
-        .order("name");
-
-      if (data) setProducts(data);
-    };
-
-    load();
-  }, []);
-
-  const productLookup = useMemo(() => {
-    const lookup = new Map<string, Product>();
-    products.forEach((product) => {
-      lookup.set(normalizeText(product.name), product);
-    });
-    return lookup;
-  }, [products]);
-
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -157,7 +120,7 @@ const Collections = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">💎 Collections</h1>
             <p className="text-muted-foreground font-body max-w-2xl mx-auto">
-              Exact HookOnLoop-style collection groups, arranged with all listed items.
+              Browse our handmade crochet collections — every piece crafted with love.
             </p>
           </motion.div>
 
@@ -181,27 +144,19 @@ const Collections = () => {
 
                 <div className="bg-card px-5 py-4">
                   <div className="space-y-2">
-                    {group.items.map((item) => {
-                      const matchedProduct = productLookup.get(normalizeText(item.name));
-                      const href = matchedProduct ? `/product/${matchedProduct.id}` : "/shop";
-
-                      return (
+                    {group.items.map((item) => (
                         <Link
                           key={item.name}
-                          to={href}
+                          to="/shop"
                           className="flex items-center gap-4 rounded-2xl px-2 py-2.5 transition-colors hover:bg-muted/60"
                         >
-                          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted shadow-sm">
-                            {matchedProduct?.image_url ? (
-                              <img
-                                src={matchedProduct.image_url}
-                                alt={item.name}
-                                className="h-full w-full object-cover"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <span className="text-lg">{group.emoji}</span>
-                            )}
+                          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted shadow-sm border-2 border-card">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                            />
                           </div>
                           <span className="flex-1 truncate font-body text-base font-medium text-foreground">
                             {item.name}
@@ -210,8 +165,8 @@ const Collections = () => {
                             Rs {item.price.toLocaleString()}
                           </span>
                         </Link>
-                      );
-                    })}
+                    ))}
+
                   </div>
                 </div>
 
