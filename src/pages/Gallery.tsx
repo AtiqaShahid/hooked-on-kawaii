@@ -62,7 +62,8 @@ const Gallery = () => (
                   />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-display font-semibold text-sm mb-2">{item.title}</h3>
+                  <h3 className="font-display font-semibold text-sm mb-1">{item.title}</h3>
+                  <p className="text-xs text-muted-foreground mb-2">{item.desc}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {item.tags.map((t) => (
                       <span key={t} className="px-2.5 py-1 rounded-2xl bg-muted text-xs font-medium text-muted-foreground">
