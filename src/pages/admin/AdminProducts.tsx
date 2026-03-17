@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Plus, Pencil, Trash2, Search, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Loader2, Percent } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,6 +75,36 @@ const AdminProducts = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
       toast({ title: "Product deleted" });
+    },
+    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+  });
+
+  const toggleSaleMutation = useMutation({
+    mutationFn: async ({ id, price, original_price, badges }: any) => {
+      const isOnSale = badges?.includes("Sale");
+      let newBadges: string[];
+      let newOriginalPrice: number | null;
+      if (isOnSale) {
+        // Remove sale
+        newBadges = (badges || []).filter((b: string) => b !== "Sale");
+        newOriginalPrice = null;
+      } else {
+        // Put on sale — set original_price to current price, reduce price by 15%
+        newBadges = [...(badges || []), "Sale"];
+        newOriginalPrice = price;
+      }
+      const payload: any = { badges: newBadges, original_price: newOriginalPrice };
+      if (!isOnSale) {
+        payload.price = Math.round(price * 0.85);
+      } else if (original_price) {
+        payload.price = original_price;
+      }
+      const { error } = await supabase.from("products").update(payload).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      toast({ title: "Sale status updated" });
     },
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
@@ -184,8 +214,16 @@ const AdminProducts = () => {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => openEdit(p)} className="rounded-lg"><Pencil size={14} /></Button>
-                        <Button variant="ghost" size="sm" onClick={() => { if (confirm("Delete this product?")) deleteMutation.mutate(p.id); }} className="rounded-lg text-destructive hover:text-destructive"><Trash2 size={14} /></Button>
+                        <Button variant="ghost" size="sm" onClick={() => openEdit(p)} className="rounded-lg" title="Edit"><Pencil size={14} /></Button>
+                        <Button
+                          variant="ghost" size="sm"
+                          onClick={() => toggleSaleMutation.mutate({ id: p.id, price: p.price, original_price: p.original_price, badges: p.badges })}
+                          className={`rounded-lg ${p.badges?.includes("Sale") ? "text-green-600" : "text-muted-foreground"}`}
+                          title={p.badges?.includes("Sale") ? "Remove Sale" : "Put on Sale (15% off)"}
+                        >
+                          <Percent size={14} />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => { if (confirm("Delete this product?")) deleteMutation.mutate(p.id); }} className="rounded-lg text-destructive hover:text-destructive" title="Delete"><Trash2 size={14} /></Button>
                       </div>
                     </td>
                   </tr>

@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Package, ShoppingCart, Users, DollarSign, TrendingUp, Star, CreditCard, Palette, AlertTriangle, ArrowUpRight, ArrowDownRight, Filter } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Package, ShoppingCart, Users, DollarSign, TrendingUp, Star, CreditCard, Palette, AlertTriangle, ArrowUpRight, ArrowDownRight, Filter, Plus, Settings, Megaphone, Percent, Image, Layers } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,6 +28,7 @@ const getDateThreshold = (range: DateRange) => {
 
 const AdminDashboard = () => {
   const [range, setRange] = useState<DateRange>("30d");
+  const navigate = useNavigate();
 
   const { data: products = [], isLoading: lp } = useQuery({
     queryKey: ["admin-products"],
@@ -295,6 +297,29 @@ const AdminDashboard = () => {
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+        {[
+          { label: "Add Product", icon: Plus, path: "/admin/products", color: "bg-primary/20 text-primary" },
+          { label: "Manage Orders", icon: ShoppingCart, path: "/admin/orders", color: "bg-secondary/30 text-secondary-foreground" },
+          { label: "Run Sale", icon: Percent, path: "/admin/settings", color: "bg-accent/30 text-accent-foreground" },
+          { label: "Announcements", icon: Megaphone, path: "/admin/settings", color: "bg-primary/30 text-primary" },
+          { label: "Collections", icon: Layers, path: "/admin/collections", color: "bg-secondary/20 text-secondary-foreground" },
+          { label: "Settings", icon: Settings, path: "/admin/settings", color: "bg-muted text-muted-foreground" },
+        ].map((action) => (
+          <motion.button
+            key={action.label}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate(action.path)}
+            className={`${action.color} rounded-2xl p-3 flex flex-col items-center gap-1.5 transition-shadow hover:shadow-md`}
+          >
+            <action.icon size={18} />
+            <span className="text-[11px] font-medium">{action.label}</span>
+          </motion.button>
+        ))}
       </div>
 
       {/* KPI Cards */}

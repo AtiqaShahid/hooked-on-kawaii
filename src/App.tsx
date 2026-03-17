@@ -9,6 +9,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 import CartDrawer from "@/components/CartDrawer";
 import SocialProofToast from "@/components/SocialProofToast";
 import AIChatbot from "@/components/AIChatbot";
+import PopupBanner from "@/components/PopupBanner";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -64,6 +65,7 @@ const App = () => (
             <CartDrawer />
             <SocialProofToast />
             <AIChatbot />
+            <PopupBanner />
             <Routes>
               {/* Public storefront */}
               <Route path="/" element={<Index />} />
