@@ -86,6 +86,9 @@ const Footer = () => (
         <p className="flex items-center justify-center gap-1">
           Made with <Heart size={14} className="text-pink fill-pink" /> by HookOnLoop © 2025
         </p>
+        <Link to="/admin/login" className="inline-block mt-3 text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors">
+          Admin Login
+        </Link>
       </div>
     </div>
   </footer>

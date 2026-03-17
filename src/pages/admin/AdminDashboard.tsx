@@ -1,14 +1,14 @@
 import { motion } from "framer-motion";
-import { Package, ShoppingCart, Users, DollarSign, TrendingUp, Star, CreditCard, Palette } from "lucide-react";
+import { Package, ShoppingCart, Users, DollarSign, TrendingUp, Star, CreditCard, Palette, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area } from "recharts";
 
 const COLORS = ["hsl(350,100%,91%)", "hsl(240,67%,94%)", "hsl(140,68%,83%)", "hsl(25,100%,90%)", "hsl(210,80%,90%)"];
 
 const AdminDashboard = () => {
-  const { data: products = [] } = useQuery({
+  const { data: products = [], isLoading: loadingProducts } = useQuery({
     queryKey: ["admin-products"],
     queryFn: async () => {
       const { data } = await supabase.from("products").select("*, category:categories(name)");
@@ -16,7 +16,7 @@ const AdminDashboard = () => {
     },
   });
 
-  const { data: orders = [] } = useQuery({
+  const { data: orders = [], isLoading: loadingOrders } = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
       const { data } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
@@ -48,21 +48,30 @@ const AdminDashboard = () => {
     },
   });
 
+  const { data: profiles = [] } = useQuery({
+    queryKey: ["admin-profiles"],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("*");
+      return data || [];
+    },
+  });
+
   const totalRevenue = orders.reduce((s: number, o: any) => s + (o.total || 0), 0);
   const pendingOrders = orders.filter((o: any) => o.status === "pending").length;
+  const lowStockProducts = products.filter((p: any) => (p.stock_quantity || 0) < 10);
 
   const stats = [
     { label: "Total Products", value: products.length, icon: Package, color: "bg-primary/20" },
     { label: "Total Orders", value: orders.length, icon: ShoppingCart, color: "bg-secondary/50" },
     { label: "Revenue", value: `₨${totalRevenue.toLocaleString()}`, icon: DollarSign, color: "bg-accent/30" },
-    { label: "Pending Orders", value: pendingOrders, icon: TrendingUp, color: "bg-[hsl(var(--peach))]/30" },
-    { label: "Reviews", value: reviews.length, icon: Star, color: "bg-primary/30" },
-    { label: "Custom Orders", value: customOrders.length, icon: Palette, color: "bg-secondary/30" },
-    { label: "Subscriptions", value: subscriptions.length, icon: CreditCard, color: "bg-accent/20" },
-    { label: "Low Stock", value: products.filter((p: any) => (p.stock_quantity || 0) < 10).length, icon: Package, color: "bg-destructive/20" },
+    { label: "Customers", value: profiles.length, icon: Users, color: "bg-[hsl(var(--peach))]/30" },
+    { label: "Pending Orders", value: pendingOrders, icon: TrendingUp, color: "bg-primary/30" },
+    { label: "Reviews", value: reviews.length, icon: Star, color: "bg-secondary/30" },
+    { label: "Custom Orders", value: customOrders.length, icon: Palette, color: "bg-accent/20" },
+    { label: "Subscriptions", value: subscriptions.length, icon: CreditCard, color: "bg-primary/20" },
   ];
 
-  // Category distribution for pie chart
+  // Category distribution
   const categoryMap: Record<string, number> = {};
   products.forEach((p: any) => {
     const cat = p.category?.name || "Uncategorized";
@@ -70,11 +79,36 @@ const AdminDashboard = () => {
   });
   const pieData = Object.entries(categoryMap).map(([name, value]) => ({ name, value }));
 
-  // Mock sales over time (from orders)
-  const salesData = orders.slice(0, 7).map((o: any, i: number) => ({
-    name: new Date(o.created_at).toLocaleDateString("en", { month: "short", day: "numeric" }),
-    sales: o.total || 0,
-  })).reverse();
+  // Sales over time (group orders by date)
+  const salesByDate: Record<string, number> = {};
+  orders.forEach((o: any) => {
+    const date = new Date(o.created_at).toLocaleDateString("en", { month: "short", day: "numeric" });
+    salesByDate[date] = (salesByDate[date] || 0) + (o.total || 0);
+  });
+  const salesData = Object.entries(salesByDate).slice(-10).map(([name, sales]) => ({ name, sales }));
+
+  // Orders by status
+  const statusMap: Record<string, number> = {};
+  orders.forEach((o: any) => {
+    statusMap[o.status] = (statusMap[o.status] || 0) + 1;
+  });
+  const statusData = Object.entries(statusMap).map(([name, value]) => ({ name, value }));
+
+  // Revenue trend (cumulative)
+  let cumulative = 0;
+  const revenueTrend = orders
+    .slice()
+    .sort((a: any, b: any) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+    .slice(-15)
+    .map((o: any) => {
+      cumulative += o.total || 0;
+      return {
+        name: new Date(o.created_at).toLocaleDateString("en", { month: "short", day: "numeric" }),
+        revenue: cumulative,
+      };
+    });
+
+  const isLoading = loadingProducts || loadingOrders;
 
   return (
     <div className="space-y-6">
@@ -92,7 +126,7 @@ const AdminDashboard = () => {
                 <div className={`w-9 h-9 rounded-xl ${s.color} flex items-center justify-center mb-2`}>
                   <s.icon size={18} />
                 </div>
-                <p className="text-xl font-display font-bold">{s.value}</p>
+                <p className="text-xl font-display font-bold">{isLoading ? "..." : s.value}</p>
                 <p className="text-xs text-muted-foreground">{s.label}</p>
               </CardContent>
             </Card>
@@ -100,22 +134,58 @@ const AdminDashboard = () => {
         ))}
       </div>
 
-      {/* Charts */}
+      {/* Low Stock Alert */}
+      {lowStockProducts.length > 0 && (
+        <Card className="rounded-2xl border-destructive/30 bg-destructive/5">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertTriangle size={16} className="text-destructive" />
+              <span className="font-display font-bold text-sm">Low Stock Alert</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {lowStockProducts.map((p: any) => (
+                <span key={p.id} className="px-2 py-1 bg-destructive/10 rounded-lg text-xs">
+                  {p.name} ({p.stock_quantity} left)
+                </span>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Charts Row 1 */}
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="rounded-2xl border-border/30">
-          <CardHeader><CardTitle className="font-display text-base">Sales Overview</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="font-display text-base">Sales by Date</CardTitle></CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={salesData.length ? salesData : [{ name: "No data", sales: 0 }]}>
                 <XAxis dataKey="name" fontSize={12} />
-                <YAxis fontSize={12} />
-                <Tooltip />
+                <YAxis fontSize={12} tickFormatter={(v) => `₨${v}`} />
+                <Tooltip formatter={(v: number) => [`₨${v.toLocaleString()}`, "Sales"]} />
                 <Bar dataKey="sales" fill="hsl(350,100%,91%)" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
+        <Card className="rounded-2xl border-border/30">
+          <CardHeader><CardTitle className="font-display text-base">Revenue Growth</CardTitle></CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <AreaChart data={revenueTrend.length ? revenueTrend : [{ name: "No data", revenue: 0 }]}>
+                <XAxis dataKey="name" fontSize={12} />
+                <YAxis fontSize={12} tickFormatter={(v) => `₨${v}`} />
+                <Tooltip formatter={(v: number) => [`₨${v.toLocaleString()}`, "Cumulative Revenue"]} />
+                <Area type="monotone" dataKey="revenue" stroke="hsl(240,67%,70%)" fill="hsl(240,67%,94%)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Charts Row 2 */}
+      <div className="grid md:grid-cols-2 gap-6">
         <Card className="rounded-2xl border-border/30">
           <CardHeader><CardTitle className="font-display text-base">Product Categories</CardTitle></CardHeader>
           <CardContent className="flex items-center justify-center">
@@ -131,11 +201,46 @@ const AdminDashboard = () => {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-muted-foreground text-sm">No products yet</p>
+              <p className="text-muted-foreground text-sm py-12">No products yet</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl border-border/30">
+          <CardHeader><CardTitle className="font-display text-base">Orders by Status</CardTitle></CardHeader>
+          <CardContent className="flex items-center justify-center">
+            {statusData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie data={statusData} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({ name, value }) => `${name} (${value})`} labelLine={false} fontSize={11}>
+                    {statusData.map((_, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-muted-foreground text-sm py-12">No orders yet</p>
             )}
           </CardContent>
         </Card>
       </div>
+
+      {/* Top Products */}
+      <Card className="rounded-2xl border-border/30">
+        <CardHeader><CardTitle className="font-display text-base">Top Products by Price</CardTitle></CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={250}>
+            <BarChart data={products.slice(0, 8).map((p: any) => ({ name: p.name.slice(0, 15), price: p.price }))}>
+              <XAxis dataKey="name" fontSize={11} />
+              <YAxis fontSize={12} tickFormatter={(v) => `₨${v}`} />
+              <Tooltip formatter={(v: number) => [`₨${v.toLocaleString()}`, "Price"]} />
+              <Bar dataKey="price" fill="hsl(140,68%,83%)" radius={[8, 8, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
       {/* Recent Orders */}
       <Card className="rounded-2xl border-border/30">
