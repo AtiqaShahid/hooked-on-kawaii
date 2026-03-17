@@ -137,7 +137,8 @@ const Collections = () => {
                   <div className="px-5 pb-5 bg-card">
                     <Link
                       to={`/shop?category=${cat.slug}`}
-                      className={`${colors.btn} block w-full text-center py-3 rounded-full text-sm font-display font-semibold text-primary-foreground shadow-soft hover:shadow-float transition-all btn-squish`}
+                      className="block w-full text-center py-3 rounded-full text-sm font-display font-semibold text-white shadow-soft hover:shadow-float transition-all btn-squish"
+                      style={{ backgroundColor: `hsl(${colors.btnHsl})` }}
                     >
                       View All {cat.name}
                     </Link>
