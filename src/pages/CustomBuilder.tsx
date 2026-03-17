@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const yarnTypes = ["Cotton", "Acrylic", "Wool Blend", "Bamboo"];
 const sizes = ["Mini (3cm)", "Small (5cm)", "Medium (8cm)", "Large (12cm)"];
