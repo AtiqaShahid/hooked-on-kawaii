@@ -1,0 +1,92 @@
+import { motion } from "framer-motion";
+import { Heart, ShoppingBag, Star } from "lucide-react";
+import { Link } from "react-router-dom";
+import type { Product } from "@/lib/products";
+
+const badgeColors: Record<string, string> = {
+  "Bestseller": "bg-pink text-primary-foreground",
+  "Handmade": "bg-warm-beige text-foreground",
+  "Customizable": "bg-lavender text-secondary-foreground",
+  "Limited Edition": "bg-mint text-accent-foreground",
+  "Crochet of the Week": "bg-peach text-foreground",
+  "Limited Stock": "bg-baby-blue text-foreground",
+};
+
+const ProductCard = ({ product, index = 0 }: { product: Product; index?: number }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ delay: index * 0.1, duration: 0.5 }}
+  >
+    <Link to={`/product/${product.id}`} className="block group">
+      <div className="bg-card rounded-3xl overflow-hidden shadow-soft card-hover">
+        {/* Image */}
+        <div className="relative aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
+          <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-60 group-hover:scale-110 transition-transform duration-500">
+            {product.category === "bouquets" && "💐"}
+            {product.category === "keychains" && "🔑"}
+            {product.category === "toys" && "🧸"}
+            {product.category === "decor" && "🌼"}
+            {product.category === "accessories" && "🎀"}
+            {product.category === "flowers" && "🌸"}
+          </div>
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
+            {product.badges.map((badge) => (
+              <span
+                key={badge}
+                className={`px-2.5 py-1 rounded-2xl text-xs font-semibold font-body ${badgeColors[badge] || "bg-muted text-foreground"}`}
+              >
+                {badge}
+              </span>
+            ))}
+          </div>
+          {/* Quick Actions */}
+          <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <button className="w-9 h-9 rounded-2xl bg-card/80 backdrop-blur-sm flex items-center justify-center text-foreground/60 hover:text-pink transition-colors btn-squish shadow-sm">
+              <Heart size={16} />
+            </button>
+          </div>
+          {/* Quick Add */}
+          <motion.button
+            initial={false}
+            className="absolute bottom-3 right-3 w-10 h-10 rounded-2xl bg-card/90 backdrop-blur-sm flex items-center justify-center text-foreground/60 hover:bg-primary hover:text-primary-foreground transition-all btn-squish shadow-sm opacity-0 group-hover:opacity-100"
+          >
+            <ShoppingBag size={16} />
+          </motion.button>
+        </div>
+        {/* Info */}
+        <div className="p-4">
+          <h3 className="font-display font-semibold text-sm leading-tight mb-1 group-hover:text-gradient-pink transition-all">
+            {product.name}
+          </h3>
+          <div className="flex items-center gap-1 mb-2">
+            <Star size={12} className="fill-peach text-peach" />
+            <span className="text-xs text-muted-foreground font-medium">
+              {product.rating} ({product.reviews})
+            </span>
+          </div>
+          {/* Colors */}
+          <div className="flex gap-1 mb-3">
+            {product.colors.slice(0, 4).map((color) => (
+              <div
+                key={color}
+                className="w-4 h-4 rounded-full border-2 border-card shadow-sm"
+                style={{ backgroundColor: color }}
+              />
+            ))}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-display font-bold text-base">${product.price}</span>
+            {product.originalPrice && (
+              <span className="text-xs text-muted-foreground line-through">${product.originalPrice}</span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
+  </motion.div>
+);
+
+export default ProductCard;
