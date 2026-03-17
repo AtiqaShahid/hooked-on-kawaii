@@ -337,6 +337,16 @@ const AdminDashboard = () => {
         </Card>
       )}
 
+      {/* Mock Data Banner */}
+      {usingMock && (
+        <Card className="rounded-2xl border-primary/30 bg-primary/5">
+          <CardContent className="p-3 flex items-center gap-2 text-sm">
+            <Palette size={16} className="text-primary" />
+            <span className="text-muted-foreground">📊 Showing <strong>sample data</strong> for preview. Real data will appear once orders start coming in.</span>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Profit Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
