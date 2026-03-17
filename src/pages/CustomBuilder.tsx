@@ -116,9 +116,9 @@ const CustomBuilder = () => {
                     </div>
                   ) : previewGenerated ? (
                     <>
-                      <div className="flex gap-2 justify-center mb-4">
+                      <div className="flex gap-3 justify-center mb-4">
                         {selectedColors.map((c) => (
-                          <motion.div key={c} layout className="w-10 h-10 rounded-full shadow-soft border-2 border-card" style={{ backgroundColor: c }} />
+                          <div key={c} className="w-10 h-10 rounded-full shadow-soft border-2 border-card" style={{ backgroundColor: c }} />
                         ))}
                       </div>
                       <div className="w-48 h-48 mx-auto mb-4 rounded-3xl overflow-hidden shadow-soft">
