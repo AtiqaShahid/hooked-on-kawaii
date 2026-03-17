@@ -299,6 +299,29 @@ const AdminDashboard = () => {
         </div>
       </div>
 
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+        {[
+          { label: "Add Product", icon: Plus, path: "/admin/products", color: "bg-primary/20 text-primary" },
+          { label: "Manage Orders", icon: ShoppingCart, path: "/admin/orders", color: "bg-secondary/30 text-secondary-foreground" },
+          { label: "Run Sale", icon: Percent, path: "/admin/settings", color: "bg-accent/30 text-accent-foreground" },
+          { label: "Announcements", icon: Megaphone, path: "/admin/settings", color: "bg-primary/30 text-primary" },
+          { label: "Collections", icon: Layers, path: "/admin/collections", color: "bg-secondary/20 text-secondary-foreground" },
+          { label: "Settings", icon: Settings, path: "/admin/settings", color: "bg-muted text-muted-foreground" },
+        ].map((action) => (
+          <motion.button
+            key={action.label}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => navigate(action.path)}
+            className={`${action.color} rounded-2xl p-3 flex flex-col items-center gap-1.5 transition-shadow hover:shadow-md`}
+          >
+            <action.icon size={18} />
+            <span className="text-[11px] font-medium">{action.label}</span>
+          </motion.button>
+        ))}
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {kpis.map((k, i) => (
