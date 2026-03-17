@@ -54,7 +54,7 @@ const Collections = () => {
   }, []);
 
   const getColors = (name: string, index: number) =>
-    categoryColors[name] || fallbackColors[index % fallbackColors.length];
+    categoryColorMap[name] || fallbackHsl[index % fallbackHsl.length];
 
   const getProductsForCategory = (catId: string) =>
     products.filter((p) => p.category_id === catId).slice(0, 4);
