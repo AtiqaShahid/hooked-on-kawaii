@@ -22,7 +22,7 @@ const ShopPage = () => {
 
   const filtered = useMemo(() => products.filter((p) => {
     const catSlug = p.category?.slug;
-    const matchesCat = activeCategory === "all" || catSlug === activeCategory;
+    const matchesCat = activeCategory === "all" || (activeCategory === "sale" ? (p.badges || []).includes("Sale") : catSlug === activeCategory);
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCat && matchesSearch;
   }), [products, activeCategory, searchQuery]);
