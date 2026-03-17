@@ -158,7 +158,7 @@ const Collections = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">💎 Collections</h1>
             <p className="text-muted-foreground font-body max-w-2xl mx-auto">
-              Exact HookOnLoop-style collection groups, arranged with all listed items.
+              Browse our handmade crochet collections — every piece crafted with love.
             </p>
           </motion.div>
 
