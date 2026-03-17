@@ -112,12 +112,17 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <Link to="/shop" className="p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish hidden sm:flex">
+              <button onClick={() => setSearchOpen(true)} className="p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish hidden sm:flex">
                 <Search size={20} />
-              </Link>
-              <Link to="/shop" className="p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish hidden sm:flex">
+              </button>
+              <button onClick={() => setWishlistOpen(true)} className="relative p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish hidden sm:flex">
                 <Heart size={20} />
-              </Link>
+                {wishlist.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-pink text-[10px] font-bold text-white rounded-full flex items-center justify-center">
+                    {wishlist.length}
+                  </span>
+                )}
+              </button>
               <button
                 onClick={() => setCartOpen(true)}
                 className="relative p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish"
