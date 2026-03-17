@@ -12,7 +12,7 @@ import {
 } from "recharts";
 
 const COLORS = ["hsl(350,80%,75%)", "hsl(240,67%,80%)", "hsl(140,58%,70%)", "hsl(25,90%,75%)", "hsl(210,70%,75%)", "hsl(280,60%,75%)"];
-const PKR = (v: number) => `PKR ${v.toLocaleString()}`;
+const PKR = (v: number) => `Rs. ${v.toLocaleString()}`;
 
 type DateRange = "7d" | "30d" | "90d" | "all";
 
@@ -489,7 +489,7 @@ const AdminDashboard = () => {
                         o.status === "delivered" ? "bg-accent/30" : "bg-muted"
                       }`}>{o.status}</span>
                     </td>
-                    <td className="py-2.5 px-2 font-medium">PKR {o.total?.toLocaleString()}</td>
+                    <td className="py-2.5 px-2 font-medium">Rs. {o.total?.toLocaleString()}</td>
                     <td className="py-2.5 px-2 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}

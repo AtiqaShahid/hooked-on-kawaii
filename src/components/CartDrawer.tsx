@@ -69,7 +69,7 @@ const CartDrawer = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-display font-semibold text-sm truncate">{item.product.name}</h4>
-                      <p className="text-sm font-bold mt-1">PKR {item.product.price.toLocaleString()}</p>
+                      <p className="text-sm font-bold mt-1">Rs. {item.product.price.toLocaleString()}</p>
                       <div className="flex items-center gap-2 mt-2">
                         <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center btn-squish">
                           <Minus size={12} />
@@ -93,7 +93,7 @@ const CartDrawer = () => {
               <div className="p-6 border-t border-border/50 space-y-4">
                 <div className="flex justify-between font-display">
                   <span className="font-semibold">Total</span>
-                  <span className="text-xl font-bold">PKR {totalPrice.toLocaleString()}</span>
+                  <span className="text-xl font-bold">Rs. {totalPrice.toLocaleString()}</span>
                 </div>
                 <button className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all">
                   Checkout 💕

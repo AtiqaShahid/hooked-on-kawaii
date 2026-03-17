@@ -14,7 +14,7 @@ const tiers = [
 ];
 
 const earnWays = [
-  { action: "Make a purchase", points: "1 point per PKR 100", icon: ShoppingBag },
+  { action: "Make a purchase", points: "1 point per Rs. 100", icon: ShoppingBag },
   { action: "Write a review", points: "+10 points", icon: MessageSquare },
   { action: "Refer a friend", points: "+25 points", icon: Users },
   { action: "Birthday bonus", points: "+50 points", icon: Gift },

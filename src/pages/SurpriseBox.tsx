@@ -70,7 +70,7 @@ const SurpriseBoxPage = () => {
                   <CardContent className="p-6">
                     <h3 className="font-display text-xl font-bold mb-2">{box.name}</h3>
                     <p className="text-muted-foreground text-sm mb-4">{box.description}</p>
-                    <p className="text-3xl font-display font-bold mb-4">PKR {box.price.toLocaleString()}</p>
+                    <p className="text-3xl font-display font-bold mb-4">Rs. {box.price.toLocaleString()}</p>
                     <Button onClick={() => handleAdd(box)} className="w-full rounded-2xl btn-squish">
                       <ShoppingBag size={16} /> Add to Cart
                     </Button>

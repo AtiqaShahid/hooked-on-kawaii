@@ -14,7 +14,7 @@ const AdminSettings = () => {
             <h3 className="font-display font-bold mb-3">🏪 Store Information</h3>
             <div className="space-y-2 text-sm">
               <p><strong>Store Name:</strong> HookOnLoop</p>
-              <p><strong>Currency:</strong> PKR (₨)</p>
+              <p><strong>Currency:</strong> Rs. (₨)</p>
               <p><strong>Country:</strong> Pakistan</p>
               <p><strong>Website:</strong> hookonloop.com</p>
             </div>

@@ -160,7 +160,7 @@ const Admin = () => {
                       <tr key={p.id} className="border-b border-border/30 hover:bg-muted/20">
                         <td className="py-3 px-2 font-medium">{p.name}</td>
                         <td className="py-3 px-2 text-muted-foreground">{p.category?.emoji} {p.category?.name}</td>
-                        <td className="py-3 px-2">PKR {p.price.toLocaleString()}</td>
+                        <td className="py-3 px-2">Rs. {p.price.toLocaleString()}</td>
                         <td className="py-3 px-2">⭐ {p.rating}</td>
                         <td className="py-3 px-2">{p.review_count}</td>
                         <td className="py-3 px-2">
