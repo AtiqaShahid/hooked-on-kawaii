@@ -84,9 +84,52 @@ const AdminDashboard = () => {
     },
   });
 
+
+  // ── MOCK DATA (shown until real data arrives) ──
+  const hasRealOrders = allOrders.length > 0;
+  const hasRealProfiles = profiles.length > 0;
+
+  const MOCK_ORDERS = [
+    { id: "mock-001", status: "delivered", total: 4500, created_at: new Date(Date.now() - 1 * 86400000).toISOString() },
+    { id: "mock-002", status: "shipped", total: 2800, created_at: new Date(Date.now() - 2 * 86400000).toISOString() },
+    { id: "mock-003", status: "pending", total: 6200, created_at: new Date(Date.now() - 3 * 86400000).toISOString() },
+    { id: "mock-004", status: "delivered", total: 3100, created_at: new Date(Date.now() - 4 * 86400000).toISOString() },
+    { id: "mock-005", status: "delivered", total: 1900, created_at: new Date(Date.now() - 5 * 86400000).toISOString() },
+    { id: "mock-006", status: "shipped", total: 5400, created_at: new Date(Date.now() - 6 * 86400000).toISOString() },
+    { id: "mock-007", status: "pending", total: 7800, created_at: new Date(Date.now() - 7 * 86400000).toISOString() },
+    { id: "mock-008", status: "delivered", total: 2200, created_at: new Date(Date.now() - 8 * 86400000).toISOString() },
+    { id: "mock-009", status: "cancelled", total: 1500, created_at: new Date(Date.now() - 10 * 86400000).toISOString() },
+    { id: "mock-010", status: "delivered", total: 9200, created_at: new Date(Date.now() - 12 * 86400000).toISOString() },
+    { id: "mock-011", status: "shipped", total: 3700, created_at: new Date(Date.now() - 14 * 86400000).toISOString() },
+    { id: "mock-012", status: "delivered", total: 4100, created_at: new Date(Date.now() - 16 * 86400000).toISOString() },
+    { id: "mock-013", status: "delivered", total: 5600, created_at: new Date(Date.now() - 18 * 86400000).toISOString() },
+    { id: "mock-014", status: "pending", total: 2900, created_at: new Date(Date.now() - 20 * 86400000).toISOString() },
+    { id: "mock-015", status: "delivered", total: 8300, created_at: new Date(Date.now() - 22 * 86400000).toISOString() },
+  ];
+
+  const MOCK_PROFILES = [
+    { id: "p1", created_at: new Date(Date.now() - 90 * 86400000).toISOString() },
+    { id: "p2", created_at: new Date(Date.now() - 75 * 86400000).toISOString() },
+    { id: "p3", created_at: new Date(Date.now() - 60 * 86400000).toISOString() },
+    { id: "p4", created_at: new Date(Date.now() - 55 * 86400000).toISOString() },
+    { id: "p5", created_at: new Date(Date.now() - 45 * 86400000).toISOString() },
+    { id: "p6", created_at: new Date(Date.now() - 40 * 86400000).toISOString() },
+    { id: "p7", created_at: new Date(Date.now() - 30 * 86400000).toISOString() },
+    { id: "p8", created_at: new Date(Date.now() - 25 * 86400000).toISOString() },
+    { id: "p9", created_at: new Date(Date.now() - 20 * 86400000).toISOString() },
+    { id: "p10", created_at: new Date(Date.now() - 15 * 86400000).toISOString() },
+    { id: "p11", created_at: new Date(Date.now() - 10 * 86400000).toISOString() },
+    { id: "p12", created_at: new Date(Date.now() - 5 * 86400000).toISOString() },
+    { id: "p13", created_at: new Date(Date.now() - 2 * 86400000).toISOString() },
+  ];
+
+  const effectiveOrders = hasRealOrders ? allOrders : MOCK_ORDERS;
+  const effectiveProfiles = hasRealProfiles ? profiles : MOCK_PROFILES;
+  const usingMock = !hasRealOrders;
+
   // Filter by date range
   const threshold = getDateThreshold(range);
-  const orders = useMemo(() => allOrders.filter((o: any) => new Date(o.created_at) >= threshold), [allOrders, threshold]);
+  const orders = useMemo(() => effectiveOrders.filter((o: any) => new Date(o.created_at) >= threshold), [effectiveOrders, threshold]);
 
   // Previous period for comparison
   const prevThreshold = useMemo(() => {
@@ -96,10 +139,10 @@ const AdminDashboard = () => {
     d.setDate(d.getDate() - days);
     return d;
   }, [range, threshold]);
-  const prevOrders = useMemo(() => allOrders.filter((o: any) => {
+  const prevOrders = useMemo(() => effectiveOrders.filter((o: any) => {
     const d = new Date(o.created_at);
     return d >= prevThreshold && d < threshold;
-  }), [allOrders, prevThreshold, threshold]);
+  }), [effectiveOrders, prevThreshold, threshold]);
 
   const totalRevenue = orders.reduce((s: number, o: any) => s + (o.total || 0), 0);
   const prevRevenue = prevOrders.reduce((s: number, o: any) => s + (o.total || 0), 0);
@@ -121,7 +164,7 @@ const AdminDashboard = () => {
   const kpis = [
     { label: "Total Revenue", value: PKR(totalRevenue), change: pctChange(totalRevenue, prevRevenue), icon: DollarSign, color: "bg-accent/30" },
     { label: "Total Orders", value: orders.length, change: pctChange(orders.length, prevOrders.length), icon: ShoppingCart, color: "bg-secondary/50" },
-    { label: "Customers", value: profiles.length, change: 0, icon: Users, color: "bg-primary/20" },
+    { label: "Customers", value: effectiveProfiles.length, change: usingMock ? 18 : 0, icon: Users, color: "bg-primary/20" },
     { label: "Total Products", value: products.length, change: 0, icon: Package, color: "bg-accent/20" },
     { label: "Avg Order Value", value: PKR(Math.round(avgOrderValue)), change: pctChange(avgOrderValue, prevAvg), icon: TrendingUp, color: "bg-secondary/30" },
     { label: "Pending Orders", value: pendingOrders, change: 0, icon: CreditCard, color: "bg-primary/30" },
@@ -167,26 +210,26 @@ const AdminDashboard = () => {
     return Object.entries(map).map(([name, value]) => ({ name, value }));
   }, [orders]);
 
-  // Sales by traffic source (simulated from analytics metadata)
+  // Sales by traffic source
   const trafficSources = useMemo(() => {
+    if (usingMock) {
+      return [
+        { name: "Direct", value: 40 }, { name: "Instagram", value: 30 },
+        { name: "Facebook", value: 15 }, { name: "Google", value: 10 }, { name: "Referral", value: 5 },
+      ];
+    }
     const sources: Record<string, number> = { Direct: 0, Instagram: 0, Facebook: 0, Google: 0, Referral: 0 };
     analytics.forEach((a: any) => {
       const src = (a.metadata as any)?.source;
       if (src && sources[src] !== undefined) sources[src]++;
       else sources.Direct++;
     });
-    // If no analytics, show proportional demo
     const total = Object.values(sources).reduce((s, v) => s + v, 0);
-    if (total === 0) {
-      return [
-        { name: "Direct", value: 40 }, { name: "Instagram", value: 30 },
-        { name: "Facebook", value: 15 }, { name: "Google", value: 10 }, { name: "Referral", value: 5 },
-      ];
-    }
+    if (total === 0) return [{ name: "Direct", value: 100 }];
     return Object.entries(sources).filter(([, v]) => v > 0).map(([name, value]) => ({ name, value }));
-  }, [analytics]);
+  }, [analytics, usingMock]);
 
-  // Top products by revenue (from order_items not available, use price * popularity)
+  // Top products by revenue
   const topProducts = useMemo(() => {
     return products
       .slice()
@@ -195,31 +238,37 @@ const AdminDashboard = () => {
       .map((p: any) => ({ name: p.name.length > 18 ? p.name.slice(0, 18) + "…" : p.name, revenue: p.price * (p.popularity_score || 1) }));
   }, [products]);
 
-  // Sales funnel (from analytics events)
+  // Sales funnel
   const funnelData = useMemo(() => {
+    if (usingMock) {
+      return [
+        { name: "Product Views", value: 1240, fill: COLORS[0] },
+        { name: "Add to Cart", value: 380, fill: COLORS[1] },
+        { name: "Checkout", value: 145, fill: COLORS[2] },
+        { name: "Purchase", value: orders.length, fill: COLORS[3] },
+      ];
+    }
     const views = analytics.filter((a: any) => a.event_type === "view").length || 0;
     const addToCart = analytics.filter((a: any) => a.event_type === "add_to_cart").length || 0;
     const checkout = analytics.filter((a: any) => a.event_type === "checkout").length || 0;
     const purchase = orders.length;
-    // Ensure funnel decreases
-    const data = [
+    return [
       { name: "Product Views", value: Math.max(views, addToCart + 10), fill: COLORS[0] },
       { name: "Add to Cart", value: Math.max(addToCart, checkout + 5), fill: COLORS[1] },
       { name: "Checkout", value: Math.max(checkout, purchase + 2), fill: COLORS[2] },
       { name: "Purchase", value: Math.max(purchase, 0), fill: COLORS[3] },
     ];
-    return data;
-  }, [analytics, orders]);
+  }, [analytics, orders, usingMock]);
 
-  // Customer cohort (group by month joined, show retention placeholder)
+  // Customer cohort
   const cohortData = useMemo(() => {
     const months: Record<string, number> = {};
-    profiles.forEach((p: any) => {
+    effectiveProfiles.forEach((p: any) => {
       const m = new Date(p.created_at).toLocaleDateString("en", { year: "numeric", month: "short" });
       months[m] = (months[m] || 0) + 1;
     });
     return Object.entries(months).slice(-6).map(([name, customers]) => ({ name, customers }));
-  }, [profiles]);
+  }, [effectiveProfiles]);
 
   // Profit estimation (assume 60% margin)
   const grossProfit = Math.round(totalRevenue * 0.6);
@@ -284,6 +333,16 @@ const AdminDashboard = () => {
                 <span key={p.id} className="px-2 py-1 bg-destructive/10 rounded-lg text-xs">{p.name} ({p.stock_quantity} left)</span>
               ))}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Mock Data Banner */}
+      {usingMock && (
+        <Card className="rounded-2xl border-primary/30 bg-primary/5">
+          <CardContent className="p-3 flex items-center gap-2 text-sm">
+            <Palette size={16} className="text-primary" />
+            <span className="text-muted-foreground">📊 Showing <strong>sample data</strong> for preview. Real data will appear once orders start coming in.</span>
           </CardContent>
         </Card>
       )}
@@ -479,7 +538,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {allOrders.slice(0, 5).map((o: any) => (
+                {effectiveOrders.slice(0, 5).map((o: any) => (
                   <tr key={o.id} className="border-b border-border/20 hover:bg-muted/20">
                     <td className="py-2.5 px-2 font-mono text-xs">{o.id.slice(0, 8)}…</td>
                     <td className="py-2.5 px-2">
@@ -493,7 +552,7 @@ const AdminDashboard = () => {
                     <td className="py-2.5 px-2 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}
-                {allOrders.length === 0 && (
+                {effectiveOrders.length === 0 && (
                   <tr><td colSpan={4} className="py-8 text-center text-muted-foreground">No orders yet</td></tr>
                 )}
               </tbody>
