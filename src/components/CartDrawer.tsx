@@ -1,26 +1,88 @@
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { X, Minus, Plus, ShoppingBag, Trash2, Loader2, CheckCircle } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
+
+const EMOJI_MAP: Record<string, string> = {
+  bouquets: "💐", keychains: "🔑", toys: "🧸", decor: "🌼",
+  accessories: "🎀", flowers: "🌸", "surprise-box": "🎁",
+  gift: "🎁", custom: "🧶", collection: "✨",
+};
 
 const CartDrawer = () => {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalItems, totalPrice, clearCart } = useCart();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
+
+  const handleCheckout = async () => {
+    if (items.length === 0) return;
+    setIsCheckingOut(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Please log in", description: "You need to be logged in to place an order.", variant: "destructive" });
+        setIsCheckingOut(false);
+        return;
+      }
+
+      // Create order
+      const { data: order, error: orderError } = await supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          total: totalPrice,
+          status: "pending",
+          tracking_stage: "received",
+        })
+        .select("id")
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order items
+      const orderItems = items.map((item) => ({
+        order_id: order.id,
+        product_id: item.type === "product" ? item.id : null,
+        price: item.price,
+        quantity: item.quantity,
+        color: item.selectedColor || null,
+        customizations: item.type !== "product" ? { type: item.type, name: item.name, meta: item.meta } : null,
+      }));
+
+      const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
+      if (itemsError) throw itemsError;
+
+      setOrderPlaced(true);
+      clearCart();
+      toast({ title: "Order placed! 🎉", description: `Order #${order.id.slice(0, 8)} has been created.` });
+
+      setTimeout(() => {
+        setOrderPlaced(false);
+        setIsOpen(false);
+      }, 3000);
+    } catch (err: any) {
+      console.error("Checkout failed:", err);
+      toast({ title: "Checkout failed", description: err.message || "Please try again.", variant: "destructive" });
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
 
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-[60]"
             onClick={() => setIsOpen(false)}
           />
           <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
+            initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed top-0 right-0 h-full w-full max-w-md bg-background shadow-float z-[70] flex flex-col"
           >
@@ -36,51 +98,61 @@ const CartDrawer = () => {
 
             {/* Items */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {items.length === 0 ? (
+              {orderPlaced ? (
+                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center py-16">
+                  <CheckCircle size={64} className="mx-auto text-green-500 mb-4" />
+                  <p className="font-display text-xl font-bold mb-2">Order Placed!</p>
+                  <p className="text-sm text-muted-foreground">Thank you for your order 💕</p>
+                  <Link to="/orders" onClick={() => setIsOpen(false)}
+                    className="inline-block mt-4 px-6 py-2.5 rounded-3xl bg-primary text-primary-foreground text-sm font-semibold btn-squish">
+                    Track Order
+                  </Link>
+                </motion.div>
+              ) : items.length === 0 ? (
                 <div className="text-center py-12">
                   <span className="text-5xl block mb-4">🧶</span>
                   <p className="font-display font-semibold mb-2">Your cart is empty</p>
                   <p className="text-sm text-muted-foreground">Add some cute crochet items!</p>
-                  <Link
-                    to="/shop"
-                    onClick={() => setIsOpen(false)}
-                    className="inline-block mt-4 px-6 py-2.5 rounded-3xl bg-primary text-primary-foreground text-sm font-semibold btn-squish"
-                  >
+                  <Link to="/shop" onClick={() => setIsOpen(false)}
+                    className="inline-block mt-4 px-6 py-2.5 rounded-3xl bg-primary text-primary-foreground text-sm font-semibold btn-squish">
                     Browse Shop
                   </Link>
                 </div>
               ) : (
                 items.map((item) => (
                   <motion.div
-                    key={item.product.id}
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, x: 50 }}
+                    key={item.id}
+                    layout initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, x: 50 }}
                     className="flex gap-4 p-4 rounded-2xl bg-card shadow-soft"
                   >
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-2xl shrink-0">
-                      {item.product.category === "bouquets" && "💐"}
-                      {item.product.category === "keychains" && "🔑"}
-                      {item.product.category === "toys" && "🧸"}
-                      {item.product.category === "decor" && "🌼"}
-                      {item.product.category === "accessories" && "🎀"}
-                      {item.product.category === "flowers" && "🌸"}
-                    </div>
+                    {item.image ? (
+                      <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-2xl shrink-0">
+                        {EMOJI_MAP[item.category || ""] || EMOJI_MAP[item.type || ""] || "🧶"}
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-display font-semibold text-sm truncate">{item.product.name}</h4>
-                      <p className="text-sm font-bold mt-1">Rs. {item.product.price.toLocaleString()}</p>
+                      <h4 className="font-display font-semibold text-sm truncate">{item.name}</h4>
+                      {item.type && item.type !== "product" && (
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                          {item.type}
+                        </span>
+                      )}
+                      <p className="text-sm font-bold mt-1">Rs. {item.price.toLocaleString()}</p>
                       <div className="flex items-center gap-2 mt-2">
-                        <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center btn-squish">
+                        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center btn-squish">
                           <Minus size={12} />
                         </button>
                         <span className="text-sm font-semibold w-6 text-center">{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center btn-squish">
+                        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center btn-squish">
                           <Plus size={12} />
                         </button>
                       </div>
                     </div>
-                    <button onClick={() => removeItem(item.product.id)} className="self-start p-1.5 text-muted-foreground hover:text-destructive transition-colors">
+                    <button onClick={() => removeItem(item.id)} className="self-start p-1.5 text-muted-foreground hover:text-destructive transition-colors">
                       <Trash2 size={14} />
                     </button>
                   </motion.div>
@@ -89,14 +161,18 @@ const CartDrawer = () => {
             </div>
 
             {/* Footer */}
-            {items.length > 0 && (
+            {items.length > 0 && !orderPlaced && (
               <div className="p-6 border-t border-border/50 space-y-4">
                 <div className="flex justify-between font-display">
                   <span className="font-semibold">Total</span>
                   <span className="text-xl font-bold">Rs. {totalPrice.toLocaleString()}</span>
                 </div>
-                <button className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all">
-                  Checkout 💕
+                <button
+                  onClick={handleCheckout}
+                  disabled={isCheckingOut}
+                  className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                >
+                  {isCheckingOut ? <><Loader2 size={18} className="animate-spin" /> Processing...</> : <>Checkout 💕</>}
                 </button>
                 <button onClick={clearCart} className="w-full py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Clear Cart

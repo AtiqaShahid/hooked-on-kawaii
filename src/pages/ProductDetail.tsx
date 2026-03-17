@@ -71,7 +71,6 @@ const ProductDetail = () => {
       category: catSlug,
       selectedColor: selectedColor,
       type: "product",
-      quantity,
     });
   };
 
