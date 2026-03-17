@@ -111,9 +111,9 @@ const ProductCard = ({ product, index = 0 }: { product: DbProduct; index?: numbe
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-display font-bold text-base">PKR {product.price.toLocaleString()}</span>
+              <span className="font-display font-bold text-base">Rs. {product.price.toLocaleString()}</span>
               {product.original_price && (
-                <span className="text-xs text-muted-foreground line-through">PKR {product.original_price.toLocaleString()}</span>
+                <span className="text-xs text-muted-foreground line-through">Rs. {product.original_price.toLocaleString()}</span>
               )}
             </div>
           </div>

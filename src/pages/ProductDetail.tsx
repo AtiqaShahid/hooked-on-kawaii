@@ -113,8 +113,8 @@ const ProductDetail = () => {
               </div>
 
               <div className="flex items-baseline gap-3 mb-6">
-                <span className="font-display text-3xl font-bold">PKR {product.price.toLocaleString()}</span>
-                {product.original_price && <span className="text-lg text-muted-foreground line-through">PKR {product.original_price.toLocaleString()}</span>}
+                <span className="font-display text-3xl font-bold">Rs. {product.price.toLocaleString()}</span>
+                {product.original_price && <span className="text-lg text-muted-foreground line-through">Rs. {product.original_price.toLocaleString()}</span>}
               </div>
 
               <p className="text-muted-foreground font-body leading-relaxed mb-8">{product.description}</p>

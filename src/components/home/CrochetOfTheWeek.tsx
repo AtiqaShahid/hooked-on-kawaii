@@ -61,7 +61,7 @@ const CrochetOfTheWeek = () => {
                 ))}
               </div>
               <div className="flex items-center gap-4">
-                <span className="font-display text-3xl font-bold">PKR {featured.price.toLocaleString()}</span>
+                <span className="font-display text-3xl font-bold">Rs. {featured.price.toLocaleString()}</span>
                 <button onClick={handleAdd} className="inline-flex items-center gap-2 px-6 py-3 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all">
                   <ShoppingBag size={18} /> Add to Cart
                 </button>

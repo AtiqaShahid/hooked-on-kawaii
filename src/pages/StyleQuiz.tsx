@@ -103,7 +103,7 @@ const StyleQuiz = () => {
                         <div className="p-4 rounded-2xl bg-muted/20 hover:bg-primary/10 transition-all">
                           <span className="text-3xl block mb-2">{p.category?.emoji || "🧶"}</span>
                           <p className="font-display font-semibold text-sm">{p.name}</p>
-                          <p className="text-primary font-bold">PKR {p.price.toLocaleString()}</p>
+                          <p className="text-primary font-bold">Rs. {p.price.toLocaleString()}</p>
                         </div>
                       </Link>
                     ))}

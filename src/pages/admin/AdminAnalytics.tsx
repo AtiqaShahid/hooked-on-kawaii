@@ -7,7 +7,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LineChart, L
 import { Filter, Eye, ShoppingCart, MousePointerClick, TrendingUp } from "lucide-react";
 
 const COLORS = ["hsl(350,80%,75%)", "hsl(240,67%,80%)", "hsl(140,58%,70%)", "hsl(25,90%,75%)", "hsl(210,70%,75%)"];
-const PKR = (v: number) => `PKR ${v.toLocaleString()}`;
+const PKR = (v: number) => `Rs. ${v.toLocaleString()}`;
 
 type DateRange = "7d" | "30d" | "90d" | "all";
 

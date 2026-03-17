@@ -489,7 +489,7 @@ const AdminDashboard = () => {
                         o.status === "delivered" ? "bg-accent/30" : "bg-muted"
                       }`}>{o.status}</span>
                     </td>
-                    <td className="py-2.5 px-2 font-medium">PKR {o.total?.toLocaleString()}</td>
+                    <td className="py-2.5 px-2 font-medium">Rs. {o.total?.toLocaleString()}</td>
                     <td className="py-2.5 px-2 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}

@@ -93,7 +93,7 @@ const CartDrawer = () => {
               <div className="p-6 border-t border-border/50 space-y-4">
                 <div className="flex justify-between font-display">
                   <span className="font-semibold">Total</span>
-                  <span className="text-xl font-bold">PKR {totalPrice.toLocaleString()}</span>
+                  <span className="text-xl font-bold">Rs. {totalPrice.toLocaleString()}</span>
                 </div>
                 <button className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all">
                   Checkout 💕
