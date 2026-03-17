@@ -2,14 +2,6 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-type Product = {
-  id: string;
-  name: string;
-  slug: string;
-  price: number;
-  image_url: string | null;
-};
-
 type CollectionItem = {
   name: string;
   price: number;
