@@ -12,6 +12,7 @@ const badgeColors: Record<string, string> = {
   "Limited Edition": "bg-mint text-accent-foreground",
   "Crochet of the Week": "bg-peach text-foreground",
   "Limited Stock": "bg-baby-blue text-foreground",
+  "Sale": "bg-red-500 text-white",
 };
 
 const categoryEmojis: Record<string, string> = {
@@ -107,8 +108,13 @@ const ProductCard = ({ product, index = 0 }: { product: DbProduct; index?: numbe
             </div>
             <div className="flex items-center gap-2">
               <span className="font-display font-bold text-base">Rs. {product.price.toLocaleString()}</span>
-              {product.original_price && (
-                <span className="text-xs text-muted-foreground line-through">Rs. {product.original_price.toLocaleString()}</span>
+              {product.original_price && product.original_price > product.price && (
+                <>
+                  <span className="text-xs text-muted-foreground line-through">Rs. {product.original_price.toLocaleString()}</span>
+                  <span className="text-[10px] font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded-full">
+                    -{Math.round(((product.original_price - product.price) / product.original_price) * 100)}%
+                  </span>
+                </>
               )}
             </div>
           </div>
