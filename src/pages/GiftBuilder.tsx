@@ -20,6 +20,18 @@ const GiftBuilder = () => {
   const [selectedTheme, setSelectedTheme] = useState("");
   const [selectedPackaging, setSelectedPackaging] = useState("");
   const [message, setMessage] = useState("");
+  const { addItem } = useCart();
+
+  const handleOrderGift = () => {
+    addItem({
+      id: `gift-${Date.now()}`,
+      name: `Gift Set: ${selectedItem}`,
+      price: 4500,
+      image: "",
+      type: "gift",
+      meta: { item: selectedItem, theme: selectedTheme, packaging: selectedPackaging, message },
+    });
+  };
 
   const steps = ["Select Item", "Color Theme", "Packaging", "Message"];
 
