@@ -69,7 +69,7 @@ const ProductDetail = () => {
       price: product.price,
       image: product.image_url || "",
       category: catSlug,
-      selectedColor: selectedColor,
+      selectedColor: colors[selectedColor] || "",
       type: "product",
     });
   };
