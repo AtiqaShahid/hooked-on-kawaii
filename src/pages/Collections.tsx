@@ -1,103 +1,148 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Clock, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 
-type Collection = {
+type Category = {
   id: string;
   name: string;
   slug: string;
+  emoji: string | null;
+  color: string | null;
   description: string | null;
+};
+
+type Product = {
+  name: string;
+  price: number;
   image_url: string | null;
-  is_limited: boolean | null;
-  available_count: number | null;
-  total_count: number | null;
-  ends_at: string | null;
+  slug: string;
+  category_id: string | null;
 };
 
-const CountdownTimer = ({ endsAt }: { endsAt: string }) => {
-  const [timeLeft, setTimeLeft] = useState("");
-
-  useEffect(() => {
-    const update = () => {
-      const diff = new Date(endsAt).getTime() - Date.now();
-      if (diff <= 0) { setTimeLeft("Ended"); return; }
-      const d = Math.floor(diff / 86400000);
-      const h = Math.floor((diff % 86400000) / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      setTimeLeft(`${d}d ${h}h ${m}m`);
-    };
-    update();
-    const t = setInterval(update, 60000);
-    return () => clearInterval(t);
-  }, [endsAt]);
-
-  return (
-    <span className="flex items-center gap-1.5 text-sm font-medium text-foreground">
-      <Clock size={14} /> {timeLeft} left
-    </span>
-  );
+const categoryColors: Record<string, { bg: string; btn: string }> = {
+  "Crochet Flowers": { bg: "bg-[hsl(var(--pink)/0.15)]", btn: "bg-[hsl(var(--pink))]" },
+  "Bouquets": { bg: "bg-[hsl(var(--mint)/0.2)]", btn: "bg-[hsl(var(--mint))]" },
+  "Amigurumi": { bg: "bg-[hsl(var(--lavender)/0.15)]", btn: "bg-[hsl(var(--lavender))]" },
+  "Keychains": { bg: "bg-[hsl(var(--peach)/0.2)]", btn: "bg-[hsl(var(--peach))]" },
+  "Accessories": { bg: "bg-[hsl(var(--warm-beige)/0.25)]", btn: "bg-[hsl(var(--warm-beige))]" },
+  "Home Decor": { bg: "bg-[hsl(var(--baby-blue)/0.15)]", btn: "bg-[hsl(var(--baby-blue))]" },
 };
+
+const fallbackColors = [
+  { bg: "bg-primary/10", btn: "bg-primary" },
+  { bg: "bg-secondary/30", btn: "bg-secondary" },
+  { bg: "bg-accent/20", btn: "bg-accent" },
+];
 
 const Collections = () => {
-  const [collections, setCollections] = useState<Collection[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase.from("collections").select("*").order("created_at", { ascending: false });
-      if (data) setCollections(data);
+    const load = async () => {
+      const [catRes, prodRes] = await Promise.all([
+        supabase.from("categories").select("*").order("name"),
+        supabase.from("products").select("name, price, image_url, slug, category_id").eq("is_active", true).order("name"),
+      ]);
+      if (catRes.data) setCategories(catRes.data);
+      if (prodRes.data) setProducts(prodRes.data);
     };
-    fetch();
+    load();
   }, []);
+
+  const getColors = (name: string, index: number) =>
+    categoryColors[name] || fallbackColors[index % fallbackColors.length];
+
+  const getProductsForCategory = (catId: string) =>
+    products.filter((p) => p.category_id === catId).slice(0, 4);
+
+  const getCategoryProductCount = (catId: string) =>
+    products.filter((p) => p.category_id === catId).length;
 
   return (
     <div className="min-h-screen">
       <Navbar />
-      <div className="pt-28 pb-20 px-6">
-        <div className="max-w-5xl mx-auto">
+      <div className="pt-28 pb-20 px-4 md:px-6">
+        <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">💎 Curated Collections</h1>
-            <p className="text-muted-foreground font-body max-w-lg mx-auto">Hand-picked themed collections of our finest crochet pieces</p>
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">💎 Our Collections</h1>
+            <p className="text-muted-foreground font-body max-w-lg mx-auto">Browse our handmade crochet categories</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {collections.map((col, i) => (
-              <motion.div key={col.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-                <Card className="rounded-3xl border-border/50 card-hover overflow-hidden">
-                  <div className="aspect-video bg-gradient-hero flex items-center justify-center">
-                    <span className="text-6xl">
-                      {col.is_limited ? "🌙" : col.name.includes("Animal") ? "🧸" : col.name.includes("Wedding") ? "💒" : "🌸"}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {categories.map((cat, i) => {
+              const colors = getColors(cat.name, i);
+              const catProducts = getProductsForCategory(cat.id);
+              const totalCount = getCategoryProductCount(cat.id);
+
+              return (
+                <motion.div
+                  key={cat.id}
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.08 }}
+                  className="rounded-3xl overflow-hidden shadow-soft"
+                >
+                  {/* Header */}
+                  <div className={`${colors.bg} px-6 pt-6 pb-5 text-center`}>
+                    <span className="text-3xl block mb-2">{cat.emoji || "🧶"}</span>
+                    <h3 className="font-display text-xl font-bold mb-1">{cat.name}</h3>
+                    {cat.description && (
+                      <p className="text-muted-foreground text-xs font-body mb-3 leading-relaxed">{cat.description}</p>
+                    )}
+                    <span className="inline-block px-3 py-1 rounded-full border border-foreground/20 text-xs font-medium">
+                      {totalCount} item{totalCount !== 1 ? "s" : ""}
                     </span>
                   </div>
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-display text-xl font-bold">{col.name}</h3>
-                      {col.is_limited && <Badge className="rounded-full bg-destructive/10 text-destructive">Limited</Badge>}
-                    </div>
-                    {col.description && <p className="text-muted-foreground text-sm mb-3">{col.description}</p>}
-                    <div className="flex items-center justify-between">
-                      {col.is_limited && col.available_count !== null && col.total_count !== null && (
-                        <div>
-                          <div className="w-32 h-2 rounded-full bg-muted overflow-hidden mb-1">
-                            <div className="h-full rounded-full bg-primary" style={{ width: `${(col.available_count / col.total_count) * 100}%` }} />
+
+                  {/* Product List */}
+                  <div className="bg-card px-5 py-4 space-y-1">
+                    {catProducts.length > 0 ? (
+                      catProducts.map((product) => (
+                        <Link
+                          key={product.slug}
+                          to={`/product/${product.slug}`}
+                          className="flex items-center gap-3 py-2.5 px-2 rounded-2xl hover:bg-muted/60 transition-colors group"
+                        >
+                          <div className="w-10 h-10 rounded-full overflow-hidden shadow-sm border-2 border-card flex-shrink-0 bg-muted">
+                            {product.image_url ? (
+                              <img
+                                src={product.image_url}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-lg">🧶</div>
+                            )}
                           </div>
-                          <p className="text-xs text-muted-foreground">{col.available_count} of {col.total_count} left</p>
-                        </div>
-                      )}
-                      {col.ends_at && <CountdownTimer endsAt={col.ends_at} />}
-                    </div>
-                    <Link to={`/shop`} className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium hover:text-primary transition-colors">
-                      <Sparkles size={14} /> Shop Collection →
+                          <span className="font-body text-sm font-medium flex-1 group-hover:text-primary transition-colors truncate">
+                            {product.name}
+                          </span>
+                          <span className="text-sm font-semibold text-muted-foreground whitespace-nowrap">
+                            Rs {product.price.toLocaleString()}
+                          </span>
+                        </Link>
+                      ))
+                    ) : (
+                      <p className="text-center text-muted-foreground text-sm py-6 font-body">Coming soon ✨</p>
+                    )}
+                  </div>
+
+                  {/* View All Button */}
+                  <div className="px-5 pb-5 bg-card">
+                    <Link
+                      to={`/shop?category=${cat.slug}`}
+                      className={`${colors.btn} block w-full text-center py-3 rounded-full text-sm font-display font-semibold text-primary-foreground shadow-soft hover:shadow-float transition-all btn-squish`}
+                    >
+                      View All {cat.name}
                     </Link>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>
