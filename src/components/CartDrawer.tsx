@@ -69,7 +69,7 @@ const CartDrawer = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="font-display font-semibold text-sm truncate">{item.product.name}</h4>
-                      <p className="text-sm font-bold mt-1">PKR {item.product.price.toLocaleString()}</p>
+                      <p className="text-sm font-bold mt-1">Rs. {item.product.price.toLocaleString()}</p>
                       <div className="flex items-center gap-2 mt-2">
                         <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)} className="w-7 h-7 rounded-full bg-muted flex items-center justify-center btn-squish">
                           <Minus size={12} />
