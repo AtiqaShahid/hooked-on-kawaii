@@ -214,8 +214,16 @@ const AdminProducts = () => {
                     </td>
                     <td className="py-3 px-4">
                       <div className="flex gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => openEdit(p)} className="rounded-lg"><Pencil size={14} /></Button>
-                        <Button variant="ghost" size="sm" onClick={() => { if (confirm("Delete this product?")) deleteMutation.mutate(p.id); }} className="rounded-lg text-destructive hover:text-destructive"><Trash2 size={14} /></Button>
+                        <Button variant="ghost" size="sm" onClick={() => openEdit(p)} className="rounded-lg" title="Edit"><Pencil size={14} /></Button>
+                        <Button
+                          variant="ghost" size="sm"
+                          onClick={() => toggleSaleMutation.mutate({ id: p.id, price: p.price, original_price: p.original_price, badges: p.badges })}
+                          className={`rounded-lg ${p.badges?.includes("Sale") ? "text-green-600" : "text-muted-foreground"}`}
+                          title={p.badges?.includes("Sale") ? "Remove Sale" : "Put on Sale (15% off)"}
+                        >
+                          <Percent size={14} />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => { if (confirm("Delete this product?")) deleteMutation.mutate(p.id); }} className="rounded-lg text-destructive hover:text-destructive" title="Delete"><Trash2 size={14} /></Button>
                       </div>
                     </td>
                   </tr>
