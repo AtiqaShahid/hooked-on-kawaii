@@ -83,7 +83,7 @@ const OrderTracker = () => {
                           <p className="font-display font-semibold">Order #{order.id.slice(0, 8)}</p>
                           <p className="text-sm text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
                         </div>
-                        <p className="font-display font-bold text-lg">${order.total}</p>
+                        <p className="font-display font-bold text-lg">Rs. {order.total.toLocaleString()}</p>
                       </div>
 
                       <div className="relative">
