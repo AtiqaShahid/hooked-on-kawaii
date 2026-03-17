@@ -192,17 +192,13 @@ const Collections = () => {
                           to={href}
                           className="flex items-center gap-4 rounded-2xl px-2 py-2.5 transition-colors hover:bg-muted/60"
                         >
-                          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted shadow-sm">
-                            {matchedProduct?.image_url ? (
-                              <img
-                                src={matchedProduct.image_url}
-                                alt={item.name}
-                                className="h-full w-full object-cover"
-                                loading="lazy"
-                              />
-                            ) : (
-                              <span className="text-lg">{group.emoji}</span>
-                            )}
+                          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted shadow-sm border-2 border-card">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="h-full w-full object-cover"
+                              loading="lazy"
+                            />
                           </div>
                           <span className="flex-1 truncate font-body text-base font-medium text-foreground">
                             {item.name}
