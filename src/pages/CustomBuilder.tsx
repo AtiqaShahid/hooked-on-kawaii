@@ -79,11 +79,53 @@ const CustomBuilder = () => {
     }
   };
 
-  const handleOrder = () => {
-    toast({
-      title: "Custom order placed! 🎉",
-      description: `Your ${size} ${yarn} crochet with ${attachment.toLowerCase()} attachment has been saved. We'll be in touch!`,
-    });
+  const handleOrder = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const { error } = await supabase.from("custom_crochet_orders").insert({
+        user_id: user?.id || null,
+        colors: colorNames,
+        yarn_type: yarn,
+        size,
+        attachment,
+        price: totalPrice,
+        preview_url: previewImage || null,
+        status: "pending",
+      });
+      if (error) throw error;
+      toast({
+        title: "Custom order placed! 🎉",
+        description: `Your ${size} ${yarn} crochet with ${attachment.toLowerCase()} attachment has been saved. We'll be in touch!`,
+      });
+    } catch (err: any) {
+      console.error("Order save failed:", err);
+      toast({ title: "Order failed", description: err.message || "Please try again.", variant: "destructive" });
+    }
+  };
+
+  const handleSaveDesign = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Please sign in", description: "You need to be logged in to save designs.", variant: "destructive" });
+        return;
+      }
+      const { error } = await supabase.from("custom_crochet_orders").insert({
+        user_id: user.id,
+        colors: colorNames,
+        yarn_type: yarn,
+        size,
+        attachment,
+        price: totalPrice,
+        preview_url: previewImage || null,
+        status: "draft",
+      });
+      if (error) throw error;
+      toast({ title: "Design saved! 💾", description: "Your design has been saved to your account." });
+    } catch (err: any) {
+      console.error("Save failed:", err);
+      toast({ title: "Save failed", description: err.message || "Please try again.", variant: "destructive" });
+    }
   };
 
   const colorNames = selectedColors.map(
