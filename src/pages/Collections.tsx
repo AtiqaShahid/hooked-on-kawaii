@@ -86,8 +86,10 @@ const Collections = () => {
                   transition={{ delay: i * 0.08 }}
                   className="rounded-3xl overflow-hidden shadow-soft"
                 >
-                  {/* Header */}
-                  <div className={`${colors.bg} px-6 pt-6 pb-5 text-center`}>
+                  <div
+                    className="px-6 pt-6 pb-5 text-center"
+                    style={{ backgroundColor: `hsl(${colors.bgHsl} / 0.25)` }}
+                  >
                     <span className="text-3xl block mb-2">{cat.emoji || "🧶"}</span>
                     <h3 className="font-display text-xl font-bold mb-1">{cat.name}</h3>
                     {cat.description && (
