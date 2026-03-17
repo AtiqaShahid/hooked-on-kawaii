@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
-
+import heroCollection from "@/assets/hero-collection.jpg";
 const FloatingYarn = ({ emoji, className }: { emoji: string; className: string }) => (
   <motion.div
     className={`absolute text-4xl md:text-5xl select-none pointer-events-none ${className}`}
