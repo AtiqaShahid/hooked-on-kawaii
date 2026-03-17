@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Package, ShoppingCart, Users, DollarSign, TrendingUp, Star, CreditCard, Palette, AlertTriangle, ArrowUpRight, ArrowDownRight, Filter } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Package, ShoppingCart, Users, DollarSign, TrendingUp, Star, CreditCard, Palette, AlertTriangle, ArrowUpRight, ArrowDownRight, Filter, Plus, Settings, Megaphone, Percent, Image, Layers } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
