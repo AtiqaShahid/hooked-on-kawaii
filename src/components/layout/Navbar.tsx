@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, Heart, Search, Menu, X, Sparkles } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 const navLinks = [
   { path: "/", label: "Home" },
   { path: "/shop", label: "Shop" },
   { path: "/custom-builder", label: "Custom Builder" },
   { path: "/gift-builder", label: "Gift Builder" },
-  { path: "/occasions", label: "Occasions" },
   { path: "/gallery", label: "Gallery" },
   { path: "/about", label: "About" },
 ];
@@ -16,6 +16,7 @@ const navLinks = [
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { totalItems, setIsOpen: setCartOpen } = useCart();
 
   return (
     <motion.header
@@ -27,7 +28,6 @@ const Navbar = () => {
       <div className="mx-4 mt-4">
         <nav className="glass-panel rounded-3xl px-6 py-3 shadow-soft max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
-            {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group">
               <motion.span
                 className="text-2xl"
@@ -41,7 +41,6 @@ const Navbar = () => {
               </span>
             </Link>
 
-            {/* Desktop Nav */}
             <div className="hidden lg:flex items-center gap-1">
               {navLinks.map((link) => (
                 <Link
@@ -58,26 +57,28 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Actions */}
             <div className="flex items-center gap-2">
-              <button className="p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish hidden sm:flex">
+              <Link to="/shop" className="p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish hidden sm:flex">
                 <Search size={20} />
-              </button>
-              <button className="p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish hidden sm:flex">
+              </Link>
+              <Link to="/shop" className="p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish hidden sm:flex">
                 <Heart size={20} />
-              </button>
-              <button className="relative p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish">
+              </Link>
+              <button
+                onClick={() => setCartOpen(true)}
+                className="relative p-2 rounded-2xl text-foreground/60 hover:text-foreground hover:bg-primary/30 transition-all btn-squish"
+              >
                 <ShoppingBag size={20} />
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-accent-foreground text-xs font-bold rounded-full flex items-center justify-center">
-                  0
+                  {totalItems}
                 </span>
               </button>
               <Link
-                to="/ai-studio"
+                to="/custom-builder"
                 className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
               >
                 <Sparkles size={16} />
-                AI Studio
+                Custom Order
               </Link>
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -90,7 +91,6 @@ const Navbar = () => {
         </nav>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
