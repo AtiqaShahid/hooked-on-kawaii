@@ -33,6 +33,7 @@ const attachmentPrice: Record<string, number> = {
 };
 
 const CustomBuilder = () => {
+  const { addItem } = useCart();
   const [selectedColors, setSelectedColors] = useState<string[]>(["#FFD1DC"]);
   const [yarn, setYarn] = useState("Cotton");
   const [size, setSize] = useState("Small (5cm)");
