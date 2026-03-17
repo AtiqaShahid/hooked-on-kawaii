@@ -15,7 +15,6 @@ import CustomBuilder from "./pages/CustomBuilder";
 import GiftBuilder from "./pages/GiftBuilder";
 import Gallery from "./pages/Gallery";
 import About from "./pages/About";
-import Admin from "./pages/Admin";
 import Community from "./pages/Community";
 import CraftStories from "./pages/CraftStories";
 import Learning from "./pages/Learning";
@@ -26,6 +25,23 @@ import StyleQuiz from "./pages/StyleQuiz";
 import OrderTracker from "./pages/OrderTracker";
 import Loyalty from "./pages/Loyalty";
 import NotFound from "./pages/NotFound";
+import AdminLogin from "./pages/AdminLogin";
+import AdminLayout from "./components/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminOrders from "./pages/admin/AdminOrders";
+import AdminCustomers from "./pages/admin/AdminCustomers";
+import AdminReviews from "./pages/admin/AdminReviews";
+import AdminCustomOrders from "./pages/admin/AdminCustomOrders";
+import AdminGiftOrders from "./pages/admin/AdminGiftOrders";
+import AdminSubscriptions from "./pages/admin/AdminSubscriptions";
+import AdminGallery from "./pages/admin/AdminGallery";
+import AdminCommunity from "./pages/admin/AdminCommunity";
+import AdminCollections from "./pages/admin/AdminCollections";
+import AdminStories from "./pages/admin/AdminStories";
+import AdminAIInsights from "./pages/admin/AdminAIInsights";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminSettings from "./pages/admin/AdminSettings";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +57,7 @@ const App = () => (
             <CartDrawer />
             <SocialProofToast />
             <Routes>
+              {/* Public storefront */}
               <Route path="/" element={<Index />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/product/:id" element={<ProductDetail />} />
@@ -48,7 +65,6 @@ const App = () => (
               <Route path="/gift-builder" element={<GiftBuilder />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/about" element={<About />} />
-              <Route path="/admin" element={<Admin />} />
               <Route path="/community" element={<Community />} />
               <Route path="/craft-stories" element={<CraftStories />} />
               <Route path="/learn" element={<Learning />} />
@@ -58,6 +74,27 @@ const App = () => (
               <Route path="/style-quiz" element={<StyleQuiz />} />
               <Route path="/orders" element={<OrderTracker />} />
               <Route path="/loyalty" element={<Loyalty />} />
+
+              {/* Admin */}
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="customers" element={<AdminCustomers />} />
+                <Route path="reviews" element={<AdminReviews />} />
+                <Route path="custom-orders" element={<AdminCustomOrders />} />
+                <Route path="gift-orders" element={<AdminGiftOrders />} />
+                <Route path="subscriptions" element={<AdminSubscriptions />} />
+                <Route path="gallery" element={<AdminGallery />} />
+                <Route path="community" element={<AdminCommunity />} />
+                <Route path="collections" element={<AdminCollections />} />
+                <Route path="stories" element={<AdminStories />} />
+                <Route path="ai-insights" element={<AdminAIInsights />} />
+                <Route path="analytics" element={<AdminAnalytics />} />
+                <Route path="settings" element={<AdminSettings />} />
+              </Route>
+
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
