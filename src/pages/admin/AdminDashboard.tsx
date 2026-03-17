@@ -28,6 +28,7 @@ const getDateThreshold = (range: DateRange) => {
 
 const AdminDashboard = () => {
   const [range, setRange] = useState<DateRange>("30d");
+  const navigate = useNavigate();
 
   const { data: products = [], isLoading: lp } = useQuery({
     queryKey: ["admin-products"],
