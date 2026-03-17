@@ -183,6 +183,9 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+      <WishlistDrawer open={wishlistOpen} onOpenChange={setWishlistOpen} />
     </motion.header>
   );
 };
