@@ -1,10 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { supabase } from "@/integrations/supabase/client";
-
 type Product = {
   id: string;
   name: string;
