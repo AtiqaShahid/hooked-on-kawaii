@@ -121,9 +121,14 @@ const CustomBuilder = () => {
                           <motion.div key={c} layout className="w-10 h-10 rounded-full shadow-soft border-2 border-card" style={{ backgroundColor: c }} />
                         ))}
                       </div>
-                      <div className="w-40 h-40 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center relative overflow-hidden">
-                        <span className="text-7xl">🧶</span>
-                        <div className="absolute inset-0 bg-gradient-to-t from-card/20 to-transparent" />
+                      <div className="w-48 h-48 mx-auto mb-4 rounded-3xl overflow-hidden shadow-soft">
+                        {previewImage ? (
+                          <img src={previewImage} alt="AI Generated Crochet Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
+                            <span className="text-7xl">🧶</span>
+                          </div>
+                        )}
                       </div>
                       <p className="font-display text-lg font-semibold mb-1">AI Generated Preview</p>
                       <p className="text-sm text-muted-foreground">{colorNames.join(" + ")} · {size} · {yarn}</p>
