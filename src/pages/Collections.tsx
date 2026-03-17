@@ -147,19 +147,24 @@ const Collections = () => {
 
                 <div className="bg-card px-5 py-4">
                   <div className="space-y-2">
-                    {group.items.map((item) => (
-                        <Link
+                    {group.items.map((item) => {
+                      const handleAdd = () => {
+                        addItem({
+                          id: `col-${item.name.toLowerCase().replace(/\s+/g, "-")}`,
+                          name: item.name,
+                          price: item.price,
+                          image: item.image,
+                          category: group.name.toLowerCase(),
+                          type: "collection",
+                        });
+                      };
+                      return (
+                        <div
                           key={item.name}
-                          to="/shop"
                           className="flex items-center gap-4 rounded-2xl px-2 py-2.5 transition-colors hover:bg-muted/60"
                         >
                           <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted shadow-sm border-2 border-card">
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="h-full w-full object-cover"
-                              loading="lazy"
-                            />
+                            <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" />
                           </div>
                           <span className="flex-1 truncate font-body text-base font-medium text-foreground">
                             {item.name}
@@ -167,8 +172,12 @@ const Collections = () => {
                           <span className="whitespace-nowrap text-sm font-medium text-muted-foreground">
                             Rs {item.price.toLocaleString()}
                           </span>
-                        </Link>
-                    ))}
+                          <button onClick={handleAdd} className="shrink-0 p-2 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors btn-squish">
+                            <ShoppingBag size={14} />
+                          </button>
+                        </div>
+                      );
+                    })}
 
                   </div>
                 </div>
