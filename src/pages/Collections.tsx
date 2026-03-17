@@ -119,34 +119,7 @@ const HOOKONLOOP_COLLECTIONS: CollectionGroup[] = [
   },
 ];
 
-const normalizeText = (value: string) =>
-  value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, " ").trim();
-
 const Collections = () => {
-  const [products, setProducts] = useState<Product[]>([]);
-
-  useEffect(() => {
-    const load = async () => {
-      const { data } = await supabase
-        .from("products")
-        .select("id, name, slug, price, image_url")
-        .eq("is_active", true)
-        .order("name");
-
-      if (data) setProducts(data);
-    };
-
-    load();
-  }, []);
-
-  const productLookup = useMemo(() => {
-    const lookup = new Map<string, Product>();
-    products.forEach((product) => {
-      lookup.set(normalizeText(product.name), product);
-    });
-    return lookup;
-  }, [products]);
-
   return (
     <div className="min-h-screen">
       <Navbar />
