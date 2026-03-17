@@ -279,7 +279,7 @@ const CustomBuilder = () => {
                   onClick={handleOrder}
                   className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2"
                 >
-                  <Sparkles size={18} /> Place Custom Order
+                  <Sparkles size={18} /> Add to Cart
                 </button>
                 <button
                   onClick={handleSaveDesign}
