@@ -4,7 +4,6 @@ import { ShoppingBag } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useCart } from "@/contexts/CartContext";
-import Footer from "@/components/layout/Footer";
 type CollectionItem = {
   name: string;
   price: number;
