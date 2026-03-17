@@ -57,7 +57,7 @@ const Collections = () => {
     categoryColorMap[name] || fallbackHsl[index % fallbackHsl.length];
 
   const getProductsForCategory = (catId: string) =>
-    products.filter((p) => p.category_id === catId).slice(0, 4);
+    products.filter((p) => p.category_id === catId);
 
   const getCategoryProductCount = (catId: string) =>
     products.filter((p) => p.category_id === catId).length;
