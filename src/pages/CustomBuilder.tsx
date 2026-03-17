@@ -207,7 +207,7 @@ const CustomBuilder = () => {
                         attachment === a ? "bg-secondary text-secondary-foreground shadow-glow" : "bg-card shadow-soft"
                       }`}
                     >
-                      {a} {attachmentPrice[a] > 0 ? `+PKR ${attachmentPrice[a]}` : ""}
+                      {a} {attachmentPrice[a] > 0 ? `+Rs. ${attachmentPrice[a]}` : ""}
                     </button>
                   ))}
                 </div>
