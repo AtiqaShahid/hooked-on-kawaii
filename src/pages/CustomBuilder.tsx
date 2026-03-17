@@ -294,7 +294,10 @@ const CustomBuilder = () => {
                 >
                   <Sparkles size={18} /> Place Custom Order
                 </button>
-                <button className="w-full mt-3 py-3 rounded-3xl bg-muted text-foreground font-display font-medium btn-squish text-sm flex items-center justify-center gap-2">
+                <button
+                  onClick={handleSaveDesign}
+                  className="w-full mt-3 py-3 rounded-3xl bg-muted text-foreground font-display font-medium btn-squish text-sm flex items-center justify-center gap-2"
+                >
                   <Save size={16} /> Save Design
                 </button>
               </div>
