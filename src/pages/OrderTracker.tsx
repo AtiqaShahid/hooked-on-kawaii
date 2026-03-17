@@ -15,18 +15,35 @@ const stages = [
   { key: "delivered", label: "Delivered", icon: MapPin, emoji: "💕" },
 ];
 
-type Order = { id: string; total: number; status: string; tracking_stage: string; created_at: string };
+type Order = { id: string; total: number; status: string; tracking_stage: string; created_at: string; is_mock?: boolean };
+
+const MOCK_ORDERS: Order[] = [
+  { id: "demo-a1b2c3d4", total: 4500, status: "processing", tracking_stage: "crocheting", created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), is_mock: true },
+  { id: "demo-e5f6g7h8", total: 1500, status: "shipped", tracking_stage: "shipped", created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), is_mock: true },
+  { id: "demo-i9j0k1l2", total: 8900, status: "delivered", tracking_stage: "delivered", created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), is_mock: true },
+];
 
 const OrderTracker = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [usingMock, setUsingMock] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
+      if (!user) {
+        setOrders(MOCK_ORDERS);
+        setUsingMock(true);
+        setLoading(false);
+        return;
+      }
       const { data } = await supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
-      if (data) setOrders(data as Order[]);
+      if (data && data.length > 0) {
+        setOrders(data as Order[]);
+      } else {
+        setOrders(MOCK_ORDERS);
+        setUsingMock(true);
+      }
       setLoading(false);
     };
     fetch();
@@ -44,14 +61,16 @@ const OrderTracker = () => {
             <p className="text-muted-foreground font-body">Track your handmade crochet orders</p>
           </motion.div>
 
+          {usingMock && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 text-center">
+              <span className="inline-block px-4 py-2 rounded-full bg-muted text-xs font-medium text-muted-foreground">
+                ✨ Sample orders shown — your real orders will appear here after you place one
+              </span>
+            </motion.div>
+          )}
+
           {loading ? (
             <div className="flex justify-center py-20"><div className="yarn-spinner" /></div>
-          ) : orders.length === 0 ? (
-            <div className="text-center py-20">
-              <span className="text-5xl block mb-4">🧶</span>
-              <p className="font-display text-lg font-semibold mb-2">No orders yet</p>
-              <p className="text-muted-foreground text-sm">Your order journey will appear here once you place an order.</p>
-            </div>
           ) : (
             <div className="space-y-6">
               {orders.map(order => {
@@ -64,7 +83,7 @@ const OrderTracker = () => {
                           <p className="font-display font-semibold">Order #{order.id.slice(0, 8)}</p>
                           <p className="text-sm text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
                         </div>
-                        <p className="font-display font-bold text-lg">${order.total}</p>
+                        <p className="font-display font-bold text-lg">Rs. {order.total.toLocaleString()}</p>
                       </div>
 
                       <div className="relative">
