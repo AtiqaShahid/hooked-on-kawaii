@@ -16,9 +16,9 @@ const CrochetOfTheWeek = () => (
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="aspect-square rounded-3xl bg-card/50 backdrop-blur-sm flex items-center justify-center text-8xl shadow-soft"
+            className="aspect-square rounded-3xl overflow-hidden shadow-soft"
           >
-            💐
+            <img src={heroBouquet} alt="Enchanted Garden Bouquet" className="w-full h-full object-cover" />
           </motion.div>
 
           {/* Details */}
