@@ -60,14 +60,13 @@ const DesignVoting = () => {
       toast({ title: "Please log in", variant: "destructive" });
       return;
     }
-    const { error } = await supabase.from("design_requests").insert({ user_id: user.id, title, description });
+    const { error } = await supabase.from("design_requests").insert({ user_id: user.id, title, description: description || null });
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Submitted! 🎨", description: "Your design idea has been submitted." });
       setTitle("");
       setDescription("");
-      setShowForm(false);
     }
   };
 
