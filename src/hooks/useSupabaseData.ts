@@ -39,6 +39,7 @@ export const useProducts = () =>
       if (error) throw error;
       return data as DbProduct[];
     },
+    staleTime: 0,
   });
 
 export const useProduct = (id: string) =>
