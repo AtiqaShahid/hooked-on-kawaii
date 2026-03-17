@@ -39,6 +39,7 @@ const CustomBuilder = () => {
   const [attachment, setAttachment] = useState("None");
   const [isGenerating, setIsGenerating] = useState(false);
   const [previewGenerated, setPreviewGenerated] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const totalPrice = (sizePrice[size] || 25) + (attachmentPrice[attachment] || 0);
 
@@ -47,15 +48,35 @@ const CustomBuilder = () => {
       prev.includes(hex) ? prev.filter((c) => c !== hex) : [...prev, hex].slice(0, 3)
     );
     setPreviewGenerated(false);
+    setPreviewImage(null);
   };
 
   const generatePreview = async () => {
     setIsGenerating(true);
-    // Simulate AI generation — will be replaced with real AI call once Cloud is enabled
-    await new Promise((r) => setTimeout(r, 2000));
-    setIsGenerating(false);
-    setPreviewGenerated(true);
-    toast({ title: "Preview generated! ✨", description: "Your custom crochet design preview is ready." });
+    try {
+      const colorNames = selectedColors.map(
+        (hex) => colorOptions.find((c) => c.hex === hex)?.name || hex
+      );
+      const { data, error } = await supabase.functions.invoke("generate-crochet-preview", {
+        body: { colors: colorNames, size, yarn, attachment },
+      });
+
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+
+      if (data?.imageUrl) {
+        setPreviewImage(data.imageUrl);
+        setPreviewGenerated(true);
+        toast({ title: "Preview generated! ✨", description: "Your custom crochet design preview is ready." });
+      } else {
+        throw new Error("No image returned");
+      }
+    } catch (err: any) {
+      console.error("Preview generation failed:", err);
+      toast({ title: "Generation failed", description: err.message || "Please try again.", variant: "destructive" });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleOrder = () => {
