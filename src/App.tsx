@@ -65,6 +65,7 @@ const App = () => (
             <CartDrawer />
             <SocialProofToast />
             <AIChatbot />
+            <PopupBanner />
             <Routes>
               {/* Public storefront */}
               <Route path="/" element={<Index />} />
