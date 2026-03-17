@@ -2,25 +2,32 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
+import aiRoseBouquet from "@/assets/gallery/ai-rose-bouquet.jpg";
+import aiAmigurumiBear from "@/assets/gallery/ai-amigurumi-bear.jpg";
+import aiSunflowerPot from "@/assets/gallery/ai-sunflower-pot.jpg";
+import aiPenguin from "@/assets/gallery/ai-penguin.jpg";
+import aiGajra from "@/assets/gallery/ai-gajra.jpg";
+import aiKeychains from "@/assets/gallery/ai-keychains.jpg";
+import aiTulipBouquet from "@/assets/gallery/ai-tulip-bouquet.jpg";
+import aiBabyRattles from "@/assets/gallery/ai-baby-rattles.jpg";
+import aiCrossbodyBag from "@/assets/gallery/ai-crossbody-bag.jpg";
+import aiSucculents from "@/assets/gallery/ai-succulents.jpg";
+import aiWeddingDecor from "@/assets/gallery/ai-wedding-decor.jpg";
+import aiDinosaur from "@/assets/gallery/ai-dinosaur.jpg";
+
 const galleryItems = [
-  { image: "/products/rose-bouquet.jpg", title: "Rose Bouquet Centerpiece", tags: ["Home Decor", "Wedding"] },
-  { image: "/products/teddy-bear.webp", title: "Teddy Bear Stuffie", tags: ["Baby", "Amigurumi"] },
-  { image: "/products/sunflower-bouquet.jpg", title: "Sunflower Bouquet", tags: ["Seasonal", "Bouquets"] },
-  { image: "/products/floral-bag-pink.webp", title: "Floral Bag Collection", tags: ["Accessories", "Bags"] },
-  { image: "/products/honey-bee.webp", title: "Honey Bee Keychain", tags: ["Accessories", "Keychains"] },
-  { image: "/products/rose-gajra.webp", title: "Rose Gajra for Mehndi", tags: ["Festive", "Gajra"] },
-  { image: "/products/mini-daisy-pot.webp", title: "Mini Daisy Pot", tags: ["Home Decor", "Pots"] },
-  { image: "/products/pookie.jpg", title: "Pookie Bouquet", tags: ["Bestseller", "Bouquets"] },
-  { image: "/products/turtle-plushie.jpeg", title: "Turtle Plushie", tags: ["Amigurumi", "Gift"] },
-  { image: "/products/sunflower-gajra.jpg", title: "Sunflower Gajra", tags: ["Festive", "Gajra"] },
-  { image: "/products/dino-stuffie.webp", title: "Dino Stuffie", tags: ["Amigurumi", "Kids"] },
-  { image: "/products/enchanted.jpeg", title: "Enchanted Bouquet", tags: ["Wedding", "Premium"] },
-  { image: "/products/heart-keychain.webp", title: "Heart Keychain", tags: ["Accessories", "Gift"] },
-  { image: "/products/tulip-pot.webp", title: "Tulip Pot Decor", tags: ["Home Decor", "Pots"] },
-  { image: "/products/floral-bag-red.webp", title: "Red Floral Bag", tags: ["Accessories", "Bags"] },
-  { image: "/products/penguin-stuffy.webp", title: "Penguin Stuffy", tags: ["Amigurumi", "Kids"] },
-  { image: "/products/eternal-flame.jpeg", title: "Eternal Flame Bouquet", tags: ["Bestseller", "Premium"] },
-  { image: "/products/white-gajra.webp", title: "White Gajra", tags: ["Festive", "Gajra"] },
+  { image: aiRoseBouquet, title: "Rose Bouquet Centerpiece", tags: ["Home Decor", "Wedding"] },
+  { image: aiAmigurumiBear, title: "Lavender Teddy Bear", tags: ["Baby", "Amigurumi"] },
+  { image: aiSunflowerPot, title: "Sunflower Pot Arrangement", tags: ["Seasonal", "Home Decor"] },
+  { image: aiKeychains, title: "Kawaii Keychain Collection", tags: ["Accessories", "Keychains"] },
+  { image: aiGajra, title: "Bridal Gajra Hair Piece", tags: ["Festive", "Wedding"] },
+  { image: aiPenguin, title: "Penguin Amigurumi", tags: ["Amigurumi", "Kids"] },
+  { image: aiTulipBouquet, title: "Pastel Tulip Bouquet", tags: ["Bouquets", "Premium"] },
+  { image: aiBabyRattles, title: "Baby Rattle Duo", tags: ["Baby", "Gift"] },
+  { image: aiCrossbodyBag, title: "Rose Crossbody Bag", tags: ["Accessories", "Bags"] },
+  { image: aiSucculents, title: "Mini Succulent Collection", tags: ["Home Decor", "Pots"] },
+  { image: aiWeddingDecor, title: "Wedding Table Centerpiece", tags: ["Wedding", "Premium"] },
+  { image: aiDinosaur, title: "Dino Stuffie", tags: ["Amigurumi", "Kids"] },
 ];
 
 const Gallery = () => (
