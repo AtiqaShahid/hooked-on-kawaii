@@ -114,6 +114,7 @@ const HOOKONLOOP_COLLECTIONS: CollectionGroup[] = [
 ];
 
 const Collections = () => {
+  const { addItem } = useCart();
   return (
     <div className="min-h-screen">
       <Navbar />
