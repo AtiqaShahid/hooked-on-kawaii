@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Truck, Shield, Palette, Gift } from "lucide-react";
 
 const features = [
-  { icon: Truck, label: "Free Shipping", desc: "On orders $40+" },
+  { icon: Truck, label: "Free Shipping", desc: "On orders PKR 4,000+" },
   { icon: Shield, label: "100% Handmade", desc: "Premium quality" },
   { icon: Palette, label: "Customizable", desc: "Your colors, your way" },
   { icon: Gift, label: "Gift Wrapping", desc: "Beautiful packaging" },

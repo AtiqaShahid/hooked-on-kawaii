@@ -217,7 +217,7 @@ const CustomBuilder = () => {
               <div className="p-6 rounded-3xl bg-card shadow-float">
                 <div className="flex justify-between items-center mb-4">
                   <span className="font-display font-semibold">Estimated Price</span>
-                  <span className="font-display text-2xl font-bold">${totalPrice}</span>
+                  <span className="font-display text-2xl font-bold">PKR {totalPrice.toLocaleString()}</span>
                 </div>
                 <button
                   onClick={handleOrder}

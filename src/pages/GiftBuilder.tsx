@@ -121,7 +121,7 @@ const GiftBuilder = () => {
                   {message && <p className="text-sm text-muted-foreground mt-2 italic">"{message}"</p>}
                 </div>
                 <button className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2">
-                  <Gift size={18} /> Order Gift Set — $45
+                  <Gift size={18} /> Order Gift Set — PKR 4,500
                 </button>
               </div>
             )}
