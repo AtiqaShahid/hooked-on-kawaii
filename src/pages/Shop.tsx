@@ -62,6 +62,14 @@ const ShopPage = () => {
             >
               All ✨
             </button>
+            <button
+              onClick={() => handleCategoryChange("sale")}
+              className={`px-5 py-2.5 rounded-3xl text-sm font-semibold font-body whitespace-nowrap transition-all btn-squish ${
+                activeCategory === "sale" ? "bg-red-500 text-white shadow-glow" : "bg-red-50 text-red-500 shadow-soft"
+              }`}
+            >
+              🔥 Sale
+            </button>
             {categories.map((cat) => (
               <button
                 key={cat.id}
