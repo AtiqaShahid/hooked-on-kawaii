@@ -32,8 +32,11 @@ const moreLinks = [
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
   const location = useLocation();
   const { totalItems, setIsOpen: setCartOpen } = useCart();
+  const { wishlist } = useWishlist();
 
   return (
     <motion.header
