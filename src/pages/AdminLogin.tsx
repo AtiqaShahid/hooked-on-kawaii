@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock, Mail, Eye, EyeOff, Loader2 } from "lucide-react";
@@ -14,15 +14,41 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isReset, setIsReset] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  // Check if already logged in as admin
+  useEffect(() => {
+    const checkExisting = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id);
+        if (roles?.some((r: any) => r.role === "admin")) {
+          navigate("/admin/dashboard", { replace: true });
+          return;
+        }
+      }
+      setChecking(false);
+    };
+    checkExisting();
+  }, [navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Client-side validation
+    if (password.length < 8) {
+      toast({ title: "Password too short", description: "Minimum 8 characters required.", variant: "destructive" });
+      return;
+    }
+
     setLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) throw error;
 
-      // Check if user has admin role
       const { data: roles, error: roleError } = await supabase
         .from("user_roles")
         .select("role")
@@ -33,11 +59,11 @@ const AdminLogin = () => {
       const isAdmin = roles?.some((r: any) => r.role === "admin");
       if (!isAdmin) {
         await supabase.auth.signOut();
-        throw new Error("Access denied. You don't have admin privileges.");
+        throw new Error("Access denied. Admin privileges required.");
       }
 
       toast({ title: "Welcome back! 🎉", description: "Logged in to admin dashboard." });
-      navigate("/admin/dashboard");
+      navigate("/admin/dashboard", { replace: true });
     } catch (e: any) {
       toast({ title: "Login Failed", description: e.message, variant: "destructive" });
     } finally {
@@ -49,8 +75,8 @@ const AdminLogin = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/admin/reset-password`,
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/admin/login`,
       });
       if (error) throw error;
       toast({ title: "Check your email", description: "Password reset link sent." });
@@ -60,6 +86,14 @@ const AdminLogin = () => {
       setLoading(false);
     }
   };
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={32} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -100,6 +134,7 @@ const AdminLogin = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="pl-10 pr-10 rounded-2xl h-12 border-border/50"
                   required
+                  minLength={8}
                 />
                 <button
                   type="button"
