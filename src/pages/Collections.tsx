@@ -144,14 +144,10 @@ const Collections = () => {
 
                 <div className="bg-card px-5 py-4">
                   <div className="space-y-2">
-                    {group.items.map((item) => {
-                      const matchedProduct = productLookup.get(normalizeText(item.name));
-                      const href = matchedProduct ? `/product/${matchedProduct.id}` : "/shop";
-
-                      return (
+                    {group.items.map((item) => (
                         <Link
                           key={item.name}
-                          to={href}
+                          to="/shop"
                           className="flex items-center gap-4 rounded-2xl px-2 py-2.5 transition-colors hover:bg-muted/60"
                         >
                           <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted shadow-sm border-2 border-card">
