@@ -1,20 +1,34 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Heart, Search, Menu, X, Sparkles } from "lucide-react";
+import { ShoppingBag, Heart, Search, Menu, X, Sparkles, MoreHorizontal } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
 const navLinks = [
   { path: "/", label: "Home" },
   { path: "/shop", label: "Shop" },
   { path: "/custom-builder", label: "Custom Builder" },
-  { path: "/gift-builder", label: "Gift Builder" },
-  { path: "/gallery", label: "Gallery" },
-  { path: "/about", label: "About" },
+  { path: "/collections", label: "Collections" },
+  { path: "/community", label: "Community" },
+];
+
+const moreLinks = [
+  { path: "/gift-builder", label: "🎁 Gift Builder" },
+  { path: "/craft-stories", label: "✨ Craft Stories" },
+  { path: "/learn", label: "📚 Learn Crochet" },
+  { path: "/design-voting", label: "🗳️ Vote on Designs" },
+  { path: "/surprise-box", label: "🎁 Mystery Box" },
+  { path: "/style-quiz", label: "🎀 Style Quiz" },
+  { path: "/loyalty", label: "⭐ Loyalty Rewards" },
+  { path: "/orders", label: "📦 Order Tracker" },
+  { path: "/gallery", label: "🖼️ Gallery" },
+  { path: "/about", label: "💕 About" },
+  { path: "/admin", label: "📊 Admin" },
 ];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const location = useLocation();
   const { totalItems, setIsOpen: setCartOpen } = useCart();
 
@@ -55,6 +69,40 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
+              <div className="relative">
+                <button
+                  onClick={() => setShowMore(!showMore)}
+                  className="px-3 py-2 rounded-2xl text-sm font-medium font-body text-foreground/70 hover:text-foreground hover:bg-primary/30 transition-all btn-squish"
+                >
+                  <MoreHorizontal size={18} />
+                </button>
+                <AnimatePresence>
+                  {showMore && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="absolute right-0 top-full mt-2 glass-panel rounded-2xl p-2 shadow-float min-w-[200px]"
+                      onMouseLeave={() => setShowMore(false)}
+                    >
+                      {moreLinks.map(link => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={() => setShowMore(false)}
+                          className={`block px-4 py-2.5 rounded-xl text-sm font-body transition-all ${
+                            location.pathname === link.path
+                              ? "bg-primary/50 font-medium"
+                              : "hover:bg-primary/20"
+                          }`}
+                        >
+                          {link.label}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
@@ -99,13 +147,13 @@ const Navbar = () => {
             exit={{ opacity: 0, y: -20 }}
             className="mx-4 mt-2 lg:hidden"
           >
-            <div className="glass-panel rounded-3xl p-4 shadow-float">
-              {navLinks.map((link, i) => (
+            <div className="glass-panel rounded-3xl p-4 shadow-float max-h-[70vh] overflow-y-auto">
+              {[...navLinks, ...moreLinks].map((link, i) => (
                 <motion.div
                   key={link.path}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ delay: i * 0.03 }}
                 >
                   <Link
                     to={link.path}

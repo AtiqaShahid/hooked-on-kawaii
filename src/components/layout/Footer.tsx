@@ -18,18 +18,20 @@ const Footer = () => (
           <h4 className="font-display font-semibold mb-4">Shop</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link to="/shop" className="hover:text-foreground transition-colors">All Products</Link></li>
-            <li><Link to="/shop?cat=flowers" className="hover:text-foreground transition-colors">Crochet Flowers</Link></li>
-            <li><Link to="/shop?cat=toys" className="hover:text-foreground transition-colors">Amigurumi</Link></li>
-            <li><Link to="/shop?cat=keychains" className="hover:text-foreground transition-colors">Keychains</Link></li>
+            <li><Link to="/collections" className="hover:text-foreground transition-colors">Collections</Link></li>
+            <li><Link to="/surprise-box" className="hover:text-foreground transition-colors">Mystery Box</Link></li>
+            <li><Link to="/style-quiz" className="hover:text-foreground transition-colors">Style Quiz</Link></li>
           </ul>
         </div>
         <div>
           <h4 className="font-display font-semibold mb-4">Explore</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
             <li><Link to="/custom-builder" className="hover:text-foreground transition-colors">Custom Builder</Link></li>
-            <li><Link to="/gift-builder" className="hover:text-foreground transition-colors">Gift Builder</Link></li>
-            <li><Link to="/gallery" className="hover:text-foreground transition-colors">Gallery</Link></li>
-            <li><Link to="/about" className="hover:text-foreground transition-colors">About the Maker</Link></li>
+            <li><Link to="/craft-stories" className="hover:text-foreground transition-colors">Craft Stories</Link></li>
+            <li><Link to="/learn" className="hover:text-foreground transition-colors">Learn Crochet</Link></li>
+            <li><Link to="/community" className="hover:text-foreground transition-colors">Community</Link></li>
+            <li><Link to="/design-voting" className="hover:text-foreground transition-colors">Vote on Designs</Link></li>
+            <li><Link to="/loyalty" className="hover:text-foreground transition-colors">Loyalty Rewards</Link></li>
           </ul>
         </div>
         <div>

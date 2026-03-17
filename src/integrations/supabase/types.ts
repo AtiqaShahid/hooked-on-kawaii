@@ -44,6 +44,193 @@ export type Database = {
         }
         Relationships: []
       }
+      collection_products: {
+        Row: {
+          collection_id: string
+          id: string
+          product_id: string
+        }
+        Insert: {
+          collection_id: string
+          id?: string
+          product_id: string
+        }
+        Update: {
+          collection_id?: string
+          id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_products_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          available_count: number | null
+          created_at: string
+          description: string | null
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          is_limited: boolean | null
+          name: string
+          slug: string
+          starts_at: string | null
+          total_count: number | null
+        }
+        Insert: {
+          available_count?: number | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_limited?: boolean | null
+          name: string
+          slug: string
+          starts_at?: string | null
+          total_count?: number | null
+        }
+        Update: {
+          available_count?: number | null
+          created_at?: string
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          is_limited?: boolean | null
+          name?: string
+          slug?: string
+          starts_at?: string | null
+          total_count?: number | null
+        }
+        Relationships: []
+      }
+      community_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_posts: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          image_url: string | null
+          is_approved: boolean | null
+          likes_count: number | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_approved?: boolean | null
+          likes_count?: number | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_approved?: boolean | null
+          likes_count?: number | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      craft_stories: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_published: boolean | null
+          product_id: string | null
+          slug: string
+          time_to_make: string | null
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          product_id?: string | null
+          slug: string
+          time_to_make?: string | null
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          product_id?: string | null
+          slug?: string
+          time_to_make?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "craft_stories_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       custom_crochet_orders: {
         Row: {
           attachment: string | null
@@ -82,6 +269,68 @@ export type Database = {
           yarn_type?: string | null
         }
         Relationships: []
+      }
+      design_requests: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          status: string | null
+          title: string
+          user_id: string
+          votes_count: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          status?: string | null
+          title: string
+          user_id: string
+          votes_count?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          status?: string | null
+          title?: string
+          user_id?: string
+          votes_count?: number | null
+        }
+        Relationships: []
+      }
+      design_votes: {
+        Row: {
+          created_at: string
+          id: string
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          request_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          request_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "design_votes_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "design_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gallery_images: {
         Row: {
@@ -146,6 +395,80 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_resources: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          difficulty: string | null
+          download_url: string | null
+          id: string
+          image_url: string | null
+          is_published: boolean | null
+          slug: string
+          title: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          difficulty?: string | null
+          download_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          slug: string
+          title: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          difficulty?: string | null
+          download_url?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      loyalty_points: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string | null
+          points: number
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          points?: number
+          reason: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string | null
+          points?: number
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loyalty_points_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           color: string | null
@@ -202,6 +525,7 @@ export type Database = {
           shipping_address: Json | null
           status: string
           total: number
+          tracking_stage: string | null
           updated_at: string
           user_id: string | null
         }
@@ -212,6 +536,7 @@ export type Database = {
           shipping_address?: Json | null
           status?: string
           total: number
+          tracking_stage?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -222,10 +547,46 @@ export type Database = {
           shipping_address?: Json | null
           status?: string
           total?: number
+          tracking_stage?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Relationships: []
+      }
+      product_analytics: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json | null
+          product_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          product_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          product_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_analytics_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       products: {
         Row: {
@@ -240,10 +601,12 @@ export type Database = {
           is_featured: boolean | null
           name: string
           original_price: number | null
+          popularity_score: number | null
           price: number
           rating: number | null
           review_count: number | null
           slug: string
+          stock_quantity: number | null
           updated_at: string
         }
         Insert: {
@@ -258,10 +621,12 @@ export type Database = {
           is_featured?: boolean | null
           name: string
           original_price?: number | null
+          popularity_score?: number | null
           price: number
           rating?: number | null
           review_count?: number | null
           slug: string
+          stock_quantity?: number | null
           updated_at?: string
         }
         Update: {
@@ -276,10 +641,12 @@ export type Database = {
           is_featured?: boolean | null
           name?: string
           original_price?: number | null
+          popularity_score?: number | null
           price?: number
           rating?: number | null
           review_count?: number | null
           slug?: string
+          stock_quantity?: number | null
           updated_at?: string
         }
         Relationships: [
@@ -298,6 +665,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          loyalty_points: number | null
           updated_at: string
           user_id: string
         }
@@ -306,6 +674,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          loyalty_points?: number | null
           updated_at?: string
           user_id: string
         }
@@ -314,6 +683,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          loyalty_points?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -363,6 +733,35 @@ export type Database = {
           },
         ]
       }
+      social_proof_log: {
+        Row: {
+          city: string | null
+          created_at: string
+          id: string
+          product_id: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          product_id?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          id?: string
+          product_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_proof_log_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           created_at: string
@@ -390,6 +789,36 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      surprise_boxes: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          name: string
+          price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name: string
+          price: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          name?: string
+          price?: number
         }
         Relationships: []
       }
