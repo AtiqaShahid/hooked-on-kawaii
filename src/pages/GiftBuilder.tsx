@@ -133,8 +133,8 @@ const GiftBuilder = () => {
                   <p className="text-sm text-muted-foreground">{selectedItem} · {selectedTheme} · {selectedPackaging}</p>
                   {message && <p className="text-sm text-muted-foreground mt-2 italic">"{message}"</p>}
                 </div>
-                <button className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2">
-                  <Gift size={18} /> Order Gift Set — Rs. 4,500
+                <button onClick={handleOrderGift} className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2">
+                  <Gift size={18} /> Add Gift Set to Cart — Rs. 4,500
                 </button>
               </div>
             )}
