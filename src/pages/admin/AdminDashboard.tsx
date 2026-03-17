@@ -538,7 +538,7 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {allOrders.slice(0, 5).map((o: any) => (
+                {effectiveOrders.slice(0, 5).map((o: any) => (
                   <tr key={o.id} className="border-b border-border/20 hover:bg-muted/20">
                     <td className="py-2.5 px-2 font-mono text-xs">{o.id.slice(0, 8)}…</td>
                     <td className="py-2.5 px-2">
@@ -552,7 +552,7 @@ const AdminDashboard = () => {
                     <td className="py-2.5 px-2 text-muted-foreground">{new Date(o.created_at).toLocaleDateString()}</td>
                   </tr>
                 ))}
-                {allOrders.length === 0 && (
+                {effectiveOrders.length === 0 && (
                   <tr><td colSpan={4} className="py-8 text-center text-muted-foreground">No orders yet</td></tr>
                 )}
               </tbody>
