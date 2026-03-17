@@ -103,7 +103,7 @@ const CustomBuilder = () => {
           <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
             {/* Preview */}
             <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="sticky top-28">
-              <div className="aspect-square rounded-3xl glass-panel shadow-float flex flex-col items-center justify-center p-8 relative overflow-hidden">
+              <div className="rounded-3xl glass-panel shadow-float flex flex-col items-center justify-center p-8 relative overflow-visible min-h-[400px]">
                 <div className="absolute inset-0 stitch-bg opacity-20" />
                 <div className="relative text-center">
                   {isGenerating ? (
