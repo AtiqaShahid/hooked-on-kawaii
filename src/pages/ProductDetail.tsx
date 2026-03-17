@@ -5,13 +5,22 @@ import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
+import ProductReviews from "@/components/reviews/ProductReviews";
 import { products } from "@/lib/products";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+
+const categoryEmojis: Record<string, string> = {
+  bouquets: "💐", keychains: "🔑", toys: "🧸", decor: "🌼", accessories: "🎀", flowers: "🌸",
+};
 
 const ProductDetail = () => {
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const [selectedColor, setSelectedColor] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const { addItem } = useCart();
+  const { toggleWishlist, isWishlisted } = useWishlist();
 
   if (!product) {
     return (
@@ -20,9 +29,7 @@ const ProductDetail = () => {
         <div className="pt-28 text-center py-20">
           <span className="text-5xl block mb-4">🧶</span>
           <p className="font-display text-xl font-bold">Product not found</p>
-          <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground mt-2 inline-block">
-            ← Back to Shop
-          </Link>
+          <Link to="/shop" className="text-sm text-muted-foreground hover:text-foreground mt-2 inline-block">← Back to Shop</Link>
         </div>
         <Footer />
       </div>
@@ -38,41 +45,34 @@ const ProductDetail = () => {
     "Limited Edition": "bg-mint text-accent-foreground",
   };
 
+  const handleAddToCart = () => {
+    for (let i = 0; i < quantity; i++) {
+      addItem(product, product.colors[selectedColor]);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <Navbar />
       <div className="pt-28 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Breadcrumb */}
           <Link to="/shop" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
             <ArrowLeft size={16} /> Back to Shop
           </Link>
 
           <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
-            {/* Image */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               className="aspect-square rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-9xl shadow-soft"
             >
-              {product.category === "bouquets" && "💐"}
-              {product.category === "keychains" && "🔑"}
-              {product.category === "toys" && "🧸"}
-              {product.category === "decor" && "🌼"}
-              {product.category === "accessories" && "🎀"}
-              {product.category === "flowers" && "🌸"}
+              {categoryEmojis[product.category] || "🧶"}
             </motion.div>
 
-            {/* Details */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
+            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}>
               <div className="flex flex-wrap gap-2 mb-4">
                 {product.badges.map((b) => (
-                  <span key={b} className={`px-3 py-1 rounded-2xl text-xs font-bold font-body ${badgeColors[b] || "bg-muted"}`}>
-                    {b}
-                  </span>
+                  <span key={b} className={`px-3 py-1 rounded-2xl text-xs font-bold font-body ${badgeColors[b] || "bg-muted"}`}>{b}</span>
                 ))}
               </div>
 
@@ -96,7 +96,6 @@ const ProductDetail = () => {
 
               <p className="text-muted-foreground font-body leading-relaxed mb-8">{product.description}</p>
 
-              {/* Color Selector */}
               <div className="mb-8">
                 <p className="font-display font-semibold text-sm mb-3">Color</p>
                 <div className="flex gap-3">
@@ -113,7 +112,6 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Quantity */}
               <div className="mb-8">
                 <p className="font-display font-semibold text-sm mb-3">Quantity</p>
                 <div className="inline-flex items-center rounded-3xl bg-card border border-border/50 shadow-soft">
@@ -123,17 +121,23 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Actions */}
               <div className="flex gap-3 mb-8">
-                <button className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all">
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all"
+                >
                   <ShoppingBag size={18} /> Add to Cart
                 </button>
-                <button className="w-14 h-14 rounded-3xl bg-card border border-border/50 flex items-center justify-center text-foreground/60 hover:text-pink shadow-soft btn-squish transition-colors">
-                  <Heart size={20} />
+                <button
+                  onClick={() => toggleWishlist(product.id, product.name)}
+                  className={`w-14 h-14 rounded-3xl bg-card border border-border/50 flex items-center justify-center shadow-soft btn-squish transition-colors ${
+                    isWishlisted(product.id) ? "text-pink" : "text-foreground/60 hover:text-pink"
+                  }`}
+                >
+                  <Heart size={20} className={isWishlisted(product.id) ? "fill-current" : ""} />
                 </button>
               </div>
 
-              {/* Trust */}
               <div className="grid grid-cols-3 gap-3">
                 {[
                   { icon: Truck, text: "Free Shipping" },
@@ -149,7 +153,9 @@ const ProductDetail = () => {
             </motion.div>
           </div>
 
-          {/* Related */}
+          {/* Reviews Section */}
+          <ProductReviews productId={product.id} />
+
           {related.length > 0 && (
             <div className="mt-20">
               <h2 className="font-display text-2xl font-bold mb-8">You Might Also Love 💕</h2>

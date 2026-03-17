@@ -7,6 +7,7 @@ import CrochetOfTheWeek from "@/components/home/CrochetOfTheWeek";
 import OccasionsSection from "@/components/home/OccasionsSection";
 import FeaturesStrip from "@/components/home/FeaturesStrip";
 import NewsletterSection from "@/components/home/NewsletterSection";
+import CustomerLoveSection from "@/components/home/CustomerLoveSection";
 
 const Index = () => (
   <div className="min-h-screen">
@@ -15,6 +16,7 @@ const Index = () => (
     <FeaturesStrip />
     <CategoriesSection />
     <FeaturedProducts />
+    <CustomerLoveSection />
     <CrochetOfTheWeek />
     <OccasionsSection />
     <NewsletterSection />

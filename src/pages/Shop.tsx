@@ -1,14 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Search, SlidersHorizontal } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
 import { products, categories } from "@/lib/products";
 
 const ShopPage = () => {
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialCat = searchParams.get("cat") || "all";
+  const [activeCategory, setActiveCategory] = useState(initialCat);
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    const cat = searchParams.get("cat");
+    if (cat) setActiveCategory(cat);
+  }, [searchParams]);
+
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    if (cat === "all") {
+      setSearchParams({});
+    } else {
+      setSearchParams({ cat });
+    }
+  };
 
   const filtered = products.filter((p) => {
     const matchesCat = activeCategory === "all" || p.category === activeCategory;
@@ -21,21 +38,11 @@ const ShopPage = () => {
       <Navbar />
       <div className="pt-28 pb-20 px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-10"
-          >
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">
-              🛍️ Our Shop
-            </h1>
-            <p className="text-muted-foreground font-body max-w-md mx-auto">
-              Every piece is handmade with love and premium yarn
-            </p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-3">🛍️ Our Shop</h1>
+            <p className="text-muted-foreground font-body max-w-md mx-auto">Every piece is handmade with love and premium yarn</p>
           </motion.div>
 
-          {/* Search & Filters */}
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <div className="relative flex-1">
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -52,10 +59,9 @@ const ShopPage = () => {
             </button>
           </div>
 
-          {/* Category Pills */}
           <div className="flex gap-2 overflow-x-auto pb-4 mb-8 scrollbar-hide">
             <button
-              onClick={() => setActiveCategory("all")}
+              onClick={() => handleCategoryChange("all")}
               className={`px-5 py-2.5 rounded-3xl text-sm font-semibold font-body whitespace-nowrap transition-all btn-squish ${
                 activeCategory === "all" ? "bg-primary text-primary-foreground shadow-glow" : "bg-card text-foreground/60 shadow-soft"
               }`}
@@ -65,7 +71,7 @@ const ShopPage = () => {
             {categories.map((cat) => (
               <button
                 key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
+                onClick={() => handleCategoryChange(cat.id)}
                 className={`px-5 py-2.5 rounded-3xl text-sm font-semibold font-body whitespace-nowrap transition-all btn-squish ${
                   activeCategory === cat.id ? "bg-primary text-primary-foreground shadow-glow" : "bg-card text-foreground/60 shadow-soft"
                 }`}
@@ -75,7 +81,6 @@ const ShopPage = () => {
             ))}
           </div>
 
-          {/* Products Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
             {filtered.map((product, i) => (
               <ProductCard key={product.id} product={product} index={i} />
