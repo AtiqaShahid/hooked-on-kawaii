@@ -304,8 +304,8 @@ const AdminDashboard = () => {
         {[
           { label: "Add Product", icon: Plus, path: "/admin/products", color: "bg-primary/20 text-primary" },
           { label: "Manage Orders", icon: ShoppingCart, path: "/admin/orders", color: "bg-secondary/30 text-secondary-foreground" },
-          { label: "Run Sale", icon: Percent, path: "/admin/settings", color: "bg-accent/30 text-accent-foreground" },
-          { label: "Announcements", icon: Megaphone, path: "/admin/settings", color: "bg-primary/30 text-primary" },
+          { label: "Run Sale", icon: Percent, path: "/admin/products", color: "bg-accent/30 text-accent-foreground" },
+          { label: "Reviews", icon: Star, path: "/admin/reviews", color: "bg-primary/30 text-primary" },
           { label: "Collections", icon: Layers, path: "/admin/collections", color: "bg-secondary/20 text-secondary-foreground" },
           { label: "Settings", icon: Settings, path: "/admin/settings", color: "bg-muted text-muted-foreground" },
         ].map((action) => (
