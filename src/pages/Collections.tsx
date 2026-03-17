@@ -22,19 +22,19 @@ type Product = {
   category_id: string | null;
 };
 
-const categoryColors: Record<string, { bg: string; btn: string }> = {
-  "Crochet Flowers": { bg: "bg-[hsl(var(--pink)/0.15)]", btn: "bg-[hsl(var(--pink))]" },
-  "Bouquets": { bg: "bg-[hsl(var(--mint)/0.2)]", btn: "bg-[hsl(var(--mint))]" },
-  "Amigurumi": { bg: "bg-[hsl(var(--lavender)/0.15)]", btn: "bg-[hsl(var(--lavender))]" },
-  "Keychains": { bg: "bg-[hsl(var(--peach)/0.2)]", btn: "bg-[hsl(var(--peach))]" },
-  "Accessories": { bg: "bg-[hsl(var(--warm-beige)/0.25)]", btn: "bg-[hsl(var(--warm-beige))]" },
-  "Home Decor": { bg: "bg-[hsl(var(--baby-blue)/0.15)]", btn: "bg-[hsl(var(--baby-blue))]" },
+const categoryColorMap: Record<string, { bgHsl: string; btnHsl: string }> = {
+  "Crochet Flowers": { bgHsl: "350 100% 91%", btnHsl: "350 80% 70%" },
+  "Bouquets": { bgHsl: "140 68% 83%", btnHsl: "140 50% 55%" },
+  "Amigurumi": { bgHsl: "240 67% 94%", btnHsl: "240 50% 70%" },
+  "Keychains": { bgHsl: "28 100% 87%", btnHsl: "28 80% 65%" },
+  "Accessories": { bgHsl: "42 50% 88%", btnHsl: "42 60% 60%" },
+  "Home Decor": { bgHsl: "210 100% 83%", btnHsl: "210 70% 60%" },
 };
 
-const fallbackColors = [
-  { bg: "bg-primary/10", btn: "bg-primary" },
-  { bg: "bg-secondary/30", btn: "bg-secondary" },
-  { bg: "bg-accent/20", btn: "bg-accent" },
+const fallbackHsl = [
+  { bgHsl: "350 100% 91%", btnHsl: "350 80% 70%" },
+  { bgHsl: "140 68% 83%", btnHsl: "140 50% 55%" },
+  { bgHsl: "240 67% 94%", btnHsl: "240 50% 70%" },
 ];
 
 const Collections = () => {
