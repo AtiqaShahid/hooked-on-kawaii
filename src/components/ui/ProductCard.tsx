@@ -12,6 +12,7 @@ const badgeColors: Record<string, string> = {
   "Limited Edition": "bg-mint text-accent-foreground",
   "Crochet of the Week": "bg-peach text-foreground",
   "Limited Stock": "bg-baby-blue text-foreground",
+  "Sale": "bg-red-500 text-white",
 };
 
 const categoryEmojis: Record<string, string> = {
