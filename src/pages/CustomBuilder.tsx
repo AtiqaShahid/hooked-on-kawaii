@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useCart } from "@/contexts/CartContext";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const yarnTypes = ["Cotton", "Acrylic", "Wool Blend", "Bamboo"];
 const sizes = ["Mini (3cm)", "Small (5cm)", "Medium (8cm)", "Large (12cm)"];
@@ -38,6 +39,7 @@ const CustomBuilder = () => {
   const [attachment, setAttachment] = useState("None");
   const [isGenerating, setIsGenerating] = useState(false);
   const [previewGenerated, setPreviewGenerated] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const totalPrice = (sizePrice[size] || 25) + (attachmentPrice[attachment] || 0);
 
@@ -46,15 +48,35 @@ const CustomBuilder = () => {
       prev.includes(hex) ? prev.filter((c) => c !== hex) : [...prev, hex].slice(0, 3)
     );
     setPreviewGenerated(false);
+    setPreviewImage(null);
   };
 
   const generatePreview = async () => {
     setIsGenerating(true);
-    // Simulate AI generation — will be replaced with real AI call once Cloud is enabled
-    await new Promise((r) => setTimeout(r, 2000));
-    setIsGenerating(false);
-    setPreviewGenerated(true);
-    toast({ title: "Preview generated! ✨", description: "Your custom crochet design preview is ready." });
+    try {
+      const colorNames = selectedColors.map(
+        (hex) => colorOptions.find((c) => c.hex === hex)?.name || hex
+      );
+      const { data, error } = await supabase.functions.invoke("generate-crochet-preview", {
+        body: { colors: colorNames, size, yarn, attachment },
+      });
+
+      if (error) throw new Error(error.message);
+      if (data?.error) throw new Error(data.error);
+
+      if (data?.imageUrl) {
+        setPreviewImage(data.imageUrl);
+        setPreviewGenerated(true);
+        toast({ title: "Preview generated! ✨", description: "Your custom crochet design preview is ready." });
+      } else {
+        throw new Error("No image returned");
+      }
+    } catch (err: any) {
+      console.error("Preview generation failed:", err);
+      toast({ title: "Generation failed", description: err.message || "Please try again.", variant: "destructive" });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleOrder = () => {
@@ -99,9 +121,14 @@ const CustomBuilder = () => {
                           <motion.div key={c} layout className="w-10 h-10 rounded-full shadow-soft border-2 border-card" style={{ backgroundColor: c }} />
                         ))}
                       </div>
-                      <div className="w-40 h-40 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center relative overflow-hidden">
-                        <span className="text-7xl">🧶</span>
-                        <div className="absolute inset-0 bg-gradient-to-t from-card/20 to-transparent" />
+                      <div className="w-48 h-48 mx-auto mb-4 rounded-3xl overflow-hidden shadow-soft">
+                        {previewImage ? (
+                          <img src={previewImage} alt="AI Generated Crochet Preview" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
+                            <span className="text-7xl">🧶</span>
+                          </div>
+                        )}
                       </div>
                       <p className="font-display text-lg font-semibold mb-1">AI Generated Preview</p>
                       <p className="text-sm text-muted-foreground">{colorNames.join(" + ")} · {size} · {yarn}</p>
