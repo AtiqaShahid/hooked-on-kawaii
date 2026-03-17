@@ -8,6 +8,7 @@ import { WishlistProvider } from "@/contexts/WishlistContext";
 import ScrollToTop from "@/components/ScrollToTop";
 import CartDrawer from "@/components/CartDrawer";
 import SocialProofToast from "@/components/SocialProofToast";
+import AIChatbot from "@/components/AIChatbot";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
@@ -42,6 +43,12 @@ import AdminStories from "./pages/admin/AdminStories";
 import AdminAIInsights from "./pages/admin/AdminAIInsights";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
+import ShippingPolicy from "./pages/ShippingPolicy";
+import RefundPolicy from "./pages/RefundPolicy";
+import ReturnPolicy from "./pages/ReturnPolicy";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Terms from "./pages/Terms";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +63,7 @@ const App = () => (
             <ScrollToTop />
             <CartDrawer />
             <SocialProofToast />
+            <AIChatbot />
             <Routes>
               {/* Public storefront */}
               <Route path="/" element={<Index />} />
@@ -74,6 +82,12 @@ const App = () => (
               <Route path="/style-quiz" element={<StyleQuiz />} />
               <Route path="/orders" element={<OrderTracker />} />
               <Route path="/loyalty" element={<Loyalty />} />
+              <Route path="/shipping-policy" element={<ShippingPolicy />} />
+              <Route path="/refund-policy" element={<RefundPolicy />} />
+              <Route path="/return-policy" element={<ReturnPolicy />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/contact" element={<Contact />} />
 
               {/* Admin */}
               <Route path="/admin/login" element={<AdminLogin />} />

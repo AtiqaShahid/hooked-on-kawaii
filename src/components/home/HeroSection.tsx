@@ -2,28 +2,27 @@ import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import heroCollection from "@/assets/hero-collection.jpg";
-const FloatingYarn = ({ emoji, className }: { emoji: string; className: string }) => (
-  <motion.div
-    className={`absolute text-4xl md:text-5xl select-none pointer-events-none ${className}`}
-    animate={{ y: [-10, 10, -10], rotate: [-5, 5, -5] }}
-    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-  >
-    {emoji}
-  </motion.div>
-);
 
 const HeroSection = () => (
   <section className="relative min-h-screen bg-gradient-hero overflow-hidden flex items-center pt-24">
-    {/* Stitch background */}
     <div className="absolute inset-0 stitch-bg opacity-50" />
 
-    {/* Floating elements */}
-    <FloatingYarn emoji="🧶" className="top-32 left-[8%] animate-float" />
-    <FloatingYarn emoji="🌸" className="top-40 right-[12%] animate-float-delayed" />
-    <FloatingYarn emoji="🪡" className="bottom-32 left-[15%] animate-float-slow" />
-    <FloatingYarn emoji="💐" className="bottom-40 right-[8%] animate-float" />
-    <FloatingYarn emoji="🧸" className="top-[55%] left-[5%] animate-float-delayed" />
-    <FloatingYarn emoji="🎀" className="top-28 left-[45%] animate-float-slow" />
+    {/* Floating elements - repositioned to corners/edges to never overlap content */}
+    <motion.div
+      className="absolute top-28 left-[3%] text-3xl select-none pointer-events-none opacity-40 hidden md:block"
+      animate={{ y: [-8, 8, -8] }}
+      transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+    >🧶</motion.div>
+    <motion.div
+      className="absolute bottom-16 right-[3%] text-3xl select-none pointer-events-none opacity-40 hidden md:block"
+      animate={{ y: [-6, 10, -6], rotate: [-3, 3, -3] }}
+      transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+    >🌸</motion.div>
+    <motion.div
+      className="absolute bottom-12 left-[3%] text-2xl select-none pointer-events-none opacity-30 hidden lg:block"
+      animate={{ y: [-5, 7, -5] }}
+      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+    >🪡</motion.div>
 
     <div className="relative max-w-7xl mx-auto px-6 text-center">
       <motion.div
@@ -31,7 +30,6 @@ const HeroSection = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        {/* Badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -42,7 +40,6 @@ const HeroSection = () => (
           <span className="text-sm font-medium text-muted-foreground">Handmade with Love, One Stitch at a Time</span>
         </motion.div>
 
-        {/* Title */}
         <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold leading-tight mb-6">
           <span className="text-gradient-pink">Crochet</span>
           <br />
@@ -59,7 +56,6 @@ const HeroSection = () => (
           Every piece is crafted with premium yarn and endless love.
         </motion.p>
 
-        {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -80,7 +76,6 @@ const HeroSection = () => (
           </Link>
         </motion.div>
 
-        {/* Hero Image */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -96,7 +91,6 @@ const HeroSection = () => (
         </motion.div>
       </motion.div>
 
-      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
