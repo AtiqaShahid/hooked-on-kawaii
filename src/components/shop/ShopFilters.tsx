@@ -146,7 +146,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Price */}
             <Section title={`Price Range (Rs. ${filters.priceRange[0].toLocaleString()} – ${filters.priceRange[1].toLocaleString()})`}>
-              <div className="px-1 pt-2">
+              <div className="px-1 pt-3 pb-1">
                 <Slider
                   min={0}
                   max={maxPrice}
