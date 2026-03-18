@@ -63,8 +63,8 @@ type Props = {
 const Section = ({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-border/40 pb-4 mb-4 last:border-0">
-      <button onClick={() => setOpen(!open)} className="flex items-center justify-between w-full text-left mb-2">
+    <div className="border-b border-border/40 pb-5 mb-5 last:border-0">
+      <button onClick={() => setOpen(!open)} className="flex items-center justify-between w-full text-left mb-3">
         <span className="font-display font-semibold text-sm">{title}</span>
         <ChevronDown size={16} className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
@@ -109,9 +109,9 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -320, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed left-0 top-0 bottom-0 w-[300px] bg-card z-50 shadow-float overflow-y-auto p-5 pt-6 lg:static lg:rounded-3xl lg:shadow-soft lg:w-[260px] lg:max-h-[calc(100vh-180px)] lg:sticky lg:top-28"
+            className="fixed left-0 top-0 bottom-0 w-[320px] bg-card z-50 shadow-float overflow-y-auto p-6 pt-7 lg:static lg:rounded-3xl lg:shadow-soft lg:w-[280px] lg:max-h-[calc(100vh-180px)] lg:sticky lg:top-28"
           >
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="font-display font-bold text-base">
                 Filters {activeCount > 0 && <span className="ml-1 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">{activeCount}</span>}
               </h2>
@@ -129,7 +129,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Sort */}
             <Section title="Sort By">
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {SORT_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
@@ -146,7 +146,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Price */}
             <Section title={`Price Range (Rs. ${filters.priceRange[0].toLocaleString()} – ${filters.priceRange[1].toLocaleString()})`}>
-              <div className="px-1 pt-2">
+              <div className="px-1 pt-3 pb-1">
                 <Slider
                   min={0}
                   max={maxPrice}
@@ -159,7 +159,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Colors */}
             <Section title="Colors">
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {COLOR_OPTIONS.map((c) => {
                   const active = filters.colors.includes(c.value);
                   return (
@@ -181,7 +181,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Mood */}
             <Section title="Mood / Vibe">
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {MOOD_OPTIONS.map((mood) => {
                   const active = filters.moods.includes(mood);
                   return (
@@ -203,7 +203,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Badges */}
             <Section title="Tags">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {BADGE_OPTIONS.map((badge) => {
                   const active = filters.badges.includes(badge);
                   return (
