@@ -63,7 +63,7 @@ type Props = {
 const Section = ({ title, children, defaultOpen = true }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-border/40 pb-4 mb-4 last:border-0">
+    <div className="border-b border-border/40 pb-5 mb-5 last:border-0">
       <button onClick={() => setOpen(!open)} className="flex items-center justify-between w-full text-left mb-2">
         <span className="font-display font-semibold text-sm">{title}</span>
         <ChevronDown size={16} className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
