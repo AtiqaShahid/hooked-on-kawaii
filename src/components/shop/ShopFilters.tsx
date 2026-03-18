@@ -203,7 +203,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Badges */}
             <Section title="Tags">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {BADGE_OPTIONS.map((badge) => {
                   const active = filters.badges.includes(badge);
                   return (
