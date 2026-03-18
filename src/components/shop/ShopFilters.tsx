@@ -109,7 +109,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -320, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed left-0 top-0 bottom-0 w-[300px] bg-card z-50 shadow-float overflow-y-auto p-5 pt-6 lg:static lg:rounded-3xl lg:shadow-soft lg:w-[260px] lg:max-h-[calc(100vh-180px)] lg:sticky lg:top-28"
+            className="fixed left-0 top-0 bottom-0 w-[320px] bg-card z-50 shadow-float overflow-y-auto p-6 pt-7 lg:static lg:rounded-3xl lg:shadow-soft lg:w-[280px] lg:max-h-[calc(100vh-180px)] lg:sticky lg:top-28"
           >
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-display font-bold text-base">
