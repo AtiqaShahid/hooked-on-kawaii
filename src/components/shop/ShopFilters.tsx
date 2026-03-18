@@ -111,7 +111,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="fixed left-0 top-0 bottom-0 w-[320px] bg-card z-50 shadow-float overflow-y-auto p-6 pt-7 lg:static lg:rounded-3xl lg:shadow-soft lg:w-[280px] lg:max-h-[calc(100vh-180px)] lg:sticky lg:top-28"
           >
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="font-display font-bold text-base">
                 Filters {activeCount > 0 && <span className="ml-1 text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">{activeCount}</span>}
               </h2>
