@@ -159,7 +159,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Colors */}
             <Section title="Colors">
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {COLOR_OPTIONS.map((c) => {
                   const active = filters.colors.includes(c.value);
                   return (
