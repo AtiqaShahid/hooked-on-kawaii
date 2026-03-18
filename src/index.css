@@ -49,8 +49,8 @@
     --shadow-float: 0 16px 48px -12px hsl(350 40% 70% / 0.2);
     --shadow-glow: 0 0 40px hsl(350 100% 91% / 0.3);
 
-    --glass-bg: hsl(0 0% 100% / 0.6);
-    --glass-border: hsl(0 0% 100% / 0.3);
+    --glass-bg: hsl(0 0% 100% / 0.88);
+    --glass-border: hsl(0 0% 100% / 0.5);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
