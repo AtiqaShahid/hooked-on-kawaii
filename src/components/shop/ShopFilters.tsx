@@ -129,7 +129,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Sort */}
             <Section title="Sort By">
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {SORT_OPTIONS.map((opt) => (
                   <button
                     key={opt.value}
