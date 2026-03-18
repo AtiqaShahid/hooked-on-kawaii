@@ -181,7 +181,7 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
 
             {/* Mood */}
             <Section title="Mood / Vibe">
-              <div className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {MOOD_OPTIONS.map((mood) => {
                   const active = filters.moods.includes(mood);
                   return (
