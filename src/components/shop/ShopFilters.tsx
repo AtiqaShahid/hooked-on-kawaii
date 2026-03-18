@@ -169,8 +169,8 @@ const ShopFilters = ({ open, onClose, filters, onChange, maxPrice }: Props) => {
                       onClick={() =>
                         update({ colors: active ? filters.colors.filter((x) => x !== c.value) : [...filters.colors, c.value] })
                       }
-                      className={`w-7 h-7 rounded-full border-2 transition-all btn-squish ${
-                        active ? "border-foreground scale-110 ring-2 ring-primary/40" : "border-border/50 hover:scale-105"
+                      className={`w-9 h-9 rounded-full border-2 transition-all btn-squish shadow-sm ${
+                        active ? "border-foreground scale-110 ring-2 ring-primary/50" : "border-border hover:scale-105"
                       }`}
                       style={{ backgroundColor: c.value }}
                     />
