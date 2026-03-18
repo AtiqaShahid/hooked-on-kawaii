@@ -64,7 +64,7 @@ const Section = ({ title, children, defaultOpen = true }: { title: string; child
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="border-b border-border/40 pb-5 mb-5 last:border-0">
-      <button onClick={() => setOpen(!open)} className="flex items-center justify-between w-full text-left mb-2">
+      <button onClick={() => setOpen(!open)} className="flex items-center justify-between w-full text-left mb-3">
         <span className="font-display font-semibold text-sm">{title}</span>
         <ChevronDown size={16} className={`text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
