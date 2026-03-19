@@ -50,6 +50,8 @@ import ReturnPolicy from "./pages/ReturnPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
+import OccasionShop from "./pages/OccasionShop";
+import AllReviews from "./pages/AllReviews";
 
 const queryClient = new QueryClient();
 
