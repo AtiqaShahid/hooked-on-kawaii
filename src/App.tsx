@@ -52,6 +52,8 @@ import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
 import OccasionShop from "./pages/OccasionShop";
 import AllReviews from "./pages/AllReviews";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
