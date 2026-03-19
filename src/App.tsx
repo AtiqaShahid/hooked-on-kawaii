@@ -92,6 +92,8 @@ const App = () => (
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/occasions/:occasionId" element={<OccasionShop />} />
+              <Route path="/reviews" element={<AllReviews />} />
 
               {/* Admin */}
               <Route path="/admin/login" element={<AdminLogin />} />

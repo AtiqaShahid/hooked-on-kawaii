@@ -76,18 +76,7 @@ const OccasionShop = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
                 >
-                  <ProductCard product={{
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image_url || "/placeholder.svg",
-                    category: product.category?.slug || "",
-                    badges: product.badges || [],
-                    description: product.description || "",
-                    colors: product.colors || [],
-                    rating: product.rating || 0,
-                    reviews: product.review_count || 0,
-                  }} />
+                  <ProductCard product={product} />
                 </motion.div>
               ))}
             </div>
