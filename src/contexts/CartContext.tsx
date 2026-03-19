@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from "react";
 import { toast } from "@/hooks/use-toast";
 
 export type CartItem = {
@@ -25,6 +25,8 @@ type CartContextType = {
   totalPrice: number;
 };
 
+const CART_KEY = "hookonloop-cart";
+
 const CartContext = createContext<CartContextType | null>(null);
 
 export const useCart = () => {
@@ -34,8 +36,17 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(() => {
+    try {
+      return JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    } catch { return []; }
+  });
   const [isOpen, setIsOpen] = useState(false);
+
+  // Persist cart
+  useEffect(() => {
+    localStorage.setItem(CART_KEY, JSON.stringify(items));
+  }, [items]);
 
   const addItem = useCallback((item: Omit<CartItem, "quantity"> & { quantity?: number }) => {
     setItems((prev) => {
@@ -47,8 +58,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       }
       return [...prev, { ...item, quantity: item.quantity || 1 }];
     });
-    toast({ title: "Added to cart! 🛒", description: `${item.name} has been added.` });
-    setIsOpen(true);
+    toast({ title: "Added to cart! 🛒", description: `${item.name} has been added.`, duration: 2500 });
   }, []);
 
   const removeItem = useCallback((id: string) => {

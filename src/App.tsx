@@ -50,6 +50,10 @@ import ReturnPolicy from "./pages/ReturnPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
 import Contact from "./pages/Contact";
+import OccasionShop from "./pages/OccasionShop";
+import AllReviews from "./pages/AllReviews";
+import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -90,6 +94,10 @@ const App = () => (
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/occasions/:occasionId" element={<OccasionShop />} />
+              <Route path="/reviews" element={<AllReviews />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/dashboard" element={<Dashboard />} />
 
               {/* Admin */}
               <Route path="/admin/login" element={<AdminLogin />} />
