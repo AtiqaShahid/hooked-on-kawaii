@@ -4,6 +4,7 @@ import Footer from "@/components/layout/Footer";
 import { motion } from "framer-motion";
 import { useProducts } from "@/hooks/useSupabaseData";
 import ProductCard from "@/components/ui/ProductCard";
+
 import { occasions } from "@/lib/products";
 
 // Map occasion IDs to product badge/category keywords
