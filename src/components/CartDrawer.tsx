@@ -46,17 +46,7 @@ const CartDrawer = () => {
 
             {/* Items */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {orderPlaced ? (
-                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center py-16">
-                  <CheckCircle size={64} className="mx-auto text-green-500 mb-4" />
-                  <p className="font-display text-xl font-bold mb-2">Order Placed!</p>
-                  <p className="text-sm text-muted-foreground">Thank you for your order 💕</p>
-                  <Link to="/orders" onClick={() => setIsOpen(false)}
-                    className="inline-block mt-4 px-6 py-2.5 rounded-3xl bg-primary text-primary-foreground text-sm font-semibold btn-squish">
-                    Track Order
-                  </Link>
-                </motion.div>
-              ) : items.length === 0 ? (
+              {items.length === 0 ? (
                 <div className="text-center py-12">
                   <span className="text-5xl block mb-4">🧶</span>
                   <p className="font-display font-semibold mb-2">Your cart is empty</p>
