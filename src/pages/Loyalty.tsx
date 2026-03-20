@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Star, Gift, Award, ShoppingBag, MessageSquare, Users } from "lucide-react";
+import { ShoppingBag, MessageSquare, Users, Gift } from "lucide-react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -14,7 +15,7 @@ const tiers = [
 ];
 
 const earnWays = [
-  { action: "Make a purchase", points: "1 point per Rs. 100", icon: ShoppingBag },
+  { action: "Make a purchase", points: "+1 per Rs. 100", icon: ShoppingBag },
   { action: "Write a review", points: "+10 points", icon: MessageSquare },
   { action: "Refer a friend", points: "+25 points", icon: Users },
   { action: "Birthday bonus", points: "+50 points", icon: Gift },
@@ -23,20 +24,47 @@ const earnWays = [
 const Loyalty = () => {
   const [totalPoints, setTotalPoints] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetch = async () => {
+    const loadPoints = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
       setIsLoggedIn(true);
-      const { data } = await supabase.from("loyalty_points").select("points").eq("user_id", user.id);
-      if (data) setTotalPoints(data.reduce((s, r) => s + r.points, 0));
+      const { data } = await supabase
+        .from("loyalty_points")
+        .select("points")
+        .eq("user_id", user.id);
+      if (data) {
+        setTotalPoints(data.reduce((sum, r) => sum + r.points, 0));
+      }
+      setLoading(false);
     };
-    fetch();
+    loadPoints();
+
+    // Real-time updates
+    const channel = supabase
+      .channel("loyalty-updates")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "loyalty_points" }, (payload) => {
+        supabase.auth.getUser().then(({ data: { user } }) => {
+          if (user && (payload.new as any).user_id === user.id) {
+            setTotalPoints(prev => prev + (payload.new as any).points);
+          }
+        });
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, []);
 
   const currentTier = tiers.find(t => totalPoints >= t.min && totalPoints <= t.max) || tiers[0];
   const nextTier = tiers[tiers.indexOf(currentTier) + 1];
+  const progressPct = nextTier
+    ? Math.min(100, ((totalPoints - currentTier.min) / (nextTier.min - currentTier.min)) * 100)
+    : 100;
 
   return (
     <div className="min-h-screen">
@@ -55,16 +83,34 @@ const Loyalty = () => {
                 {currentTier.emoji}
               </motion.span>
               <h2 className="font-display text-2xl font-bold mb-1">{currentTier.name}</h2>
-              <p className="text-3xl font-display font-bold text-primary mb-4">{totalPoints} points</p>
-              {nextTier && (
+              {isLoggedIn ? (
                 <>
-                  <div className="w-full max-w-xs mx-auto h-3 rounded-full bg-muted overflow-hidden mb-2">
-                    <motion.div className="h-full rounded-full bg-primary" initial={{ width: 0 }} animate={{ width: `${((totalPoints - currentTier.min) / (nextTier.min - currentTier.min)) * 100}%` }} />
-                  </div>
-                  <p className="text-sm text-muted-foreground">{nextTier.min - totalPoints} points to {nextTier.name} {nextTier.emoji}</p>
+                  <p className="text-3xl font-display font-bold text-primary mb-4">{totalPoints} points</p>
+                  {nextTier && (
+                    <>
+                      <div className="w-full max-w-xs mx-auto h-3 rounded-full bg-muted overflow-hidden mb-2">
+                        <motion.div
+                          className="h-full rounded-full bg-primary"
+                          initial={{ width: 0 }}
+                          animate={{ width: `${progressPct}%` }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                        />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {nextTier.min - totalPoints} points to {nextTier.name} {nextTier.emoji}
+                      </p>
+                    </>
+                  )}
+                  {!nextTier && <p className="text-sm text-muted-foreground">You've reached the highest tier! 🎉</p>}
                 </>
+              ) : (
+                <div className="mt-4">
+                  <p className="text-sm text-muted-foreground mb-3">Login to track your loyalty points!</p>
+                  <Link to="/login" className="inline-flex px-6 py-2.5 rounded-3xl bg-primary text-primary-foreground text-sm font-semibold btn-squish">
+                    Login
+                  </Link>
+                </div>
               )}
-              {!isLoggedIn && <p className="mt-4 text-sm text-muted-foreground">Log in to track your loyalty points!</p>}
             </CardContent>
           </Card>
 

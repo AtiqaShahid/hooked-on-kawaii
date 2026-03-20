@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Minus, Plus, ShoppingBag, Trash2, Loader2, CheckCircle } from "lucide-react";
+import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { Link, useNavigate } from "react-router-dom";
+import { resolveImageUrl, handleImageError } from "@/lib/imageUtils";
 
 const EMOJI_MAP: Record<string, string> = {
   bouquets: "💐", keychains: "🔑", toys: "🧸", decor: "🌼",
@@ -14,62 +13,11 @@ const EMOJI_MAP: Record<string, string> = {
 
 const CartDrawer = () => {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalItems, totalPrice, clearCart } = useCart();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
+  const navigate = useNavigate();
 
-  const handleCheckout = async () => {
-    if (items.length === 0) return;
-    setIsCheckingOut(true);
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({ title: "Please log in", description: "You need to be logged in to place an order.", variant: "destructive" });
-        setIsCheckingOut(false);
-        return;
-      }
-
-      // Create order
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user.id,
-          total: totalPrice,
-          status: "pending",
-          tracking_stage: "received",
-        })
-        .select("id")
-        .single();
-
-      if (orderError) throw orderError;
-
-      // Create order items
-      const orderItems = items.map((item) => ({
-        order_id: order.id,
-        product_id: item.type === "product" ? item.id : null,
-        price: item.price,
-        quantity: item.quantity,
-        color: item.selectedColor || null,
-        customizations: item.type !== "product" ? { type: item.type, name: item.name, meta: item.meta } : null,
-      }));
-
-      const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-      if (itemsError) throw itemsError;
-
-      setOrderPlaced(true);
-      clearCart();
-      toast({ title: "Order placed! 🎉", description: `Order #${order.id.slice(0, 8)} has been created.` });
-
-      setTimeout(() => {
-        setOrderPlaced(false);
-        setIsOpen(false);
-      }, 3000);
-    } catch (err: any) {
-      console.error("Checkout failed:", err);
-      toast({ title: "Checkout failed", description: err.message || "Please try again.", variant: "destructive" });
-    } finally {
-      setIsCheckingOut(false);
-    }
+  const handleCheckout = () => {
+    setIsOpen(false);
+    navigate("/checkout");
   };
 
   return (
@@ -98,17 +46,7 @@ const CartDrawer = () => {
 
             {/* Items */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {orderPlaced ? (
-                <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center py-16">
-                  <CheckCircle size={64} className="mx-auto text-green-500 mb-4" />
-                  <p className="font-display text-xl font-bold mb-2">Order Placed!</p>
-                  <p className="text-sm text-muted-foreground">Thank you for your order 💕</p>
-                  <Link to="/orders" onClick={() => setIsOpen(false)}
-                    className="inline-block mt-4 px-6 py-2.5 rounded-3xl bg-primary text-primary-foreground text-sm font-semibold btn-squish">
-                    Track Order
-                  </Link>
-                </motion.div>
-              ) : items.length === 0 ? (
+              {items.length === 0 ? (
                 <div className="text-center py-12">
                   <span className="text-5xl block mb-4">🧶</span>
                   <p className="font-display font-semibold mb-2">Your cart is empty</p>
@@ -161,7 +99,7 @@ const CartDrawer = () => {
             </div>
 
             {/* Footer */}
-            {items.length > 0 && !orderPlaced && (
+            {items.length > 0 && (
               <div className="p-6 border-t border-border/50 space-y-4">
                 <div className="flex justify-between font-display">
                   <span className="font-semibold">Total</span>
@@ -169,10 +107,9 @@ const CartDrawer = () => {
                 </div>
                 <button
                   onClick={handleCheckout}
-                  disabled={isCheckingOut}
-                  className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                  className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2"
                 >
-                  {isCheckingOut ? <><Loader2 size={18} className="animate-spin" /> Processing...</> : <>Checkout 💕</>}
+                  Checkout 💕
                 </button>
                 <button onClick={clearCart} className="w-full py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Clear Cart

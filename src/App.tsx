@@ -54,6 +54,7 @@ import OccasionShop from "./pages/OccasionShop";
 import AllReviews from "./pages/AllReviews";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Checkout from "./pages/Checkout";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,7 @@ const App = () => (
               <Route path="/reviews" element={<AllReviews />} />
               <Route path="/login" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/checkout" element={<Checkout />} />
 
               {/* Admin */}
               <Route path="/admin/login" element={<AdminLogin />} />
