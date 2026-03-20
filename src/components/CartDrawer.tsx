@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Minus, Plus, ShoppingBag, Trash2, Loader2, CheckCircle } from "lucide-react";
+import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
-import { Link } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
+import { Link, useNavigate } from "react-router-dom";
+import { resolveImageUrl, handleImageError } from "@/lib/imageUtils";
 
 const EMOJI_MAP: Record<string, string> = {
   bouquets: "💐", keychains: "🔑", toys: "🧸", decor: "🌼",
