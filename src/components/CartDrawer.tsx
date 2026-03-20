@@ -109,7 +109,7 @@ const CartDrawer = () => {
             </div>
 
             {/* Footer */}
-            {items.length > 0 && !orderPlaced && (
+            {items.length > 0 && (
               <div className="p-6 border-t border-border/50 space-y-4">
                 <div className="flex justify-between font-display">
                   <span className="font-semibold">Total</span>
@@ -117,10 +117,9 @@ const CartDrawer = () => {
                 </div>
                 <button
                   onClick={handleCheckout}
-                  disabled={isCheckingOut}
-                  className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                  className="w-full py-4 rounded-3xl bg-primary text-primary-foreground font-display font-semibold shadow-glow btn-squish hover:shadow-float transition-all flex items-center justify-center gap-2"
                 >
-                  {isCheckingOut ? <><Loader2 size={18} className="animate-spin" /> Processing...</> : <>Checkout 💕</>}
+                  Checkout 💕
                 </button>
                 <button onClick={clearCart} className="w-full py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Clear Cart
