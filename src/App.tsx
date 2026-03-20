@@ -54,6 +54,7 @@ import OccasionShop from "./pages/OccasionShop";
 import AllReviews from "./pages/AllReviews";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Checkout from "./pages/Checkout";
 
 const queryClient = new QueryClient();
 
