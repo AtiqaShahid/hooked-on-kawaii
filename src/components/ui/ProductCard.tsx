@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import type { DbProduct } from "@/hooks/useSupabaseData";
+import { resolveImageUrl, handleImageError } from "@/lib/imageUtils";
 
 const badgeColors: Record<string, string> = {
   "Bestseller": "bg-pink text-primary-foreground",
