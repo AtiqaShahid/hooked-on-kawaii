@@ -55,18 +55,13 @@ const ProductCard = ({ product, index = 0 }: { product: DbProduct; index?: numbe
       <Link to={`/product/${product.id}`} className="block group">
         <div className="bg-card rounded-3xl overflow-hidden shadow-soft card-hover">
           <div className="relative aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
-            {product.image_url ? (
-              <img
-                src={product.image_url}
-                alt={product.name}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                loading="lazy"
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-60 group-hover:scale-110 transition-transform duration-500">
-                {categoryEmojis[catSlug] || "🧶"}
-              </div>
-            )}
+            <img
+              src={resolveImageUrl(product.image_url)}
+              alt={product.name}
+              onError={handleImageError}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              loading="lazy"
+            />
             <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
               {(product.badges || []).map((badge) => (
                 <span key={badge} className={`px-2.5 py-1 rounded-2xl text-xs font-semibold font-body ${badgeColors[badge] || "bg-muted text-foreground"}`}>

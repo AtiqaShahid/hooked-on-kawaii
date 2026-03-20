@@ -85,8 +85,13 @@ const ProductDetail = () => {
           </Link>
 
           <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
-            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="aspect-square rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-9xl shadow-soft">
-              {categoryEmojis[catSlug] || "🧶"}
+            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="aspect-square rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden shadow-soft">
+              <img
+                src={resolveImageUrl(product.image_url)}
+                alt={product.name}
+                onError={handleImageError}
+                className="w-full h-full object-cover"
+              />
             </motion.div>
 
             <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}>
