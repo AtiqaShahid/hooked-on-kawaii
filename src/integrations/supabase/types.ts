@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string | null
+          metadata: Json | null
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string | null
+          metadata?: Json | null
+          title: string
+          type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string | null
+          metadata?: Json | null
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           color: string | null
@@ -469,6 +499,27 @@ export type Database = {
           },
         ]
       }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_verified?: boolean
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           color: string | null
@@ -552,6 +603,53 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      payment_submissions: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_name: string
+          id: string
+          order_id: string | null
+          payment_method: string
+          screenshot_url: string | null
+          status: string
+          transaction_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          customer_name: string
+          id?: string
+          order_id?: string | null
+          payment_method?: string
+          screenshot_url?: string | null
+          status?: string
+          transaction_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_name?: string
+          id?: string
+          order_id?: string | null
+          payment_method?: string
+          screenshot_url?: string | null
+          status?: string
+          transaction_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_submissions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       product_analytics: {
         Row: {
