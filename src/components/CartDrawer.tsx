@@ -13,62 +13,11 @@ const EMOJI_MAP: Record<string, string> = {
 
 const CartDrawer = () => {
   const { items, isOpen, setIsOpen, removeItem, updateQuantity, totalItems, totalPrice, clearCart } = useCart();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
+  const navigate = useNavigate();
 
-  const handleCheckout = async () => {
-    if (items.length === 0) return;
-    setIsCheckingOut(true);
-
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        toast({ title: "Please log in", description: "You need to be logged in to place an order.", variant: "destructive" });
-        setIsCheckingOut(false);
-        return;
-      }
-
-      // Create order
-      const { data: order, error: orderError } = await supabase
-        .from("orders")
-        .insert({
-          user_id: user.id,
-          total: totalPrice,
-          status: "pending",
-          tracking_stage: "received",
-        })
-        .select("id")
-        .single();
-
-      if (orderError) throw orderError;
-
-      // Create order items
-      const orderItems = items.map((item) => ({
-        order_id: order.id,
-        product_id: item.type === "product" ? item.id : null,
-        price: item.price,
-        quantity: item.quantity,
-        color: item.selectedColor || null,
-        customizations: item.type !== "product" ? { type: item.type, name: item.name, meta: item.meta } : null,
-      }));
-
-      const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-      if (itemsError) throw itemsError;
-
-      setOrderPlaced(true);
-      clearCart();
-      toast({ title: "Order placed! 🎉", description: `Order #${order.id.slice(0, 8)} has been created.` });
-
-      setTimeout(() => {
-        setOrderPlaced(false);
-        setIsOpen(false);
-      }, 3000);
-    } catch (err: any) {
-      console.error("Checkout failed:", err);
-      toast({ title: "Checkout failed", description: err.message || "Please try again.", variant: "destructive" });
-    } finally {
-      setIsCheckingOut(false);
-    }
+  const handleCheckout = () => {
+    setIsOpen(false);
+    navigate("/checkout");
   };
 
   return (
