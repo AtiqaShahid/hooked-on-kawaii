@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Save, Plus, Trash2, Eye, EyeOff, Megaphone, Store, Truck, Mail, Percent, Image, Link, Type } from "lucide-react";
+import { Save, Plus, Trash2, Eye, EyeOff, Megaphone, Store, Truck, Mail, Percent, Image, Link, Type, CreditCard, Smartphone, Building2, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useStoreSettings, useUpdateSetting } from "@/hooks/useStoreSettings";
-import { Loader2 } from "lucide-react";
 
 const AdminSettings = () => {
   const { data: settings, isLoading } = useStoreSettings();

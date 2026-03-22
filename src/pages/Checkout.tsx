@@ -1,21 +1,36 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { CreditCard, Upload, CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Truck, CreditCard, Smartphone, Building2, Upload, Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 import { useCart } from "@/contexts/CartContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useStoreSetting } from "@/hooks/useStoreSettings";
+
+type PaymentMethod = "cod" | "jazzcash" | "card" | "bank_transfer";
+
+const PAYMENT_ICONS: Record<PaymentMethod, React.ReactNode> = {
+  cod: <Truck size={20} />,
+  jazzcash: <Smartphone size={20} />,
+  card: <CreditCard size={20} />,
+  bank_transfer: <Building2 size={20} />,
+};
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
+  const { data: paymentConfig, isLoading: loadingConfig } = useStoreSetting("payment_methods");
+
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | "">("");
   const [transactionId, setTransactionId] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -34,14 +49,29 @@ const Checkout = () => {
     );
   }
 
+  const enabledMethods = paymentConfig
+    ? (Object.entries(paymentConfig) as [PaymentMethod, any][]).filter(([, v]) => v.enabled)
+    : [];
+
+  const selectedConfig = paymentMethod ? paymentConfig?.[paymentMethod] : null;
+  const codAdvance = paymentConfig?.cod?.advance_amount || 500;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerName.trim() || !phone.trim() || !address.trim()) {
       toast({ title: "Please fill all fields", variant: "destructive" });
       return;
     }
-    if (!transactionId.trim()) {
-      toast({ title: "Please enter your JazzCash Transaction ID", variant: "destructive" });
+    if (!paymentMethod) {
+      toast({ title: "Please select a payment method", variant: "destructive" });
+      return;
+    }
+    if (paymentMethod === "jazzcash" && !transactionId.trim()) {
+      toast({ title: "Please enter your Transaction ID", variant: "destructive" });
+      return;
+    }
+    if (paymentMethod === "card" && selectedConfig?.coming_soon) {
+      toast({ title: "Card payments coming soon!", description: "Please choose another method." });
       return;
     }
 
@@ -49,18 +79,27 @@ const Checkout = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
-      // Create order
+      const paymentStatus = paymentMethod === "cod"
+        ? "awaiting_advance_confirmation"
+        : paymentMethod === "jazzcash"
+          ? "pending_verification"
+          : "pending";
+
       const { data: order, error: orderError } = await supabase.from("orders").insert({
         user_id: user?.id || null,
         total: totalPrice,
-        status: "pending",
+        status: paymentStatus,
         tracking_stage: "received",
         shipping_address: { name: customerName, phone, address } as any,
+        notes: JSON.stringify({
+          payment_method: paymentMethod,
+          advance_required: paymentMethod === "cod",
+          advance_amount: paymentMethod === "cod" ? codAdvance : 0,
+        }),
       }).select().single();
 
       if (orderError) throw orderError;
 
-      // Create order items
       const orderItems = items.map(item => ({
         order_id: order.id,
         product_id: item.type === "product" ? item.id : null,
@@ -71,33 +110,30 @@ const Checkout = () => {
       }));
       await supabase.from("order_items").insert(orderItems);
 
-      // Submit payment
-      await supabase.from("payment_submissions" as any).insert({
-        order_id: order.id,
-        user_id: user?.id || null,
-        customer_name: customerName,
-        amount: totalPrice,
-        transaction_id: transactionId,
-        payment_method: "jazzcash",
-      });
+      if (paymentMethod === "jazzcash" || paymentMethod === "cod") {
+        await supabase.from("payment_submissions").insert({
+          order_id: order.id,
+          user_id: user?.id || null,
+          customer_name: customerName,
+          amount: paymentMethod === "cod" ? codAdvance : totalPrice,
+          transaction_id: transactionId || null,
+          payment_method: paymentMethod,
+          status: "pending",
+        });
+      }
 
-      // Create admin notification
-      await supabase.from("admin_notifications" as any).insert({
+      await supabase.from("admin_notifications").insert({
         type: "payment",
-        title: "New Payment Received",
-        message: `${customerName} paid Rs. ${totalPrice.toLocaleString()} via JazzCash (TID: ${transactionId})`,
-        metadata: { order_id: order.id, amount: totalPrice, transaction_id: transactionId },
+        title: "New Order Received",
+        message: `${customerName} placed an order for Rs. ${totalPrice.toLocaleString()} via ${selectedConfig?.label || paymentMethod}`,
+        metadata: { order_id: order.id, amount: totalPrice, payment_method: paymentMethod } as any,
       });
 
-      // Award loyalty points if logged in
       if (user) {
         const points = Math.floor(totalPrice / 100);
         if (points > 0) {
           await supabase.from("loyalty_points").insert({
-            user_id: user.id,
-            points,
-            reason: "purchase",
-            order_id: order.id,
+            user_id: user.id, points, reason: "purchase", order_id: order.id,
           });
         }
       }
@@ -121,7 +157,9 @@ const Checkout = () => {
             <CheckCircle2 size={64} className="mx-auto text-green-500 mb-4" />
             <h1 className="font-display text-3xl font-bold mb-3">Order Placed! 🎉</h1>
             <p className="text-muted-foreground font-body mb-6">
-              We've received your payment details. Your order will be confirmed after verification.
+              {paymentMethod === "cod"
+                ? `Your order is confirmed! Please pay Rs. ${codAdvance} advance to finalize. We'll reach out with payment details.`
+                : "We've received your payment details. Your order will be confirmed after verification."}
             </p>
             <div className="flex gap-3 justify-center">
               <Button onClick={() => navigate("/orders")} className="rounded-3xl">Track Order</Button>
@@ -163,21 +201,57 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                {/* JazzCash Payment Info */}
-                <div className="mt-6 p-4 rounded-2xl bg-[#e31e25]/5 border border-[#e31e25]/20">
-                  <div className="flex items-center gap-2 mb-3">
-                    <CreditCard size={18} className="text-[#e31e25]" />
-                    <h3 className="font-display font-bold text-sm">Pay via JazzCash</h3>
-                  </div>
-                  <div className="space-y-1 text-sm font-body">
-                    <p><span className="text-muted-foreground">Account Name:</span> <strong>Atiqa Shahid</strong></p>
-                    <p><span className="text-muted-foreground">Number:</span> <strong>03091447191</strong></p>
-                    <p><span className="text-muted-foreground">Amount:</span> <strong>Rs. {totalPrice.toLocaleString()}</strong></p>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-3">
-                    Send payment to the above account and enter the Transaction ID below.
-                  </p>
+                {/* Payment Method Selection */}
+                <div className="mt-6">
+                  <h3 className="font-display font-semibold text-sm mb-3">Select Payment Method</h3>
+                  {loadingConfig ? (
+                    <div className="flex justify-center py-4"><Loader2 className="animate-spin text-primary" size={20} /></div>
+                  ) : (
+                    <RadioGroup value={paymentMethod} onValueChange={(v) => { setPaymentMethod(v as PaymentMethod); setTransactionId(""); }}>
+                      <div className="space-y-2">
+                        {enabledMethods.map(([key, config]) => (
+                          <label
+                            key={key}
+                            className={`flex items-center gap-3 p-3 rounded-2xl border cursor-pointer transition-all ${
+                              paymentMethod === key
+                                ? "border-primary bg-primary/5 ring-1 ring-primary/20"
+                                : "border-border/50 hover:border-primary/30"
+                            } ${config.coming_soon ? "opacity-60" : ""}`}
+                          >
+                            <RadioGroupItem value={key} id={key} />
+                            <span className="text-primary/70">{PAYMENT_ICONS[key]}</span>
+                            <div className="flex-1">
+                              <Label htmlFor={key} className="font-display font-semibold text-sm cursor-pointer">
+                                {config.label} {config.coming_soon && <span className="text-xs text-muted-foreground ml-1">(Coming Soon)</span>}
+                              </Label>
+                              <p className="text-xs text-muted-foreground">{config.description}</p>
+                            </div>
+                          </label>
+                        ))}
+                      </div>
+                    </RadioGroup>
+                  )}
                 </div>
+
+                {/* COD Info */}
+                {paymentMethod === "cod" && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-4 p-4 rounded-2xl bg-accent/50 border border-accent">
+                    <p className="text-sm font-body">
+                      <strong>Cash on Delivery selected.</strong> To confirm your order, a <strong>Rs. {codAdvance.toLocaleString()}</strong> advance payment is required. The remaining amount will be paid on delivery.
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">Our team will contact you with advance payment instructions after you place the order.</p>
+                  </motion.div>
+                )}
+
+                {/* JazzCash Info */}
+                {paymentMethod === "jazzcash" && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-4 p-4 rounded-2xl bg-accent/50 border border-accent">
+                    <p className="text-sm font-body">
+                      Please complete your payment and submit your <strong>Transaction ID</strong> below for verification.
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">Payment instructions will be shared after order placement. Our team will verify your payment promptly.</p>
+                  </motion.div>
+                )}
               </CardContent>
             </Card>
 
@@ -212,21 +286,36 @@ const Checkout = () => {
                     className="w-full p-3 rounded-2xl bg-card border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                   />
 
-                  <div className="border-t border-border/50 pt-4">
-                    <h3 className="font-display font-semibold text-sm mb-3">Payment Verification</h3>
-                    <input
-                      value={transactionId}
-                      onChange={e => setTransactionId(e.target.value)}
-                      placeholder="JazzCash Transaction ID"
-                      required
-                      maxLength={50}
-                      className="w-full p-3 rounded-2xl bg-card border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    />
-                  </div>
+                  {/* JazzCash Transaction ID */}
+                  {paymentMethod === "jazzcash" && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-border/50 pt-4">
+                      <h3 className="font-display font-semibold text-sm mb-3">Payment Verification</h3>
+                      <input
+                        value={transactionId}
+                        onChange={e => setTransactionId(e.target.value)}
+                        placeholder="Transaction ID"
+                        required
+                        maxLength={50}
+                        className="w-full p-3 rounded-2xl bg-card border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">Enter the transaction ID from your payment confirmation.</p>
+                    </motion.div>
+                  )}
+
+                  {/* Card coming soon */}
+                  {paymentMethod === "card" && selectedConfig?.coming_soon && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-border/50 pt-4">
+                      <div className="p-4 rounded-2xl bg-muted/50 text-center">
+                        <CreditCard size={32} className="mx-auto text-muted-foreground mb-2" />
+                        <p className="text-sm font-display font-semibold">Card Payments Coming Soon</p>
+                        <p className="text-xs text-muted-foreground mt-1">We're working on integrating secure card payments. Please use another method for now.</p>
+                      </div>
+                    </motion.div>
+                  )}
 
                   <Button
                     type="submit"
-                    disabled={submitting}
+                    disabled={submitting || !paymentMethod || (paymentMethod === "card" && selectedConfig?.coming_soon)}
                     className="w-full rounded-3xl py-6 text-base font-display font-semibold btn-squish"
                   >
                     {submitting ? "Placing Order..." : `Place Order — Rs. ${totalPrice.toLocaleString()}`}
