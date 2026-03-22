@@ -32,6 +32,7 @@ const AdminSettings = () => {
       setAnnouncements(settings.announcements || []);
       setPopup(settings.popup || {});
       setSaleBanner(settings.sale_banner || {});
+      setPaymentMethods(settings.payment_methods || {});
     }
   }, [settings]);
 
