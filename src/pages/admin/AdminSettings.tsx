@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Save, Plus, Trash2, Eye, EyeOff, Megaphone, Store, Truck, Mail, Percent, Image, Link, Type } from "lucide-react";
+import { Save, Plus, Trash2, Eye, EyeOff, Megaphone, Store, Truck, Mail, Percent, Image, Link, Type, CreditCard, Smartphone, Building2, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useStoreSettings, useUpdateSetting } from "@/hooks/useStoreSettings";
-import { Loader2 } from "lucide-react";
 
 const AdminSettings = () => {
   const { data: settings, isLoading } = useStoreSettings();
@@ -23,6 +22,8 @@ const AdminSettings = () => {
   const [popup, setPopup] = useState<any>({});
   // Sale Banner
   const [saleBanner, setSaleBanner] = useState<any>({});
+  // Payment Methods
+  const [paymentMethods, setPaymentMethods] = useState<any>({});
 
   useEffect(() => {
     if (settings) {
@@ -31,6 +32,7 @@ const AdminSettings = () => {
       setAnnouncements(settings.announcements || []);
       setPopup(settings.popup || {});
       setSaleBanner(settings.sale_banner || {});
+      setPaymentMethods(settings.payment_methods || {});
     }
   }, [settings]);
 
@@ -203,6 +205,105 @@ const AdminSettings = () => {
             </div>
             <Button onClick={() => saveSection("sale_banner", saleBanner)} disabled={updateSetting.isPending} className="rounded-xl w-full">
               <Save size={14} className="mr-1" /> Save Sale Banner
+            </Button>
+          </CardContent>
+        </Card>
+        {/* Payment Methods Settings */}
+        <Card className="rounded-2xl border-border/30 lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="font-display flex items-center gap-2 text-base"><CreditCard size={18} /> Payment Methods</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-xs text-muted-foreground">Configure which payment methods are available at checkout and their details. Private details (account numbers) are only visible here in admin.</p>
+
+            {/* COD */}
+            <div className="p-4 rounded-xl border border-border/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Truck size={16} className="text-primary/70" />
+                  <span className="text-sm font-semibold font-display">Cash on Delivery</span>
+                </div>
+                <Switch checked={paymentMethods.cod?.enabled || false} onCheckedChange={(v) => setPaymentMethods({ ...paymentMethods, cod: { ...paymentMethods.cod, enabled: v } })} />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Advance Amount (Rs.)</label>
+                <Input type="number" value={paymentMethods.cod?.advance_amount || 500} onChange={(e) => setPaymentMethods({ ...paymentMethods, cod: { ...paymentMethods.cod, advance_amount: parseInt(e.target.value) || 0 } })} className="rounded-xl" />
+              </div>
+            </div>
+
+            {/* JazzCash */}
+            <div className="p-4 rounded-xl border border-border/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Smartphone size={16} className="text-primary/70" />
+                  <span className="text-sm font-semibold font-display">JazzCash / Mobile Wallet</span>
+                </div>
+                <Switch checked={paymentMethods.jazzcash?.enabled || false} onCheckedChange={(v) => setPaymentMethods({ ...paymentMethods, jazzcash: { ...paymentMethods.jazzcash, enabled: v } })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Account Name</label>
+                  <Input value={paymentMethods.jazzcash?.account_name || ""} onChange={(e) => setPaymentMethods({ ...paymentMethods, jazzcash: { ...paymentMethods.jazzcash, account_name: e.target.value } })} className="rounded-xl" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Account Number</label>
+                  <Input value={paymentMethods.jazzcash?.account_number || ""} onChange={(e) => setPaymentMethods({ ...paymentMethods, jazzcash: { ...paymentMethods.jazzcash, account_number: e.target.value } })} className="rounded-xl" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Payment Instructions (shown to customer after order)</label>
+                <textarea value={paymentMethods.jazzcash?.instructions || ""} onChange={(e) => setPaymentMethods({ ...paymentMethods, jazzcash: { ...paymentMethods.jazzcash, instructions: e.target.value } })} className="w-full rounded-xl border border-border/50 p-3 text-sm min-h-[60px] bg-background" />
+              </div>
+            </div>
+
+            {/* Card */}
+            <div className="p-4 rounded-xl border border-border/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CreditCard size={16} className="text-primary/70" />
+                  <span className="text-sm font-semibold font-display">Card Payment</span>
+                </div>
+                <Switch checked={paymentMethods.card?.enabled || false} onCheckedChange={(v) => setPaymentMethods({ ...paymentMethods, card: { ...paymentMethods.card, enabled: v } })} />
+              </div>
+              <div className="flex items-center gap-2">
+                <Switch checked={paymentMethods.card?.coming_soon || false} onCheckedChange={(v) => setPaymentMethods({ ...paymentMethods, card: { ...paymentMethods.card, coming_soon: v } })} />
+                <span className="text-xs text-muted-foreground">Show "Coming Soon" badge</span>
+              </div>
+            </div>
+
+            {/* Bank Transfer */}
+            <div className="p-4 rounded-xl border border-border/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Building2 size={16} className="text-primary/70" />
+                  <span className="text-sm font-semibold font-display">Bank Transfer</span>
+                </div>
+                <Switch checked={paymentMethods.bank_transfer?.enabled || false} onCheckedChange={(v) => setPaymentMethods({ ...paymentMethods, bank_transfer: { ...paymentMethods.bank_transfer, enabled: v } })} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Bank Name</label>
+                  <Input value={paymentMethods.bank_transfer?.bank_name || ""} onChange={(e) => setPaymentMethods({ ...paymentMethods, bank_transfer: { ...paymentMethods.bank_transfer, bank_name: e.target.value } })} className="rounded-xl" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Account Title</label>
+                  <Input value={paymentMethods.bank_transfer?.account_title || ""} onChange={(e) => setPaymentMethods({ ...paymentMethods, bank_transfer: { ...paymentMethods.bank_transfer, account_title: e.target.value } })} className="rounded-xl" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Account Number</label>
+                  <Input value={paymentMethods.bank_transfer?.account_number || ""} onChange={(e) => setPaymentMethods({ ...paymentMethods, bank_transfer: { ...paymentMethods.bank_transfer, account_number: e.target.value } })} className="rounded-xl" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">IBAN</label>
+                  <Input value={paymentMethods.bank_transfer?.iban || ""} onChange={(e) => setPaymentMethods({ ...paymentMethods, bank_transfer: { ...paymentMethods.bank_transfer, iban: e.target.value } })} className="rounded-xl" />
+                </div>
+              </div>
+            </div>
+
+            <Button onClick={() => saveSection("payment_methods", paymentMethods)} disabled={updateSetting.isPending} className="rounded-xl w-full">
+              <Save size={14} className="mr-1" /> Save Payment Settings
             </Button>
           </CardContent>
         </Card>
