@@ -22,6 +22,8 @@ const AdminSettings = () => {
   const [popup, setPopup] = useState<any>({});
   // Sale Banner
   const [saleBanner, setSaleBanner] = useState<any>({});
+  // Payment Methods
+  const [paymentMethods, setPaymentMethods] = useState<any>({});
 
   useEffect(() => {
     if (settings) {
