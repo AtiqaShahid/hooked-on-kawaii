@@ -104,12 +104,18 @@ const ProductDetail = () => {
               <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">{product.name}</h1>
 
               <div className="flex items-center gap-3 mb-4">
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={16} className={i < Math.floor(product.rating) ? "fill-peach text-peach" : "text-border"} />
-                  ))}
-                </div>
-                <span className="text-sm text-muted-foreground">{product.rating} ({product.review_count} reviews)</span>
+                {product.review_count > 0 ? (
+                  <>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={16} className={i < Math.floor(product.rating) ? "fill-peach text-peach" : "text-border"} />
+                      ))}
+                    </div>
+                    <span className="text-sm text-muted-foreground">{product.rating} ({product.review_count} reviews)</span>
+                  </>
+                ) : (
+                  <span className="text-sm text-muted-foreground/70 italic">No reviews yet — be the first to rate this product ✨</span>
+                )}
               </div>
 
               <div className="flex items-baseline gap-3 mb-6">

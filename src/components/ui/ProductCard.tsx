@@ -92,10 +92,18 @@ const ProductCard = ({ product, index = 0 }: { product: DbProduct; index?: numbe
               {product.name}
             </h3>
             <div className="flex items-center gap-1 mb-2">
-              <Star size={12} className="fill-peach text-peach" />
-              <span className="text-xs text-muted-foreground font-medium">
-                {product.rating} ({product.review_count})
-              </span>
+              {product.review_count > 0 ? (
+                <>
+                  <Star size={12} className="fill-peach text-peach" />
+                  <span className="text-xs text-muted-foreground font-medium">
+                    {product.rating} ({product.review_count})
+                  </span>
+                </>
+              ) : (
+                <span className="text-xs text-muted-foreground/60 font-medium italic">
+                  Be the first to rate ✨
+                </span>
+              )}
             </div>
             <div className="flex gap-1 mb-3">
               {(product.colors || []).slice(0, 4).map((color) => (
