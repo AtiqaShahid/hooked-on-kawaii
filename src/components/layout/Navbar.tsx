@@ -155,11 +155,11 @@ const Navbar = () => {
                 </span>
               </button>
               <Link
-                to="/custom-builder"
+                to="/login"
                 className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
               >
-                <Sparkles size={16} />
-                Custom Order
+                <User size={16} />
+                Account
               </Link>
               <button
                 onClick={() => setIsOpen(!isOpen)}
