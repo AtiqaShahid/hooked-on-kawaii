@@ -87,7 +87,45 @@ const AdminDashboard = () => {
     },
   });
 
+  const { data: designRequests = [] } = useQuery({
+    queryKey: ["admin-design-requests-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("design_requests").select("*").order("votes_count", { ascending: false });
+      return data || [];
+    },
+  });
 
+  const { data: designVotes = [] } = useQuery({
+    queryKey: ["admin-design-votes-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("design_votes").select("id", { count: "exact", head: true });
+      return data || [];
+    },
+  });
+
+  const { data: communityPosts = [] } = useQuery({
+    queryKey: ["admin-community-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("community_posts").select("id, is_approved");
+      return data || [];
+    },
+  });
+
+  const { data: galleryImages = [] } = useQuery({
+    queryKey: ["admin-gallery-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("gallery_images").select("id");
+      return data || [];
+    },
+  });
+
+  const { data: learningResources = [] } = useQuery({
+    queryKey: ["admin-learning-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("learning_resources").select("id");
+      return data || [];
+    },
+  });
   // ── MOCK DATA (shown until real data arrives) ──
   const hasRealOrders = allOrders.length > 0;
   const hasRealProfiles = profiles.length > 0;
