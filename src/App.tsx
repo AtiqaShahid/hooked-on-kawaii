@@ -44,6 +44,9 @@ import AdminStories from "./pages/admin/AdminStories";
 import AdminAIInsights from "./pages/admin/AdminAIInsights";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import AdminSettings from "./pages/admin/AdminSettings";
+import AdminLearning from "./pages/admin/AdminLearning";
+import AdminLoyalty from "./pages/admin/AdminLoyalty";
+import AdminDesignVotes from "./pages/admin/AdminDesignVotes";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import ReturnPolicy from "./pages/ReturnPolicy";
@@ -116,6 +119,9 @@ const App = () => (
                 <Route path="community" element={<AdminCommunity />} />
                 <Route path="collections" element={<AdminCollections />} />
                 <Route path="stories" element={<AdminStories />} />
+                <Route path="learning" element={<AdminLearning />} />
+                <Route path="loyalty" element={<AdminLoyalty />} />
+                <Route path="design-votes" element={<AdminDesignVotes />} />
                 <Route path="ai-insights" element={<AdminAIInsights />} />
                 <Route path="analytics" element={<AdminAnalytics />} />
                 <Route path="settings" element={<AdminSettings />} />

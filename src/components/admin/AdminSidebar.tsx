@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { NavLink } from "@/components/NavLink";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Palette, Gift, CreditCard,
-  Star, Image, BookOpen, Sparkles, Settings, Layers, MessageSquare, BarChart3, Scissors
+  Star, Image, BookOpen, Sparkles, Settings, Layers, MessageSquare, BarChart3, Scissors, GraduationCap, Award, Vote
 } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
@@ -28,9 +28,12 @@ const contentNav = [
   { title: "Collections", url: "/admin/collections", icon: Layers },
   { title: "Craft Stories", url: "/admin/stories", icon: BookOpen },
   { title: "Community", url: "/admin/community", icon: MessageSquare },
+  { title: "Learn Crochet", url: "/admin/learning", icon: GraduationCap },
+  { title: "Design Votes", url: "/admin/design-votes", icon: Vote },
 ];
 
 const toolsNav = [
+  { title: "Loyalty", url: "/admin/loyalty", icon: Award },
   { title: "AI Insights", url: "/admin/ai-insights", icon: Sparkles },
   { title: "Analytics", url: "/admin/analytics", icon: BarChart3 },
   { title: "Settings", url: "/admin/settings", icon: Settings },
@@ -72,7 +75,7 @@ const AdminSidebar = () => {
         {renderGroup("Main", mainNav)}
         {renderGroup("Special Orders", specialOrders)}
         {renderGroup("Content", contentNav)}
-        {renderGroup("Tools", toolsNav)}
+        {renderGroup("Tools & Reports", toolsNav)}
       </SidebarContent>
     </Sidebar>
   );
