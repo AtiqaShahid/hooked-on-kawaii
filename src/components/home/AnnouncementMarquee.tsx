@@ -8,8 +8,12 @@ const fallbackMessages = [
 ];
 
 const AnnouncementMarquee = () => {
-  const { data: announcements } = useStoreSetting("announcements");
-  const messages = (Array.isArray(announcements) && announcements.length > 0) ? announcements : fallbackMessages;
+  const { data: announcements, isLoading } = useStoreSetting("announcements");
+  
+  // Only use fallback if DB returned nothing (not while loading)
+  const messages = (!isLoading && Array.isArray(announcements) && announcements.length > 0)
+    ? announcements
+    : (isLoading ? fallbackMessages : (Array.isArray(announcements) && announcements.length === 0 ? fallbackMessages : fallbackMessages));
 
   return (
     <div className="overflow-hidden bg-primary/40 py-2.5">

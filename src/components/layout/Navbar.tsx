@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Heart, Search, Menu, X, Sparkles, ChevronDown } from "lucide-react";
+import { ShoppingBag, Heart, Search, Menu, X, Sparkles, ChevronDown, User } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import SearchDialog from "@/components/SearchDialog";
@@ -155,11 +155,11 @@ const Navbar = () => {
                 </span>
               </button>
               <Link
-                to="/custom-builder"
+                to="/login"
                 className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
               >
-                <Sparkles size={16} />
-                Custom Order
+                <User size={16} />
+                Account
               </Link>
               <button
                 onClick={() => setIsOpen(!isOpen)}
@@ -217,6 +217,7 @@ const Navbar = () => {
                 { path: "/surprise-box", label: "🎁 Mystery Box" },
                 { path: "/about", label: "💕 About" },
                 { path: "/contact", label: "💌 Contact" },
+                { path: "/login", label: "👤 Account / Login" },
               ].map((link, i) => (
                 <motion.div key={link.path} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: (i + 12) * 0.03 }}>
                   <Link to={link.path} onClick={() => setIsOpen(false)} className={`block px-4 py-3 rounded-2xl text-sm font-medium font-body transition-all ${location.pathname === link.path ? "bg-primary text-primary-foreground" : "text-foreground/70 hover:bg-primary/30"}`}>

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Package, ShoppingCart, Users, DollarSign, TrendingUp, Star, CreditCard, Palette, AlertTriangle, ArrowUpRight, ArrowDownRight, Filter, Plus, Settings, Percent, Image, Layers } from "lucide-react";
+import { Package, ShoppingCart, Users, DollarSign, TrendingUp, Star, CreditCard, Palette, AlertTriangle, ArrowUpRight, ArrowDownRight, Filter, Plus, Settings, Percent, Image, Layers, Megaphone, BookOpen, Award, Vote, MessageSquare } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -87,7 +87,45 @@ const AdminDashboard = () => {
     },
   });
 
+  const { data: designRequests = [] } = useQuery({
+    queryKey: ["admin-design-requests-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("design_requests").select("*").order("votes_count", { ascending: false });
+      return data || [];
+    },
+  });
 
+  const { data: designVotes = [] } = useQuery({
+    queryKey: ["admin-design-votes-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("design_votes").select("id", { count: "exact", head: true });
+      return data || [];
+    },
+  });
+
+  const { data: communityPosts = [] } = useQuery({
+    queryKey: ["admin-community-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("community_posts").select("id, is_approved");
+      return data || [];
+    },
+  });
+
+  const { data: galleryImages = [] } = useQuery({
+    queryKey: ["admin-gallery-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("gallery_images").select("id");
+      return data || [];
+    },
+  });
+
+  const { data: learningResources = [] } = useQuery({
+    queryKey: ["admin-learning-dash"],
+    queryFn: async () => {
+      const { data } = await supabase.from("learning_resources").select("id");
+      return data || [];
+    },
+  });
   // ── MOCK DATA (shown until real data arrives) ──
   const hasRealOrders = allOrders.length > 0;
   const hasRealProfiles = profiles.length > 0;
@@ -378,6 +416,44 @@ const AdminDashboard = () => {
         </Card>
       )}
 
+      {/* Additional Business Summary */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        {[
+          { label: "Design Votes", value: designRequests.reduce((s: number, r: any) => s + (r.votes_count || 0), 0), icon: Vote, color: "bg-secondary/30" },
+          { label: "Design Requests", value: designRequests.length, icon: Palette, color: "bg-primary/20" },
+          { label: "Community Posts", value: communityPosts.length, icon: MessageSquare, color: "bg-accent/20" },
+          { label: "Pending Moderation", value: communityPosts.filter((p: any) => !p.is_approved).length, icon: AlertTriangle, color: "bg-destructive/10" },
+          { label: "Gallery Items", value: galleryImages.length, icon: Image, color: "bg-secondary/20" },
+          { label: "Learning Resources", value: learningResources.length, icon: BookOpen, color: "bg-primary/30" },
+        ].map((item) => (
+          <Card key={item.label} className="rounded-2xl border-border/30">
+            <CardContent className="p-3">
+              <div className={`w-7 h-7 rounded-lg ${item.color} flex items-center justify-center mb-1`}>
+                <item.icon size={14} />
+              </div>
+              <p className="text-lg font-display font-bold">{item.value}</p>
+              <p className="text-[10px] text-muted-foreground">{item.label}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Most Voted Design */}
+      {designRequests.length > 0 && (
+        <Card className="rounded-2xl border-border/30 bg-secondary/5">
+          <CardContent className="p-4 flex items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+              <TrendingUp size={18} />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">🏆 Most Requested Design</p>
+              <p className="font-display font-bold">{designRequests[0]?.title}</p>
+              <p className="text-xs text-primary">{designRequests[0]?.votes_count || 0} votes</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Profit Summary */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
@@ -394,8 +470,6 @@ const AdminDashboard = () => {
           </Card>
         ))}
       </div>
-
-      {/* Charts Row 1: Sales + Revenue */}
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="rounded-2xl border-border/30">
           <CardHeader><CardTitle className="font-display text-base">Sales Over Time</CardTitle></CardHeader>
