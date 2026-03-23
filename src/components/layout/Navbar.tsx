@@ -217,6 +217,7 @@ const Navbar = () => {
                 { path: "/surprise-box", label: "🎁 Mystery Box" },
                 { path: "/about", label: "💕 About" },
                 { path: "/contact", label: "💌 Contact" },
+                { path: "/login", label: "👤 Account / Login" },
               ].map((link, i) => (
                 <motion.div key={link.path} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: (i + 12) * 0.03 }}>
                   <Link to={link.path} onClick={() => setIsOpen(false)} className={`block px-4 py-3 rounded-2xl text-sm font-medium font-body transition-all ${location.pathname === link.path ? "bg-primary text-primary-foreground" : "text-foreground/70 hover:bg-primary/30"}`}>
