@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Heart, Search, Menu, X, Sparkles, ChevronDown, User } from "lucide-react";
+import { ShoppingBag, Heart, Search, Menu, X, Sparkles, ChevronDown, User, LogOut } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useAuth } from "@/hooks/useAuth";
 import SearchDialog from "@/components/SearchDialog";
 import WishlistDrawer from "@/components/WishlistDrawer";
 
@@ -75,8 +76,10 @@ const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { totalItems, setIsOpen: setCartOpen } = useCart();
   const { wishlist } = useWishlist();
+  const { user, signOut } = useAuth();
 
   const createPaths = createLinks.map(l => l.path);
   const explorePaths = exploreLinks.map(l => l.path);
@@ -154,13 +157,32 @@ const Navbar = () => {
                   {totalItems}
                 </span>
               </button>
-              <Link
-                to="/login"
-                className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
-              >
-                <User size={16} />
-                Account
-              </Link>
+              {user ? (
+                <div className="hidden sm:flex items-center gap-1">
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
+                  >
+                    <User size={16} />
+                    My Account
+                  </Link>
+                  <button
+                    onClick={async () => { await signOut(); navigate("/"); }}
+                    className="p-2 rounded-2xl text-foreground/60 hover:text-destructive transition-all btn-squish"
+                    title="Logout"
+                  >
+                    <LogOut size={18} />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
+                >
+                  <User size={16} />
+                  Login
+                </Link>
+              )}
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="p-2 rounded-2xl lg:hidden text-foreground/60 hover:text-foreground btn-squish"
@@ -217,7 +239,10 @@ const Navbar = () => {
                 { path: "/surprise-box", label: "🎁 Mystery Box" },
                 { path: "/about", label: "💕 About" },
                 { path: "/contact", label: "💌 Contact" },
-                { path: "/login", label: "👤 Account / Login" },
+                ...(user
+                  ? [{ path: "/dashboard", label: "👤 My Account" }]
+                  : [{ path: "/login", label: "👤 Login / Sign Up" }]
+                ),
               ].map((link, i) => (
                 <motion.div key={link.path} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: (i + 12) * 0.03 }}>
                   <Link to={link.path} onClick={() => setIsOpen(false)} className={`block px-4 py-3 rounded-2xl text-sm font-medium font-body transition-all ${location.pathname === link.path ? "bg-primary text-primary-foreground" : "text-foreground/70 hover:bg-primary/30"}`}>
@@ -225,6 +250,16 @@ const Navbar = () => {
                   </Link>
                 </motion.div>
               ))}
+              {user && (
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
+                  <button
+                    onClick={async () => { await signOut(); setIsOpen(false); navigate("/"); }}
+                    className="block w-full text-left px-4 py-3 rounded-2xl text-sm font-medium font-body text-destructive/70 hover:bg-destructive/10 transition-all"
+                  >
+                    🚪 Logout
+                  </button>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         )}
