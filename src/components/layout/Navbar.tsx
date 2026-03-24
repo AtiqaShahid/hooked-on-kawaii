@@ -157,13 +157,32 @@ const Navbar = () => {
                   {totalItems}
                 </span>
               </button>
-              <Link
-                to="/login"
-                className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
-              >
-                <User size={16} />
-                Account
-              </Link>
+              {user ? (
+                <div className="hidden sm:flex items-center gap-1">
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
+                  >
+                    <User size={16} />
+                    My Account
+                  </Link>
+                  <button
+                    onClick={async () => { await signOut(); navigate("/"); }}
+                    className="p-2 rounded-2xl text-foreground/60 hover:text-destructive transition-all btn-squish"
+                    title="Logout"
+                  >
+                    <LogOut size={18} />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  to="/login"
+                  className="hidden sm:flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
+                >
+                  <User size={16} />
+                  Login
+                </Link>
+              )}
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="p-2 rounded-2xl lg:hidden text-foreground/60 hover:text-foreground btn-squish"
