@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingBag, Heart, Search, Menu, X, Sparkles, ChevronDown, User } from "lucide-react";
+import { ShoppingBag, Heart, Search, Menu, X, Sparkles, ChevronDown, User, LogOut } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
+import { useAuth } from "@/hooks/useAuth";
 import SearchDialog from "@/components/SearchDialog";
 import WishlistDrawer from "@/components/WishlistDrawer";
 
