@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus, Pencil, Trash2, Search, Loader2, Percent } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,12 +15,13 @@ const AdminProducts = () => {
   const [search, setSearch] = useState("");
   const [editProduct, setEditProduct] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
   const [form, setForm] = useState({ name: "", slug: "", price: "", original_price: "", description: "", category_id: "", image_url: "", stock_quantity: "100", is_featured: false, badges: "" as string, colors: "" as string });
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["admin-products"],
     queryFn: async () => {
-      const { data } = await supabase.from("products").select("*, category:categories(name, emoji)").order("created_at", { ascending: false });
+      const { data } = await supabase.from("products").select("*, category:categories(name, emoji)").eq("is_active", true).order("created_at", { ascending: false });
       return data || [];
     },
   });
@@ -48,7 +49,6 @@ const AdminProducts = () => {
         badges: product.badges ? product.badges.split(",").map((b: string) => b.trim()) : [],
         colors: product.colors ? product.colors.split(",").map((c: string) => c.trim()) : [],
       };
-
       if (editProduct) {
         const { error } = await supabase.from("products").update(payload).eq("id", editProduct.id);
         if (error) throw error;
@@ -59,6 +59,7 @@ const AdminProducts = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
       setShowForm(false);
       setEditProduct(null);
       resetForm();
@@ -67,16 +68,22 @@ const AdminProducts = () => {
     onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
   });
 
+  // Soft-delete: set is_active = false so it disappears from storefront + admin
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("products").delete().eq("id", id);
+      const { error } = await supabase.from("products").update({ is_active: false }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
-      toast({ title: "Product deleted" });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      setDeleteTarget(null);
+      toast({ title: "Product deleted successfully 🗑️" });
     },
-    onError: (e: any) => toast({ title: "Error", description: e.message, variant: "destructive" }),
+    onError: (e: any) => {
+      setDeleteTarget(null);
+      toast({ title: "Error deleting product", description: e.message, variant: "destructive" });
+    },
   });
 
   const toggleSaleMutation = useMutation({
@@ -85,11 +92,9 @@ const AdminProducts = () => {
       let newBadges: string[];
       let newOriginalPrice: number | null;
       if (isOnSale) {
-        // Remove sale
         newBadges = (badges || []).filter((b: string) => b !== "Sale");
         newOriginalPrice = null;
       } else {
-        // Put on sale — set original_price to current price, reduce price by 15%
         newBadges = [...(badges || []), "Sale"];
         newOriginalPrice = price;
       }
@@ -180,6 +185,30 @@ const AdminProducts = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="max-w-sm rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="font-display">Delete Product?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete <strong>{deleteTarget?.name}</strong>? It will be removed from the shop and all storefront sections.
+          </p>
+          <div className="flex gap-3 mt-4">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} className="rounded-xl flex-1">Cancel</Button>
+            <Button
+              variant="destructive"
+              onClick={() => deleteMutation.mutate(deleteTarget.id)}
+              disabled={deleteMutation.isPending}
+              className="rounded-xl flex-1"
+            >
+              {deleteMutation.isPending ? <Loader2 className="animate-spin mr-1" size={14} /> : <Trash2 size={14} className="mr-1" />}
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Products Table */}
       <Card className="rounded-2xl border-border/30">
         <CardContent className="p-0">
@@ -224,7 +253,7 @@ const AdminProducts = () => {
                         >
                           <Percent size={14} />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => { if (confirm("Delete this product?")) deleteMutation.mutate(p.id); }} className="rounded-lg text-destructive hover:text-destructive" title="Delete"><Trash2 size={14} /></Button>
+                        <Button variant="ghost" size="sm" onClick={() => setDeleteTarget(p)} className="rounded-lg text-destructive hover:text-destructive" title="Delete"><Trash2 size={14} /></Button>
                       </div>
                     </td>
                   </tr>

@@ -6,12 +6,13 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import { useStoreSetting } from "@/hooks/useStoreSettings";
 
-const tiers = [
+const defaultTiers = [
   { name: "Yarn Starter", min: 0, max: 99, emoji: "🧶", perks: ["5% off next order"] },
   { name: "Stitch Lover", min: 100, max: 299, emoji: "💕", perks: ["10% off", "Free keychain"] },
   { name: "Crochet VIP", min: 300, max: 599, emoji: "✨", perks: ["15% off", "Free mystery item", "Early access to drops"] },
-  { name: "Hook Master", min: 600, max: Infinity, emoji: "👑", perks: ["20% off", "Free surprise box", "Early access", "Exclusive designs"] },
+  { name: "Hook Master", min: 600, max: 999999, emoji: "👑", perks: ["20% off", "Free surprise box", "Early access", "Exclusive designs"] },
 ];
 
 const earnWays = [
@@ -25,27 +26,23 @@ const Loyalty = () => {
   const [totalPoints, setTotalPoints] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { data: savedTiers } = useStoreSetting("loyalty_tiers");
+
+  const tiers = (savedTiers && Array.isArray(savedTiers) && savedTiers.length > 0)
+    ? (savedTiers as typeof defaultTiers)
+    : defaultTiers;
 
   useEffect(() => {
     const loadPoints = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
-      }
+      if (!user) { setLoading(false); return; }
       setIsLoggedIn(true);
-      const { data } = await supabase
-        .from("loyalty_points")
-        .select("points")
-        .eq("user_id", user.id);
-      if (data) {
-        setTotalPoints(data.reduce((sum, r) => sum + r.points, 0));
-      }
+      const { data } = await supabase.from("loyalty_points").select("points").eq("user_id", user.id);
+      if (data) setTotalPoints(data.reduce((sum, r) => sum + r.points, 0));
       setLoading(false);
     };
     loadPoints();
 
-    // Real-time updates
     const channel = supabase
       .channel("loyalty-updates")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "loyalty_points" }, (payload) => {
@@ -56,7 +53,6 @@ const Loyalty = () => {
         });
       })
       .subscribe();
-
     return () => { supabase.removeChannel(channel); };
   }, []);
 
@@ -76,7 +72,6 @@ const Loyalty = () => {
             <p className="text-muted-foreground font-body max-w-lg mx-auto">Earn points with every purchase, review, and referral. Unlock exclusive perks!</p>
           </motion.div>
 
-          {/* Current status */}
           <Card className="rounded-3xl border-border/50 mb-8">
             <CardContent className="p-8 text-center">
               <motion.span className="text-5xl block mb-3" animate={{ scale: [1, 1.15, 1] }} transition={{ duration: 2, repeat: Infinity }}>
@@ -89,16 +84,9 @@ const Loyalty = () => {
                   {nextTier && (
                     <>
                       <div className="w-full max-w-xs mx-auto h-3 rounded-full bg-muted overflow-hidden mb-2">
-                        <motion.div
-                          className="h-full rounded-full bg-primary"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progressPct}%` }}
-                          transition={{ duration: 1, ease: "easeOut" }}
-                        />
+                        <motion.div className="h-full rounded-full bg-primary" initial={{ width: 0 }} animate={{ width: `${progressPct}%` }} transition={{ duration: 1, ease: "easeOut" }} />
                       </div>
-                      <p className="text-sm text-muted-foreground">
-                        {nextTier.min - totalPoints} points to {nextTier.name} {nextTier.emoji}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{nextTier.min - totalPoints} points to {nextTier.name} {nextTier.emoji}</p>
                     </>
                   )}
                   {!nextTier && <p className="text-sm text-muted-foreground">You've reached the highest tier! 🎉</p>}
@@ -106,24 +94,19 @@ const Loyalty = () => {
               ) : (
                 <div className="mt-4">
                   <p className="text-sm text-muted-foreground mb-3">Login to track your loyalty points!</p>
-                  <Link to="/login" className="inline-flex px-6 py-2.5 rounded-3xl bg-primary text-primary-foreground text-sm font-semibold btn-squish">
-                    Login
-                  </Link>
+                  <Link to="/login" className="inline-flex px-6 py-2.5 rounded-3xl bg-primary text-primary-foreground text-sm font-semibold btn-squish">Login</Link>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* How to earn */}
           <h3 className="font-display text-xl font-bold mb-4 text-center">How to Earn Points</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
             {earnWays.map((w, i) => (
               <motion.div key={w.action} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
                 <Card className="rounded-3xl border-border/50 card-hover text-center">
                   <CardContent className="p-5">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-3">
-                      <w.icon size={22} />
-                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-3"><w.icon size={22} /></div>
                     <p className="font-display font-semibold text-sm mb-1">{w.action}</p>
                     <p className="text-xs text-muted-foreground">{w.points}</p>
                   </CardContent>
@@ -132,7 +115,6 @@ const Loyalty = () => {
             ))}
           </div>
 
-          {/* Tiers */}
           <h3 className="font-display text-xl font-bold mb-4 text-center">Reward Tiers</h3>
           <div className="grid md:grid-cols-4 gap-4">
             {tiers.map((tier, i) => (
@@ -143,9 +125,7 @@ const Loyalty = () => {
                     <h4 className="font-display font-bold text-sm mb-1">{tier.name}</h4>
                     <p className="text-xs text-muted-foreground mb-3">{tier.min}+ pts</p>
                     <ul className="space-y-1">
-                      {tier.perks.map(p => (
-                        <li key={p} className="text-xs text-foreground/70">✓ {p}</li>
-                      ))}
+                      {tier.perks.map(p => <li key={p} className="text-xs text-foreground/70">✓ {p}</li>)}
                     </ul>
                   </CardContent>
                 </Card>
