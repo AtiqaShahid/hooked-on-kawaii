@@ -76,8 +76,10 @@ const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [wishlistOpen, setWishlistOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { totalItems, setIsOpen: setCartOpen } = useCart();
   const { wishlist } = useWishlist();
+  const { user, signOut } = useAuth();
 
   const createPaths = createLinks.map(l => l.path);
   const explorePaths = exploreLinks.map(l => l.path);
