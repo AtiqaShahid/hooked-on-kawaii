@@ -54,6 +54,8 @@ const CustomBuilder = () => {
   };
 
   const generatePreview = async () => {
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     setIsGenerating(true);
     try {
       const colorNames = selectedColors.map(
@@ -63,6 +65,7 @@ const CustomBuilder = () => {
         body: { colors: colorNames, size, yarn, attachment },
       });
 
+      if (controller.signal.aborted) return;
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
 
@@ -74,11 +77,20 @@ const CustomBuilder = () => {
         throw new Error("No image returned");
       }
     } catch (err: any) {
+      if (controller.signal.aborted) return;
       console.error("Preview generation failed:", err);
       toast({ title: "Generation failed", description: err.message || "Please try again.", variant: "destructive" });
     } finally {
-      setIsGenerating(false);
+      if (!controller.signal.aborted) setIsGenerating(false);
+      abortControllerRef.current = null;
     }
+  };
+
+  const cancelGeneration = () => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    setIsGenerating(false);
+    toast({ title: "Cancelled", description: "Preview generation was cancelled." });
   };
 
   const handleOrder = () => {

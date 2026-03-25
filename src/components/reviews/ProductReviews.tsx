@@ -1,24 +1,107 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Star, MessageSquare } from "lucide-react";
+import { Star, MessageSquare, Loader2 } from "lucide-react";
 import ReviewCard from "./ReviewCard";
-import { getReviewsForProduct } from "@/lib/reviews";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
+
+interface Review {
+  id: string;
+  rating: number;
+  review_text: string | null;
+  created_at: string;
+  user_id: string;
+  profiles?: { display_name: string | null } | null;
+}
 
 const ProductReviews = ({ productId }: { productId: string }) => {
-  const reviews = getReviewsForProduct(productId);
+  const { user } = useAuth();
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [newRating, setNewRating] = useState(5);
   const [newText, setNewText] = useState("");
   const [hoverRating, setHoverRating] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
 
-  const avgRating = reviews.length > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : "0";
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const { data } = await supabase
+        .from("reviews")
+        .select("id, rating, review_text, created_at, user_id")
+        .eq("product_id", productId)
+        .eq("is_approved", true)
+        .order("created_at", { ascending: false });
+      setReviews(data || []);
+      setLoading(false);
+    };
+    fetchReviews();
+  }, [productId]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+    : "0";
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: submit to Supabase once Cloud is enabled
-    setShowForm(false);
-    setNewText("");
-    setNewRating(5);
+    if (!user) {
+      toast({ title: "Please sign in", description: "You need to be logged in to submit a review.", variant: "destructive" });
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // Check if user purchased this product
+      const { data: orderItems } = await supabase
+        .from("order_items")
+        .select("id, order_id, orders!inner(user_id, status)")
+        .eq("product_id", productId);
+
+      const purchased = orderItems?.some((item: any) => {
+        const order = item.orders;
+        return order?.user_id === user.id && ["delivered", "completed", "shipped", "confirmed"].includes(order?.status);
+      });
+
+      if (!purchased) {
+        toast({ title: "Purchase required", description: "You must purchase this product before submitting a review.", variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
+
+      // Check for existing review
+      const { data: existing } = await supabase
+        .from("reviews")
+        .select("id")
+        .eq("product_id", productId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (existing) {
+        toast({ title: "Already reviewed", description: "You have already reviewed this product.", variant: "destructive" });
+        setSubmitting(false);
+        return;
+      }
+
+      const { error } = await supabase.from("reviews").insert({
+        product_id: productId,
+        user_id: user.id,
+        rating: newRating,
+        review_text: newText.trim() || null,
+        is_approved: false,
+      });
+
+      if (error) throw error;
+
+      toast({ title: "Review submitted! ✨", description: "Your review will appear after approval." });
+      setShowForm(false);
+      setNewText("");
+      setNewRating(5);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -43,7 +126,6 @@ const ProductReviews = ({ productId }: { productId: string }) => {
         </button>
       </div>
 
-      {/* Review Form */}
       {showForm && (
         <motion.form
           initial={{ opacity: 0, height: 0 }}
@@ -51,6 +133,9 @@ const ProductReviews = ({ productId }: { productId: string }) => {
           onSubmit={handleSubmit}
           className="p-6 rounded-3xl bg-card shadow-float mb-8 space-y-4"
         >
+          {!user && (
+            <p className="text-sm text-destructive font-medium">⚠️ Please sign in to submit a review.</p>
+          )}
           <div>
             <p className="font-display font-semibold text-sm mb-2">Your Rating</p>
             <div className="flex gap-1">
@@ -83,15 +168,20 @@ const ProductReviews = ({ productId }: { productId: string }) => {
           </div>
           <button
             type="submit"
-            className="px-6 py-3 rounded-3xl bg-primary text-primary-foreground font-display font-semibold btn-squish shadow-glow text-sm"
+            disabled={submitting || !user}
+            className="px-6 py-3 rounded-3xl bg-primary text-primary-foreground font-display font-semibold btn-squish shadow-glow text-sm disabled:opacity-50 inline-flex items-center gap-2"
           >
+            {submitting && <Loader2 size={16} className="animate-spin" />}
             Submit Review ✨
           </button>
         </motion.form>
       )}
 
-      {/* Reviews List */}
-      {reviews.length > 0 ? (
+      {loading ? (
+        <div className="text-center py-12">
+          <Loader2 className="animate-spin mx-auto text-primary" size={32} />
+        </div>
+      ) : reviews.length > 0 ? (
         <div className="grid md:grid-cols-2 gap-4">
           {reviews.map((review) => (
             <motion.div
@@ -100,7 +190,14 @@ const ProductReviews = ({ productId }: { productId: string }) => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <ReviewCard review={review} />
+              <ReviewCard review={{
+                id: review.id,
+                name: "Customer",
+                rating: review.rating,
+                text: review.review_text || "",
+                date: new Date(review.created_at).toLocaleDateString(),
+                avatar: "🧶",
+              }} />
             </motion.div>
           ))}
         </div>
@@ -108,7 +205,7 @@ const ProductReviews = ({ productId }: { productId: string }) => {
         <div className="text-center py-12 rounded-3xl bg-card shadow-soft">
           <span className="text-4xl block mb-3">💬</span>
           <p className="font-display font-semibold">No reviews yet</p>
-          <p className="text-sm text-muted-foreground">Be the first to share your experience!</p>
+          <p className="text-sm text-muted-foreground">Be the first to rate this product! ✨</p>
         </div>
       )}
     </div>

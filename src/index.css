@@ -66,9 +66,14 @@
 @layer base {
   * {
     @apply border-border;
+    cursor: url('/cursor-needle.svg') 4 4, auto;
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    cursor: url('/cursor-needle.svg') 4 4, auto;
+  }
+  a, button, [role="button"], input[type="submit"], select, label[for], .btn-squish {
+    cursor: url('/cursor-needle.svg') 4 4, pointer;
   }
   h1, h2, h3, h4, h5, h6 {
     @apply font-display;

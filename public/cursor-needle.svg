@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <g transform="rotate(-35 16 16)">
+    <!-- Hook -->
+    <path d="M16 4 Q18 4 18 6 Q18 8 16 8" fill="none" stroke="#c4788a" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Shaft -->
+    <line x1="16" y1="8" x2="16" y2="28" stroke="#c4788a" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Grip -->
+    <rect x="14.5" y="16" width="3" height="6" rx="1.5" fill="#e8b4c0" stroke="#c4788a" stroke-width="0.8"/>
+  </g>
+</svg>
