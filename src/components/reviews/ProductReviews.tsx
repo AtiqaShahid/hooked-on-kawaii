@@ -192,11 +192,12 @@ const ProductReviews = ({ productId }: { productId: string }) => {
             >
               <ReviewCard review={{
                 id: review.id,
-                name: "Customer",
+                productId: productId,
+                userName: "Customer",
                 rating: review.rating,
                 text: review.review_text || "",
-                date: new Date(review.created_at).toLocaleDateString(),
-                avatar: "🧶",
+                date: review.created_at,
+                verified: true,
               }} />
             </motion.div>
           ))}
