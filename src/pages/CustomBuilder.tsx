@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Palette, Sparkles, RefreshCw, Save, Loader2 } from "lucide-react";
+import { Palette, Sparkles, RefreshCw, Save, Loader2, X } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useCart } from "@/contexts/CartContext";
@@ -41,6 +41,7 @@ const CustomBuilder = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [previewGenerated, setPreviewGenerated] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const totalPrice = (sizePrice[size] || 25) + (attachmentPrice[attachment] || 0);
 
@@ -53,6 +54,8 @@ const CustomBuilder = () => {
   };
 
   const generatePreview = async () => {
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     setIsGenerating(true);
     try {
       const colorNames = selectedColors.map(
@@ -62,6 +65,7 @@ const CustomBuilder = () => {
         body: { colors: colorNames, size, yarn, attachment },
       });
 
+      if (controller.signal.aborted) return;
       if (error) throw new Error(error.message);
       if (data?.error) throw new Error(data.error);
 
@@ -73,11 +77,20 @@ const CustomBuilder = () => {
         throw new Error("No image returned");
       }
     } catch (err: any) {
+      if (controller.signal.aborted) return;
       console.error("Preview generation failed:", err);
       toast({ title: "Generation failed", description: err.message || "Please try again.", variant: "destructive" });
     } finally {
-      setIsGenerating(false);
+      if (!controller.signal.aborted) setIsGenerating(false);
+      abortControllerRef.current = null;
     }
+  };
+
+  const cancelGeneration = () => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+    setIsGenerating(false);
+    toast({ title: "Cancelled", description: "Preview generation was cancelled." });
   };
 
   const handleOrder = () => {
@@ -137,7 +150,14 @@ const CustomBuilder = () => {
                 <div className="absolute inset-0 stitch-bg opacity-20" />
                 <div className="relative text-center">
                   {isGenerating ? (
-                    <div className="flex flex-col items-center gap-4">
+                    <div className="flex flex-col items-center gap-4 relative">
+                      <button
+                        onClick={cancelGeneration}
+                        className="absolute top-0 right-0 w-8 h-8 rounded-full bg-destructive/10 hover:bg-destructive/20 flex items-center justify-center transition-colors"
+                        title="Cancel generation"
+                      >
+                        <X size={16} className="text-destructive" />
+                      </button>
                       <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
                         <Loader2 size={48} className="text-primary" />
                       </motion.div>
