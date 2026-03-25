@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { Palette, Sparkles, RefreshCw, Save, Loader2 } from "lucide-react";
+import { Palette, Sparkles, RefreshCw, Save, Loader2, X } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useCart } from "@/contexts/CartContext";
