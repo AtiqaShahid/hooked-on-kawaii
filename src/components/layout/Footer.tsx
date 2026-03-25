@@ -80,6 +80,12 @@ const Footer = () => (
             </a>
           </div>
           <p className="text-sm text-muted-foreground">hello@hookonloop.com</p>
+          <Link
+            to="/admin/login"
+            className="inline-block mt-4 text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-200"
+          >
+            Admin Login
+          </Link>
         </div>
       </div>
       <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
