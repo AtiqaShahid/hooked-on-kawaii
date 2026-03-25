@@ -41,6 +41,7 @@ const CustomBuilder = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [previewGenerated, setPreviewGenerated] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const totalPrice = (sizePrice[size] || 25) + (attachmentPrice[attachment] || 0);
 
