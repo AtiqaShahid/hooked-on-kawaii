@@ -80,15 +80,18 @@ const Footer = () => (
             </a>
           </div>
           <p className="text-sm text-muted-foreground">hello@hookonloop.com</p>
+          <Link
+            to="/admin/login"
+            className="inline-block mt-4 text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-200"
+          >
+            Admin Login
+          </Link>
         </div>
       </div>
       <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
         <p className="flex items-center justify-center gap-1">
           Made with <Heart size={14} className="text-pink fill-pink" /> by HookOnLoop © 2025
         </p>
-        <Link to="/admin/login" className="inline-block mt-3 text-[10px] text-muted-foreground/40 hover:text-muted-foreground/70 transition-colors">
-          Admin Login
-        </Link>
       </div>
     </div>
   </footer>
