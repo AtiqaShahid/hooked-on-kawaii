@@ -6,7 +6,7 @@ import { Send, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
-const WHATSAPP_NUMBER = "923001234567"; // Replace with actual number
+const WHATSAPP_NUMBER = "923091447191";
 
 const Contact = () => {
   const [name, setName] = useState("");
