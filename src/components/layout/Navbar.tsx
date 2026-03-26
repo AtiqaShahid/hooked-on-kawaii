@@ -95,13 +95,7 @@ const Navbar = () => {
         <nav className="glass-panel rounded-3xl px-6 py-3 shadow-soft max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 group">
-              <motion.span
-                className="text-2xl"
-                animate={{ rotate: [0, 10, -10, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-              >
-                🧶
-              </motion.span>
+              <img src="/logo.png" alt="Crochet World" width={32} height={32} className="w-8 h-8" />
               <img src="/logo.png" alt="Crochet World" width={32} height={32} className="w-8 h-8" />
               <span className="font-display text-xl font-bold text-gradient-pink">
                 Crochet World
