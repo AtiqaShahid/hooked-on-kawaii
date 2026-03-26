@@ -116,7 +116,7 @@ const AdminLogin = () => {
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
               <Input
                 type="email"
-                placeholder="admin@hookonloop.com"
+                placeholder="admin@crochetworld.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="pl-10 rounded-2xl h-12 border-border/50"
