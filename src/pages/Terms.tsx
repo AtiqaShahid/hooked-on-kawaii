@@ -19,7 +19,7 @@ const Terms = () => (
           </section>
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">Intellectual Property</h2>
-            <p>All designs, images, and content on this website are the property of HookOnLoop and may not be reproduced without permission.</p>
+            <p>All designs, images, and content on this website are the property of Crochet World and may not be reproduced without permission.</p>
           </section>
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">Limitation of Liability</h2>
