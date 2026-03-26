@@ -23,7 +23,7 @@ const Terms = () => (
           </section>
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">Limitation of Liability</h2>
-            <p>HookOnLoop is not responsible for delays caused by courier services. We are not liable for any indirect damages arising from the use of our products.</p>
+            <p>Crochet World is not responsible for delays caused by courier services. We are not liable for any indirect damages arising from the use of our products.</p>
           </section>
         </div>
       </motion.div>

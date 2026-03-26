@@ -19,7 +19,7 @@ const RefundPolicy = () => (
           </section>
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">Process</h2>
-            <p>To request a refund, contact us at hello@hookonloop.com with your order number and photos of the issue. Refunds are processed within 5–7 business days after approval.</p>
+            <p>To request a refund, contact us at hello@crochetworld.com with your order number and photos of the issue. Refunds are processed within 5–7 business days after approval.</p>
           </section>
         </div>
       </motion.div>

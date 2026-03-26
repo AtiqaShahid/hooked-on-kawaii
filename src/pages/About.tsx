@@ -23,7 +23,7 @@ const About = () => (
             </div>
           </motion.div>
           <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-            <h2 className="font-display text-2xl font-bold mb-4">Hi, I'm the creator of HookOnLoop! 💕</h2>
+            <h2 className="font-display text-2xl font-bold mb-4">Hi, I'm the creator of Crochet World! 💕</h2>
             <p className="text-muted-foreground font-body leading-relaxed mb-4">
               What started as a hobby during quiet evenings has blossomed into a full-fledged passion. Every single piece you see in this shop is handcrafted by me with love, patience, and premium materials.
             </p>

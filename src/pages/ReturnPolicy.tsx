@@ -15,7 +15,7 @@ const ReturnPolicy = () => (
           </section>
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">How to Return</h2>
-            <p>Contact us at hello@hookonloop.com with your order number. We will provide return shipping instructions. Items must be unused, unwashed, and in original packaging.</p>
+            <p>Contact us at hello@crochetworld.com with your order number. We will provide return shipping instructions. Items must be unused, unwashed, and in original packaging.</p>
           </section>
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">Return Shipping</h2>

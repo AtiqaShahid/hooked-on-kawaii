@@ -18,7 +18,7 @@ export const useWishlist = () => {
 export const WishlistProvider = ({ children }: { children: ReactNode }) => {
   const [wishlist, setWishlist] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem("hookonloop-wishlist") || "[]");
+      return JSON.parse(localStorage.getItem("crochetworld-wishlist") || "[]");
     } catch { return []; }
   });
 

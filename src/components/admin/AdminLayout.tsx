@@ -68,7 +68,7 @@ const AdminLayout = () => {
             <div className="flex items-center gap-3">
               <SidebarTrigger />
               <span className="text-sm text-muted-foreground hidden sm:block">
-                🧶 HookOnLoop Admin
+                🧶 Crochet World Admin
               </span>
             </div>
             <div className="flex items-center gap-3">

@@ -23,7 +23,7 @@ const PrivacyPolicy = () => (
           </section>
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">Contact</h2>
-            <p>For any privacy concerns, contact us at hello@hookonloop.com.</p>
+            <p>For any privacy concerns, contact us at hello@crochetworld.com.</p>
           </section>
         </div>
       </motion.div>
