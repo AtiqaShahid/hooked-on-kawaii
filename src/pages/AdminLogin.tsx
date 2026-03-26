@@ -104,8 +104,8 @@ const AdminLogin = () => {
       >
         <div className="glass-panel rounded-3xl p-8 shadow-float">
           <div className="text-center mb-8">
-            <motion.span className="text-4xl block mb-3" animate={{ rotate: [0, 10, -10, 0] }} transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}>🧶</motion.span>
-            <h1 className="font-display text-2xl font-bold">HookOnLoop Admin</h1>
+            <img src="/logo.png" alt="Crochet World" width={48} height={48} className="w-12 h-12 mx-auto mb-3" />
+            <h1 className="font-display text-2xl font-bold">Crochet World Admin</h1>
             <p className="text-muted-foreground text-sm mt-1">
               {isReset ? "Reset your password" : "Sign in to manage your store"}
             </p>
