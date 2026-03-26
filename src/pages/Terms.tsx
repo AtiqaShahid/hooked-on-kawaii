@@ -11,7 +11,7 @@ const Terms = () => (
         <div className="prose prose-sm max-w-none space-y-6 text-foreground/80 font-body">
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">General</h2>
-            <p>By using HookOnLoop's website and purchasing our products, you agree to these terms. All products are handmade and may have slight variations in color, size, and texture — this is the beauty of handmade items.</p>
+            <p>By using Crochet World's website and purchasing our products, you agree to these terms. All products are handmade and may have slight variations in color, size, and texture — this is the beauty of handmade items.</p>
           </section>
           <section>
             <h2 className="font-display text-xl font-semibold text-foreground">Orders & Payment</h2>
