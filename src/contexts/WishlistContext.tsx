@@ -27,7 +27,7 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
       const next = prev.includes(productId)
         ? prev.filter((id) => id !== productId)
         : [...prev, productId];
-      localStorage.setItem("hookonloop-wishlist", JSON.stringify(next));
+      localStorage.setItem("crochetworld-wishlist", JSON.stringify(next));
       if (next.includes(productId)) {
         toast({ title: "Added to wishlist 💕", description: productName ? `${productName} saved!` : "Item saved!" });
       } else {
