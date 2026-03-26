@@ -79,7 +79,7 @@ const Footer = () => (
               <TikTokIcon />
             </a>
           </div>
-          <p className="text-sm text-muted-foreground">hello@hookonloop.com</p>
+          <p className="text-sm text-muted-foreground">hello@crochetworld.com</p>
           <Link
             to="/admin/login"
             className="inline-block mt-4 text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-200"

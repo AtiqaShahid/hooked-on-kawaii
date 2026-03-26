@@ -102,8 +102,9 @@ const Navbar = () => {
               >
                 🧶
               </motion.span>
+              <img src="/logo.png" alt="Crochet World" width={32} height={32} className="w-8 h-8" />
               <span className="font-display text-xl font-bold text-gradient-pink">
-                HookOnLoop
+                Crochet World
               </span>
             </Link>
 
