@@ -52,7 +52,7 @@ const MOCK_COMMENTS: Record<string, Comment[]> = {
 const MOCK_POSTS: Post[] = [
   {
     id: "mock-1", title: "Sarah M.",
-    content: "Just finished my first sunflower bouquet from HookOnLoop inspiration! So proud of how it turned out 🧶",
+    content: "Just finished my first sunflower bouquet from Crochet World inspiration! So proud of how it turned out 🧶",
     image_url: "/products/sunflower-bouquet.jpg", likes_count: 48, comments: MOCK_COMMENTS["mock-1"],
     author_name: "Sarah M.", author_avatar: "🧶",
     created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), is_mock: true,
