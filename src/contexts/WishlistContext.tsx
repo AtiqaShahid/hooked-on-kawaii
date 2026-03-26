@@ -18,7 +18,7 @@ export const useWishlist = () => {
 export const WishlistProvider = ({ children }: { children: ReactNode }) => {
   const [wishlist, setWishlist] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem("hookonloop-wishlist") || "[]");
+      return JSON.parse(localStorage.getItem("crochetworld-wishlist") || "[]");
     } catch { return []; }
   });
 
@@ -27,7 +27,7 @@ export const WishlistProvider = ({ children }: { children: ReactNode }) => {
       const next = prev.includes(productId)
         ? prev.filter((id) => id !== productId)
         : [...prev, productId];
-      localStorage.setItem("hookonloop-wishlist", JSON.stringify(next));
+      localStorage.setItem("crochetworld-wishlist", JSON.stringify(next));
       if (next.includes(productId)) {
         toast({ title: "Added to wishlist 💕", description: productName ? `${productName} saved!` : "Item saved!" });
       } else {

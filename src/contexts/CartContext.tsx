@@ -25,7 +25,7 @@ type CartContextType = {
   totalPrice: number;
 };
 
-const CART_KEY = "hookonloop-cart";
+const CART_KEY = "crochetworld-cart";
 
 const CartContext = createContext<CartContextType | null>(null);
 

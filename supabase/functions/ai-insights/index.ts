@@ -18,7 +18,7 @@ serve(async (req) => {
     let userPrompt = "";
 
     if (type === "business-insights") {
-      systemPrompt = `You are an AI business analyst for HookOnLoop, a handmade crochet e-commerce store. Analyze the provided store data and return actionable insights. Be specific with product names and numbers. Use a friendly but professional tone. Format with markdown headers and bullet points.`;
+      systemPrompt = `You are an AI business analyst for Crochet World, a handmade crochet e-commerce store. Analyze the provided store data and return actionable insights. Be specific with product names and numbers. Use a friendly but professional tone. Format with markdown headers and bullet points.`;
       userPrompt = `Analyze this store data and provide:
 1. **Top Selling Products** (ranked list)
 2. **Trending Colors** (based on selections)
@@ -31,14 +31,14 @@ serve(async (req) => {
 
 Store data: ${JSON.stringify(data)}`;
     } else if (type === "marketing") {
-      systemPrompt = `You are a creative marketing copywriter for HookOnLoop, a kawaii handmade crochet brand. Generate cute, engaging marketing content.`;
+      systemPrompt = `You are a creative marketing copywriter for Crochet World, a kawaii handmade crochet brand. Generate cute, engaging marketing content.`;
       userPrompt = `Generate the following marketing content for these products: ${JSON.stringify(data)}
 1. **Product Captions** (2-3 for each product, Instagram-ready)
 2. **Email Subject Lines** (5 creative ones)
 3. **Product Descriptions** (compelling, emotional)
 Format with markdown.`;
     } else if (type === "quiz-recommendation") {
-      systemPrompt = `You are a fun crochet product recommender for HookOnLoop. Based on quiz answers, suggest the best crochet products from the store catalog.`;
+      systemPrompt = `You are a fun crochet product recommender for Crochet World. Based on quiz answers, suggest the best crochet products from the store catalog.`;
       userPrompt = `Based on these quiz answers, recommend 3-5 products with reasons:
 Quiz answers: ${JSON.stringify(data)}
 Available products will come from the store catalog.`;

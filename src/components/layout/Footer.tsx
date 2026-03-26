@@ -13,8 +13,8 @@ const Footer = () => (
       <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
         <div className="md:col-span-1">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl">🧶</span>
-            <span className="font-display text-xl font-bold text-gradient-pink">HookOnLoop</span>
+            <img src="/logo.png" alt="Crochet World" width={32} height={32} className="w-8 h-8" />
+            <span className="font-display text-xl font-bold text-gradient-pink">Crochet World</span>
           </div>
           <p className="text-muted-foreground text-sm leading-relaxed">
             Handmade with love, one stitch at a time. Every piece tells a story. 💕
@@ -79,7 +79,7 @@ const Footer = () => (
               <TikTokIcon />
             </a>
           </div>
-          <p className="text-sm text-muted-foreground">hello@hookonloop.com</p>
+          <p className="text-sm text-muted-foreground">hello@crochetworld.com</p>
           <Link
             to="/admin/login"
             className="inline-block mt-4 text-xs text-muted-foreground/60 hover:text-primary transition-colors duration-200"
@@ -90,7 +90,7 @@ const Footer = () => (
       </div>
       <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
         <p className="flex items-center justify-center gap-1">
-          Made with <Heart size={14} className="text-pink fill-pink" /> by HookOnLoop © 2025
+          Made with <Heart size={14} className="text-pink fill-pink" /> by Crochet World © 2025
         </p>
       </div>
     </div>

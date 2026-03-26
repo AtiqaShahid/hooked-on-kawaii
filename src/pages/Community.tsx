@@ -52,7 +52,7 @@ const MOCK_COMMENTS: Record<string, Comment[]> = {
 const MOCK_POSTS: Post[] = [
   {
     id: "mock-1", title: "Sarah M.",
-    content: "Just finished my first sunflower bouquet from HookOnLoop inspiration! So proud of how it turned out 🧶",
+    content: "Just finished my first sunflower bouquet from Crochet World inspiration! So proud of how it turned out 🧶",
     image_url: "/products/sunflower-bouquet.jpg", likes_count: 48, comments: MOCK_COMMENTS["mock-1"],
     author_name: "Sarah M.", author_avatar: "🧶",
     created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), is_mock: true,
@@ -80,7 +80,7 @@ const MOCK_POSTS: Post[] = [
   },
   {
     id: "mock-5", title: "Hira Z.",
-    content: "Made a custom tulip pot as a housewarming gift using ideas from HookOnLoop. The colors came out perfect! 🌷",
+    content: "Made a custom tulip pot as a housewarming gift using ideas from Crochet World. The colors came out perfect! 🌷",
     image_url: "/products/tulip-pot.webp", likes_count: 41, comments: [],
     author_name: "Hira Z.", author_avatar: "🪻",
     created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), is_mock: true,
