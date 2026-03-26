@@ -76,7 +76,7 @@ const Admin = () => {
         <div className="max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
             <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">📊 Admin Dashboard</h1>
-            <p className="text-muted-foreground font-body">AI-powered business insights for HookOnLoop</p>
+            <p className="text-muted-foreground font-body">AI-powered business insights for Crochet World</p>
           </motion.div>
 
           {/* Stats Grid */}
