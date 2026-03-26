@@ -13,8 +13,8 @@ const Footer = () => (
       <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
         <div className="md:col-span-1">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-2xl">🧶</span>
-            <span className="font-display text-xl font-bold text-gradient-pink">HookOnLoop</span>
+            <img src="/logo.png" alt="Crochet World" width={32} height={32} className="w-8 h-8" />
+            <span className="font-display text-xl font-bold text-gradient-pink">Crochet World</span>
           </div>
           <p className="text-muted-foreground text-sm leading-relaxed">
             Handmade with love, one stitch at a time. Every piece tells a story. 💕
