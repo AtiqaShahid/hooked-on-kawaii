@@ -31,7 +31,7 @@ serve(async (req) => {
 
 Store data: ${JSON.stringify(data)}`;
     } else if (type === "marketing") {
-      systemPrompt = `You are a creative marketing copywriter for HookOnLoop, a kawaii handmade crochet brand. Generate cute, engaging marketing content.`;
+      systemPrompt = `You are a creative marketing copywriter for Crochet World, a kawaii handmade crochet brand. Generate cute, engaging marketing content.`;
       userPrompt = `Generate the following marketing content for these products: ${JSON.stringify(data)}
 1. **Product Captions** (2-3 for each product, Instagram-ready)
 2. **Email Subject Lines** (5 creative ones)
