@@ -18,7 +18,7 @@ serve(async (req) => {
     let userPrompt = "";
 
     if (type === "business-insights") {
-      systemPrompt = `You are an AI business analyst for HookOnLoop, a handmade crochet e-commerce store. Analyze the provided store data and return actionable insights. Be specific with product names and numbers. Use a friendly but professional tone. Format with markdown headers and bullet points.`;
+      systemPrompt = `You are an AI business analyst for Crochet World, a handmade crochet e-commerce store. Analyze the provided store data and return actionable insights. Be specific with product names and numbers. Use a friendly but professional tone. Format with markdown headers and bullet points.`;
       userPrompt = `Analyze this store data and provide:
 1. **Top Selling Products** (ranked list)
 2. **Trending Colors** (based on selections)
