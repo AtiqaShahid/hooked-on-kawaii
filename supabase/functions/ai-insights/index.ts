@@ -38,7 +38,7 @@ Store data: ${JSON.stringify(data)}`;
 3. **Product Descriptions** (compelling, emotional)
 Format with markdown.`;
     } else if (type === "quiz-recommendation") {
-      systemPrompt = `You are a fun crochet product recommender for HookOnLoop. Based on quiz answers, suggest the best crochet products from the store catalog.`;
+      systemPrompt = `You are a fun crochet product recommender for Crochet World. Based on quiz answers, suggest the best crochet products from the store catalog.`;
       userPrompt = `Based on these quiz answers, recommend 3-5 products with reasons:
 Quiz answers: ${JSON.stringify(data)}
 Available products will come from the store catalog.`;
