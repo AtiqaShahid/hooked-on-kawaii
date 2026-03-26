@@ -90,7 +90,7 @@ const Footer = () => (
       </div>
       <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
         <p className="flex items-center justify-center gap-1">
-          Made with <Heart size={14} className="text-pink fill-pink" /> by HookOnLoop © 2025
+          Made with <Heart size={14} className="text-pink fill-pink" /> by Crochet World © 2025
         </p>
       </div>
     </div>
