@@ -14,7 +14,7 @@ serve(async (req) => {
 
     const { messages } = await req.json();
 
-    const systemPrompt = `You are the friendly AI assistant for HookOnLoop, a handmade crochet brand from Pakistan. You help customers with:
+    const systemPrompt = `You are the friendly AI assistant for Crochet World, a handmade crochet brand from Pakistan. You help customers with:
 - Product questions (crochet flowers, keychains, bouquets, amigurumi toys, accessories)
 - Order status and tracking
 - Custom order guidance (colors, yarn types, sizes)
@@ -24,7 +24,7 @@ serve(async (req) => {
 - Return/refund policies
 
 Be cute, friendly, and helpful. Use emojis sparingly. Keep answers concise but informative.
-If you don't know something specific about an order, suggest they email hello@hookonloop.com or check their order tracker.
+If you don't know something specific about an order, suggest they contact us or check their order tracker.
 Never make up order numbers or tracking info.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -49,7 +49,7 @@ Never make up order numbers or tracking info.`;
         });
       }
       if (response.status === 402) {
-        return new Response(JSON.stringify({ reply: "I'm taking a short break. Please email hello@hookonloop.com for help! 💕" }), {
+        return new Response(JSON.stringify({ reply: "I'm taking a short break. Please contact us for help! 💕" }), {
           status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
@@ -64,7 +64,7 @@ Never make up order numbers or tracking info.`;
     });
   } catch (e) {
     console.error("chatbot error:", e);
-    return new Response(JSON.stringify({ reply: "Something went wrong. Please try again or email hello@hookonloop.com 💕" }), {
+    return new Response(JSON.stringify({ reply: "Something went wrong. Please try again later 💕" }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
