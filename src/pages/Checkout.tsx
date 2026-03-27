@@ -231,7 +231,7 @@ const Checkout = () => {
                   {loadingConfig ? (
                     <div className="flex justify-center py-4"><Loader2 className="animate-spin text-primary" size={20} /></div>
                   ) : (
-                    <RadioGroup value={paymentMethod} onValueChange={(v) => { setPaymentMethod(v as PaymentMethod); setTransactionId(""); }}>
+                    <RadioGroup value={paymentMethod} onValueChange={(v) => { setPaymentMethod(v as PaymentMethod); setScreenshotFile(null); setScreenshotPreview(null); }}>
                       <div className="space-y-2">
                         {enabledMethods.map(([key, config]) => (
                           <label
