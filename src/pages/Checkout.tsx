@@ -322,16 +322,7 @@ const Checkout = () => {
                   {/* JazzCash / COD Payment Proof */}
                   {(paymentMethod === "jazzcash" || paymentMethod === "cod") && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-border/50 pt-4 space-y-3">
-                      <h3 className="font-display font-semibold text-sm">Payment Verification</h3>
-                      <input
-                        value={transactionId}
-                        onChange={e => setTransactionId(e.target.value)}
-                        placeholder="Transaction ID"
-                        required={paymentMethod === "jazzcash"}
-                        maxLength={50}
-                        className="w-full p-3 rounded-2xl bg-card border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50"
-                      />
-                      {/* Screenshot Upload */}
+                      <h3 className="font-display font-semibold text-sm">Upload Payment Proof *</h3>
                       <div>
                         <input
                           type="file"
@@ -343,10 +334,14 @@ const Checkout = () => {
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="w-full p-3 rounded-2xl border border-dashed border-border text-sm font-body text-muted-foreground hover:border-primary/50 hover:bg-primary/5 transition-all flex items-center justify-center gap-2"
+                          className={`w-full p-3 rounded-2xl border border-dashed text-sm font-body transition-all flex items-center justify-center gap-2 ${
+                            screenshotFile 
+                              ? "border-primary/50 bg-primary/5 text-foreground" 
+                              : "border-border text-muted-foreground hover:border-primary/50 hover:bg-primary/5"
+                          }`}
                         >
                           <Upload size={16} />
-                          {screenshotFile ? screenshotFile.name : "Upload Payment Screenshot (Optional)"}
+                          {screenshotFile ? screenshotFile.name : "Upload Payment Screenshot"}
                         </button>
                         {screenshotPreview && (
                           <div className="mt-2 relative">
@@ -360,8 +355,10 @@ const Checkout = () => {
                             </button>
                           </div>
                         )}
+                        {!screenshotFile && (
+                          <p className="text-xs text-destructive/70 mt-1">⚠️ Screenshot is required to place your order</p>
+                        )}
                       </div>
-                      <p className="text-xs text-muted-foreground">Enter your transaction ID{paymentMethod === "cod" ? " for advance payment" : ""}.</p>
                     </motion.div>
                   )}
 
