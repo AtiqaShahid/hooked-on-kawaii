@@ -573,6 +573,7 @@ export type Database = {
           created_at: string
           id: string
           notes: string | null
+          payment_screenshot: string | null
           shipping_address: Json | null
           status: string
           total: number
@@ -584,6 +585,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          payment_screenshot?: string | null
           shipping_address?: Json | null
           status?: string
           total: number
@@ -595,6 +597,7 @@ export type Database = {
           created_at?: string
           id?: string
           notes?: string | null
+          payment_screenshot?: string | null
           shipping_address?: Json | null
           status?: string
           total?: number

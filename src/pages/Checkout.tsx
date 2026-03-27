@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Truck, CreditCard, Smartphone, Building2, Upload, Loader2 } from "lucide-react";
+import { CheckCircle2, Truck, CreditCard, Smartphone, Building2, Upload, Loader2, ImageIcon } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,8 +32,20 @@ const Checkout = () => {
   const [address, setAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | "">("");
   const [transactionId, setTransactionId] = useState("");
+  const [screenshotFile, setScreenshotFile] = useState<File | null>(null);
+  const [screenshotPreview, setScreenshotPreview] = useState<string | null>(null);
+  const [uploadingScreenshot, setUploadingScreenshot] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const handleScreenshotChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setScreenshotFile(file);
+      setScreenshotPreview(URL.createObjectURL(file));
+    }
+  };
 
   if (items.length === 0 && !success) {
     return (
@@ -70,6 +82,10 @@ const Checkout = () => {
       toast({ title: "Please enter your Transaction ID", variant: "destructive" });
       return;
     }
+    if (paymentMethod === "cod" && !transactionId.trim()) {
+      toast({ title: "Please enter advance payment Transaction ID", variant: "destructive" });
+      return;
+    }
     if (paymentMethod === "card" && selectedConfig?.coming_soon) {
       toast({ title: "Card payments coming soon!", description: "Please choose another method." });
       return;
@@ -80,10 +96,8 @@ const Checkout = () => {
       const { data: { user } } = await supabase.auth.getUser();
 
       const paymentStatus = paymentMethod === "cod"
-        ? "awaiting_advance_confirmation"
-        : paymentMethod === "jazzcash"
-          ? "pending_verification"
-          : "pending";
+        ? "cod_pending"
+        : "pending";
 
       const { data: order, error: orderError } = await supabase.from("orders").insert({
         user_id: user?.id || null,
@@ -99,6 +113,21 @@ const Checkout = () => {
       }).select().single();
 
       if (orderError) throw orderError;
+
+      // Upload screenshot if provided
+      if (screenshotFile) {
+        setUploadingScreenshot(true);
+        const fileExt = screenshotFile.name.split('.').pop();
+        const filePath = `${order.id}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from("payment-proofs")
+          .upload(filePath, screenshotFile);
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from("payment-proofs").getPublicUrl(filePath);
+          await supabase.from("orders").update({ payment_screenshot: urlData.publicUrl }).eq("id", order.id);
+        }
+        setUploadingScreenshot(false);
+      }
 
       const orderItems = items.map(item => ({
         order_id: order.id,
@@ -246,10 +275,19 @@ const Checkout = () => {
                 {/* JazzCash Info */}
                 {paymentMethod === "jazzcash" && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-4 p-4 rounded-2xl bg-accent/50 border border-accent">
-                    <p className="text-sm font-body">
-                      Please complete your payment and submit your <strong>Transaction ID</strong> below for verification.
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-2">Payment instructions will be shared after order placement. Our team will verify your payment promptly.</p>
+                    <p className="text-sm font-body font-semibold mb-2">Send payment to:</p>
+                    <div className="bg-card rounded-xl p-3 mb-2 space-y-1">
+                      <p className="text-sm font-body">📱 JazzCash Number: <strong>03091447191</strong></p>
+                      <p className="text-sm font-body">👤 Account Name: <strong>Atiqa Shahid</strong></p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">After sending payment, enter your <strong>Transaction ID</strong> and optionally upload a screenshot below.</p>
+                  </motion.div>
+                )}
+                {/* COD JazzCash advance info */}
+                {paymentMethod === "cod" && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-2 p-3 rounded-2xl bg-card border border-border/50">
+                    <p className="text-xs font-body text-muted-foreground">Send Rs. {codAdvance} advance to:</p>
+                    <p className="text-xs font-body mt-1">📱 JazzCash: <strong>03091447191</strong> (Atiqa Shahid)</p>
                   </motion.div>
                 )}
               </CardContent>
@@ -286,19 +324,49 @@ const Checkout = () => {
                     className="w-full p-3 rounded-2xl bg-card border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
                   />
 
-                  {/* JazzCash Transaction ID */}
-                  {paymentMethod === "jazzcash" && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-border/50 pt-4">
-                      <h3 className="font-display font-semibold text-sm mb-3">Payment Verification</h3>
+                  {/* JazzCash / COD Payment Proof */}
+                  {(paymentMethod === "jazzcash" || paymentMethod === "cod") && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="border-t border-border/50 pt-4 space-y-3">
+                      <h3 className="font-display font-semibold text-sm">Payment Verification</h3>
                       <input
                         value={transactionId}
                         onChange={e => setTransactionId(e.target.value)}
                         placeholder="Transaction ID"
-                        required
+                        required={paymentMethod === "jazzcash"}
                         maxLength={50}
                         className="w-full p-3 rounded-2xl bg-card border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50"
                       />
-                      <p className="text-xs text-muted-foreground mt-2">Enter the transaction ID from your payment confirmation.</p>
+                      {/* Screenshot Upload */}
+                      <div>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          accept="image/*"
+                          onChange={handleScreenshotChange}
+                          className="hidden"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="w-full p-3 rounded-2xl border border-dashed border-border text-sm font-body text-muted-foreground hover:border-primary/50 hover:bg-primary/5 transition-all flex items-center justify-center gap-2"
+                        >
+                          <Upload size={16} />
+                          {screenshotFile ? screenshotFile.name : "Upload Payment Screenshot (Optional)"}
+                        </button>
+                        {screenshotPreview && (
+                          <div className="mt-2 relative">
+                            <img src={screenshotPreview} alt="Payment proof" className="w-full max-h-40 object-contain rounded-xl border border-border/50" />
+                            <button
+                              type="button"
+                              onClick={() => { setScreenshotFile(null); setScreenshotPreview(null); }}
+                              className="absolute top-1 right-1 w-6 h-6 bg-destructive text-destructive-foreground rounded-full text-xs flex items-center justify-center"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs text-muted-foreground">Enter your transaction ID{paymentMethod === "cod" ? " for advance payment" : ""}.</p>
                     </motion.div>
                   )}
 
