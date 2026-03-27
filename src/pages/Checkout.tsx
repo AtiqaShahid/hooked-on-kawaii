@@ -140,7 +140,7 @@ const Checkout = () => {
           user_id: user?.id || null,
           customer_name: customerName,
           amount: paymentMethod === "cod" ? codAdvance : totalPrice,
-          transaction_id: transactionId || null,
+          transaction_id: null,
           payment_method: paymentMethod,
           status: "pending",
         });
