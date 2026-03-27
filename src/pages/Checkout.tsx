@@ -82,6 +82,10 @@ const Checkout = () => {
       toast({ title: "Please enter your Transaction ID", variant: "destructive" });
       return;
     }
+    if (paymentMethod === "cod" && !transactionId.trim()) {
+      toast({ title: "Please enter advance payment Transaction ID", variant: "destructive" });
+      return;
+    }
     if (paymentMethod === "card" && selectedConfig?.coming_soon) {
       toast({ title: "Card payments coming soon!", description: "Please choose another method." });
       return;
