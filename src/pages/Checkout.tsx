@@ -110,6 +110,21 @@ const Checkout = () => {
 
       if (orderError) throw orderError;
 
+      // Upload screenshot if provided
+      if (screenshotFile) {
+        setUploadingScreenshot(true);
+        const fileExt = screenshotFile.name.split('.').pop();
+        const filePath = `${order.id}.${fileExt}`;
+        const { error: uploadError } = await supabase.storage
+          .from("payment-proofs")
+          .upload(filePath, screenshotFile);
+        if (!uploadError) {
+          const { data: urlData } = supabase.storage.from("payment-proofs").getPublicUrl(filePath);
+          await supabase.from("orders").update({ payment_screenshot: urlData.publicUrl }).eq("id", order.id);
+        }
+        setUploadingScreenshot(false);
+      }
+
       const orderItems = items.map(item => ({
         order_id: order.id,
         product_id: item.type === "product" ? item.id : null,
