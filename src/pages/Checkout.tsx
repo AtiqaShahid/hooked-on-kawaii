@@ -80,10 +80,8 @@ const Checkout = () => {
       const { data: { user } } = await supabase.auth.getUser();
 
       const paymentStatus = paymentMethod === "cod"
-        ? "awaiting_advance_confirmation"
-        : paymentMethod === "jazzcash"
-          ? "pending_verification"
-          : "pending";
+        ? "cod_pending"
+        : "pending";
 
       const { data: order, error: orderError } = await supabase.from("orders").insert({
         user_id: user?.id || null,
