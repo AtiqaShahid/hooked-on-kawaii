@@ -77,6 +77,10 @@ const Checkout = () => {
       toast({ title: "Please select a payment method", variant: "destructive" });
       return;
     }
+    if ((paymentMethod === "jazzcash" || paymentMethod === "cod") && !screenshotFile) {
+      toast({ title: "Payment screenshot required", description: "Please upload a screenshot of your payment transaction.", variant: "destructive" });
+      return;
+    }
     if (paymentMethod === "card" && selectedConfig?.coming_soon) {
       toast({ title: "Card payments coming soon!", description: "Please choose another method." });
       return;
