@@ -271,10 +271,19 @@ const Checkout = () => {
                 {/* JazzCash Info */}
                 {paymentMethod === "jazzcash" && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-4 p-4 rounded-2xl bg-accent/50 border border-accent">
-                    <p className="text-sm font-body">
-                      Please complete your payment and submit your <strong>Transaction ID</strong> below for verification.
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-2">Payment instructions will be shared after order placement. Our team will verify your payment promptly.</p>
+                    <p className="text-sm font-body font-semibold mb-2">Send payment to:</p>
+                    <div className="bg-card rounded-xl p-3 mb-2 space-y-1">
+                      <p className="text-sm font-body">📱 JazzCash Number: <strong>03091447191</strong></p>
+                      <p className="text-sm font-body">👤 Account Name: <strong>Atiqa Shahid</strong></p>
+                    </div>
+                    <p className="text-xs text-muted-foreground">After sending payment, enter your <strong>Transaction ID</strong> and optionally upload a screenshot below.</p>
+                  </motion.div>
+                )}
+                {/* COD JazzCash advance info */}
+                {paymentMethod === "cod" && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="mt-2 p-3 rounded-2xl bg-card border border-border/50">
+                    <p className="text-xs font-body text-muted-foreground">Send Rs. {codAdvance} advance to:</p>
+                    <p className="text-xs font-body mt-1">📱 JazzCash: <strong>03091447191</strong> (Atiqa Shahid)</p>
                   </motion.div>
                 )}
               </CardContent>
