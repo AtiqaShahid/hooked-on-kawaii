@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2, Truck, CreditCard, Smartphone, Building2, Upload, Loader2 } from "lucide-react";
+import { CheckCircle2, Truck, CreditCard, Smartphone, Building2, Upload, Loader2, ImageIcon } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
