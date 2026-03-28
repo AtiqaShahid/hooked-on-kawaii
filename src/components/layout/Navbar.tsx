@@ -80,6 +80,13 @@ const Navbar = () => {
   const { totalItems, setIsOpen: setCartOpen } = useCart();
   const { wishlist } = useWishlist();
   const { user, signOut } = useAuth();
+  const [displayName, setDisplayName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) { setDisplayName(null); return; }
+    supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => { if (data?.display_name) setDisplayName(data.display_name.split(" ")[0]); });
+  }, [user]);
 
   const createPaths = createLinks.map(l => l.path);
   const explorePaths = exploreLinks.map(l => l.path);
