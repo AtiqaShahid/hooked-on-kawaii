@@ -93,6 +93,9 @@ const DesignVoting = () => {
       await supabase.from("design_requests").update({ votes_count: current.votes_count + 1 }).eq("id", id);
     }
     toast({ title: "Voted! 🎉" });
+    } finally {
+      setVotingInProgress(false);
+    }
   };
 
   const submitRequest = async () => {
