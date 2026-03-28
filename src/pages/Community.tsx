@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, MessageCircle, Plus, Send, ChevronDown, ChevronUp } from "lucide-react";
+import { Heart, MessageCircle, Plus, Send, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -259,6 +260,7 @@ const PostCard = ({ post: initialPost, index }: { post: Post; index: number }) =
 
 const Community = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [postsLoading, setPostsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState("");
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
@@ -313,33 +315,41 @@ const Community = () => {
 
       setPosts(dbPosts);
     };
-    fetchPosts();
+    fetchPosts().finally(() => setPostsLoading(false));
   }, []);
 
+  const [postSubmitting, setPostSubmitting] = useState(false);
+
   const submitPost = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast({ title: "Please log in", description: "You need to be logged in to post.", variant: "destructive" });
-      return;
-    }
-    const { data: profile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
-    const authorName = profile?.display_name || "Crochet Lover";
-    
-    const { data: newPost, error } = await supabase.from("community_posts").insert({
-      user_id: user.id, title: authorName, content, is_approved: true,
-    }).select("*").single();
-    if (error) {
-      toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
-    } else if (newPost) {
-      const postWithMeta: Post = {
-        ...newPost,
-        author_name: authorName,
-        author_avatar: "🧶",
-        comments: [],
-      };
-      setPosts(prev => [postWithMeta, ...prev]);
-      toast({ title: "Post published successfully 🎉" });
-      setContent(""); setShowForm(false);
+    if (postSubmitting) return;
+    setPostSubmitting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Please log in", description: "You need to be logged in to post.", variant: "destructive" });
+        return;
+      }
+      const { data: profile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
+      const authorName = profile?.display_name || "Crochet Lover";
+      
+      const { data: newPost, error } = await supabase.from("community_posts").insert({
+        user_id: user.id, title: authorName, content, is_approved: true,
+      }).select("*").single();
+      if (error) {
+        toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
+      } else if (newPost) {
+        const postWithMeta: Post = {
+          ...newPost,
+          author_name: authorName,
+          author_avatar: "🧶",
+          comments: [],
+        };
+        setPosts(prev => [postWithMeta, ...prev]);
+        toast({ title: "Post published successfully 🎉" });
+        setContent(""); setShowForm(false);
+      }
+    } finally {
+      setPostSubmitting(false);
     }
   };
 
@@ -371,8 +381,8 @@ const Community = () => {
                   )}
                   <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Tell us about your crochet creation..." rows={4}
                     className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none" />
-                  <Button onClick={submitPost} disabled={!content.trim()} className="rounded-2xl btn-squish">
-                    <Send size={16} /> Publish
+                  <Button onClick={submitPost} disabled={!content.trim() || postSubmitting} className="rounded-2xl btn-squish">
+                    {postSubmitting ? <><Loader2 size={16} className="animate-spin" /> Publishing...</> : <><Send size={16} /> Publish</>}
                   </Button>
                 </CardContent>
               </Card>
@@ -380,15 +390,31 @@ const Community = () => {
           )}
 
           <div className="space-y-6">
-            {posts.map((post, i) => (
-              <PostCard key={post.id} post={post} index={i} />
-            ))}
-            {posts.length === 0 && (
+            {postsLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="rounded-3xl border border-border/50 p-5 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-16" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-48 w-full rounded-2xl" />
+                </div>
+              ))
+            ) : posts.length === 0 ? (
               <div className="text-center py-20">
                 <span className="text-5xl block mb-4">💬</span>
                 <p className="font-display text-lg font-semibold mb-2">No posts yet</p>
                 <p className="text-muted-foreground text-sm">Be the first to share your creation!</p>
               </div>
+            ) : (
+              posts.map((post, i) => (
+                <PostCard key={post.id} post={post} index={i} />
+              ))
             )}
           </div>
         </div>

@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ThumbsUp, Plus, Send, TrendingUp } from "lucide-react";
+import { ThumbsUp, Plus, Send, TrendingUp, Loader2 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -26,12 +27,14 @@ const statusColors: Record<string, string> = {
 
 const DesignVoting = () => {
   const [requests, setRequests] = useState<DesignRequest[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [votedIds, setVotedIds] = useState<Set<string>>(new Set());
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [votingInProgress, setVotingInProgress] = useState(false);
+  const [submittingRequest, setSubmittingRequest] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -45,7 +48,7 @@ const DesignVoting = () => {
         if (votes) setVotedIds(new Set(votes.map(v => v.request_id)));
       }
     };
-    load();
+    load().finally(() => setRequestsLoading(false));
   }, []);
 
   const vote = async (id: string) => {
@@ -99,20 +102,26 @@ const DesignVoting = () => {
   };
 
   const submitRequest = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast({ title: "Please log in", variant: "destructive" });
-      return;
-    }
-    const { data: newReq, error } = await supabase.from("design_requests").insert({ user_id: user.id, title, description: description || null }).select("*").single();
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Submitted! 🎨", description: "Your design idea has been submitted." });
-      if (newReq) setRequests(prev => [{ ...newReq, votes_count: newReq.votes_count || 0, status: newReq.status || "open" }, ...prev]);
-      setTitle("");
-      setDescription("");
-      setShowForm(false);
+    if (submittingRequest) return;
+    setSubmittingRequest(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Please log in", variant: "destructive" });
+        return;
+      }
+      const { data: newReq, error } = await supabase.from("design_requests").insert({ user_id: user.id, title, description: description || null }).select("*").single();
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Submitted! 🎨", description: "Your design idea has been submitted." });
+        if (newReq) setRequests(prev => [{ ...newReq, votes_count: newReq.votes_count || 0, status: newReq.status || "open" }, ...prev]);
+        setTitle("");
+        setDescription("");
+        setShowForm(false);
+      }
+    } finally {
+      setSubmittingRequest(false);
     }
   };
 
@@ -138,43 +147,64 @@ const DesignVoting = () => {
                 <CardContent className="p-6 space-y-4">
                   <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Your design idea..." className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50" />
                   <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe your idea..." rows={3} className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none" />
-                  <Button onClick={submitRequest} disabled={!title} className="rounded-2xl btn-squish"><Send size={16} /> Submit</Button>
+                  <Button onClick={submitRequest} disabled={!title || submittingRequest} className="rounded-2xl btn-squish">
+                    {submittingRequest ? <><Loader2 size={16} className="animate-spin" /> Submitting...</> : <><Send size={16} /> Submit</>}
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
           )}
 
           <div className="space-y-4">
-            {requests.map((r, i) => {
-              const hasVoted = votedIds.has(r.id);
-              return (
-                <motion.div key={r.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                  <Card className="rounded-3xl border-border/50">
-                    <CardContent className="p-5 flex items-center gap-4">
-                      <button
-                        onClick={() => vote(r.id)}
-                        className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all btn-squish min-w-[60px] ${
-                          hasVoted
-                            ? "bg-primary/30 text-primary"
-                            : "bg-muted/30 hover:bg-primary/20"
-                        }`}
-                      >
-                        <ThumbsUp size={20} fill={hasVoted ? "currentColor" : "none"} />
-                        <span className="text-sm font-bold">{r.votes_count}</span>
-                      </button>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-display font-semibold">{r.title}</h3>
-                          <Badge className={`rounded-full text-xs ${statusColors[r.status] || ""}`}>{r.status}</Badge>
+            {requestsLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-3xl border border-border/50 p-5 flex items-center gap-4">
+                  <Skeleton className="h-16 w-[60px] rounded-2xl" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-1/2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                </div>
+              ))
+            ) : requests.length === 0 ? (
+              <div className="text-center py-20">
+                <span className="text-5xl block mb-4">🗳️</span>
+                <p className="font-display text-lg font-semibold mb-2">No design ideas yet</p>
+                <p className="text-muted-foreground text-sm">Be the first to submit one!</p>
+              </div>
+            ) : (
+              requests.map((r, i) => {
+                const hasVoted = votedIds.has(r.id);
+                return (
+                  <motion.div key={r.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                    <Card className="rounded-3xl border-border/50">
+                      <CardContent className="p-5 flex items-center gap-4">
+                        <button
+                          onClick={() => vote(r.id)}
+                          disabled={votingInProgress}
+                          className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all btn-squish min-w-[60px] ${
+                            hasVoted
+                              ? "bg-primary/30 text-primary"
+                              : "bg-muted/30 hover:bg-primary/20"
+                          } ${votingInProgress ? "opacity-50 cursor-not-allowed" : ""}`}
+                        >
+                          <ThumbsUp size={20} fill={hasVoted ? "currentColor" : "none"} />
+                          <span className="text-sm font-bold">{r.votes_count}</span>
+                        </button>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-display font-semibold">{r.title}</h3>
+                            <Badge className={`rounded-full text-xs ${statusColors[r.status] || ""}`}>{r.status}</Badge>
+                          </div>
+                          {r.description && <p className="text-muted-foreground text-sm">{r.description}</p>}
                         </div>
-                        {r.description && <p className="text-muted-foreground text-sm">{r.description}</p>}
-                      </div>
-                      {r.status === "planned" && <TrendingUp size={18} className="text-accent-foreground" />}
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                        {r.status === "planned" && <TrendingUp size={18} className="text-accent-foreground" />}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>
