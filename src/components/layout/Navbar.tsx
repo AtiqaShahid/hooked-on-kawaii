@@ -166,7 +166,7 @@ const Navbar = () => {
                     className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
                   >
                     <User size={16} />
-                    My Account
+                    {displayName || "Account"}
                   </Link>
                   <button
                     onClick={async () => { await signOut(); navigate("/"); }}
