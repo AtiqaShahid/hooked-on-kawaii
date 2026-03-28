@@ -316,30 +316,38 @@ const Community = () => {
     fetchPosts();
   }, []);
 
+  const [postSubmitting, setPostSubmitting] = useState(false);
+
   const submitPost = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast({ title: "Please log in", description: "You need to be logged in to post.", variant: "destructive" });
-      return;
-    }
-    const { data: profile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
-    const authorName = profile?.display_name || "Crochet Lover";
-    
-    const { data: newPost, error } = await supabase.from("community_posts").insert({
-      user_id: user.id, title: authorName, content, is_approved: true,
-    }).select("*").single();
-    if (error) {
-      toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
-    } else if (newPost) {
-      const postWithMeta: Post = {
-        ...newPost,
-        author_name: authorName,
-        author_avatar: "🧶",
-        comments: [],
-      };
-      setPosts(prev => [postWithMeta, ...prev]);
-      toast({ title: "Post published successfully 🎉" });
-      setContent(""); setShowForm(false);
+    if (postSubmitting) return;
+    setPostSubmitting(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Please log in", description: "You need to be logged in to post.", variant: "destructive" });
+        return;
+      }
+      const { data: profile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
+      const authorName = profile?.display_name || "Crochet Lover";
+      
+      const { data: newPost, error } = await supabase.from("community_posts").insert({
+        user_id: user.id, title: authorName, content, is_approved: true,
+      }).select("*").single();
+      if (error) {
+        toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
+      } else if (newPost) {
+        const postWithMeta: Post = {
+          ...newPost,
+          author_name: authorName,
+          author_avatar: "🧶",
+          comments: [],
+        };
+        setPosts(prev => [postWithMeta, ...prev]);
+        toast({ title: "Post published successfully 🎉" });
+        setContent(""); setShowForm(false);
+      }
+    } finally {
+      setPostSubmitting(false);
     }
   };
 
