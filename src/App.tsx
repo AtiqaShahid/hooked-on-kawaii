@@ -10,6 +10,7 @@ import CartDrawer from "@/components/CartDrawer";
 import SocialProofToast from "@/components/SocialProofToast";
 import AIChatbot from "@/components/AIChatbot";
 import PopupBanner from "@/components/PopupBanner";
+import FloatingParticles from "@/components/visuals/FloatingParticles";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import ProductDetail from "./pages/ProductDetail";
