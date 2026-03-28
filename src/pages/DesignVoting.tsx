@@ -102,20 +102,26 @@ const DesignVoting = () => {
   };
 
   const submitRequest = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast({ title: "Please log in", variant: "destructive" });
-      return;
-    }
-    const { data: newReq, error } = await supabase.from("design_requests").insert({ user_id: user.id, title, description: description || null }).select("*").single();
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Submitted! 🎨", description: "Your design idea has been submitted." });
-      if (newReq) setRequests(prev => [{ ...newReq, votes_count: newReq.votes_count || 0, status: newReq.status || "open" }, ...prev]);
-      setTitle("");
-      setDescription("");
-      setShowForm(false);
+    if (submittingRequest) return;
+    setSubmittingRequest(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Please log in", variant: "destructive" });
+        return;
+      }
+      const { data: newReq, error } = await supabase.from("design_requests").insert({ user_id: user.id, title, description: description || null }).select("*").single();
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else {
+        toast({ title: "Submitted! 🎨", description: "Your design idea has been submitted." });
+        if (newReq) setRequests(prev => [{ ...newReq, votes_count: newReq.votes_count || 0, status: newReq.status || "open" }, ...prev]);
+        setTitle("");
+        setDescription("");
+        setShowForm(false);
+      }
+    } finally {
+      setSubmittingRequest(false);
     }
   };
 
