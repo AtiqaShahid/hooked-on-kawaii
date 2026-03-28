@@ -5,6 +5,7 @@ import { ShoppingBag, Heart, Search, Menu, X, Sparkles, ChevronDown, User, LogOu
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import SearchDialog from "@/components/SearchDialog";
 import WishlistDrawer from "@/components/WishlistDrawer";
 
