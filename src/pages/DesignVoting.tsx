@@ -48,7 +48,7 @@ const DesignVoting = () => {
         if (votes) setVotedIds(new Set(votes.map(v => v.request_id)));
       }
     };
-    load();
+    load().finally(() => setRequestsLoading(false));
   }, []);
 
   const vote = async (id: string) => {
