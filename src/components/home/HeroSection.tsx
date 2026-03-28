@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { lazy, Suspense } from "react";
 import heroCollection from "@/assets/hero-collection.jpg";
+
+const YarnBall3D = lazy(() => import("@/components/visuals/YarnBall3D"));
 
 const HeroSection = () => (
   <section className="relative min-h-screen bg-gradient-hero overflow-hidden flex items-center pt-24">
