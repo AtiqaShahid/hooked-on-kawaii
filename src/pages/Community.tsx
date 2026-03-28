@@ -379,8 +379,8 @@ const Community = () => {
                   )}
                   <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Tell us about your crochet creation..." rows={4}
                     className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none" />
-                  <Button onClick={submitPost} disabled={!content.trim()} className="rounded-2xl btn-squish">
-                    <Send size={16} /> Publish
+                  <Button onClick={submitPost} disabled={!content.trim() || postSubmitting} className="rounded-2xl btn-squish">
+                    {postSubmitting ? <><Loader2 size={16} className="animate-spin" /> Publishing...</> : <><Send size={16} /> Publish</>}
                   </Button>
                 </CardContent>
               </Card>
