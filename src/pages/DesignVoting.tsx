@@ -27,12 +27,14 @@ const statusColors: Record<string, string> = {
 
 const DesignVoting = () => {
   const [requests, setRequests] = useState<DesignRequest[]>([]);
+  const [requestsLoading, setRequestsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [votedIds, setVotedIds] = useState<Set<string>>(new Set());
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [votingInProgress, setVotingInProgress] = useState(false);
+  const [submittingRequest, setSubmittingRequest] = useState(false);
 
   useEffect(() => {
     const load = async () => {
