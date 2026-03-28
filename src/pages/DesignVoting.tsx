@@ -31,6 +31,7 @@ const DesignVoting = () => {
   const [description, setDescription] = useState("");
   const [votedIds, setVotedIds] = useState<Set<string>>(new Set());
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [votingInProgress, setVotingInProgress] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -48,11 +49,14 @@ const DesignVoting = () => {
   }, []);
 
   const vote = async (id: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast({ title: "Please log in", description: "You need an account to vote.", variant: "destructive" });
-      return;
-    }
+    if (votingInProgress) return;
+    setVotingInProgress(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Please log in", description: "You need an account to vote.", variant: "destructive" });
+        return;
+      }
 
     // Toggle: if already voted, remove vote
     if (votedIds.has(id)) {
@@ -89,6 +93,9 @@ const DesignVoting = () => {
       await supabase.from("design_requests").update({ votes_count: current.votes_count + 1 }).eq("id", id);
     }
     toast({ title: "Voted! 🎉" });
+    } finally {
+      setVotingInProgress(false);
+    }
   };
 
   const submitRequest = async () => {
