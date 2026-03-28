@@ -390,15 +390,31 @@ const Community = () => {
           )}
 
           <div className="space-y-6">
-            {posts.map((post, i) => (
-              <PostCard key={post.id} post={post} index={i} />
-            ))}
-            {posts.length === 0 && (
+            {postsLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="rounded-3xl border border-border/50 p-5 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-16" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-48 w-full rounded-2xl" />
+                </div>
+              ))
+            ) : posts.length === 0 ? (
               <div className="text-center py-20">
                 <span className="text-5xl block mb-4">💬</span>
                 <p className="font-display text-lg font-semibold mb-2">No posts yet</p>
                 <p className="text-muted-foreground text-sm">Be the first to share your creation!</p>
               </div>
+            ) : (
+              posts.map((post, i) => (
+                <PostCard key={post.id} post={post} index={i} />
+              ))
             )}
           </div>
         </div>
