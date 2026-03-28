@@ -147,7 +147,9 @@ const DesignVoting = () => {
                 <CardContent className="p-6 space-y-4">
                   <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="Your design idea..." className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50" />
                   <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe your idea..." rows={3} className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none" />
-                  <Button onClick={submitRequest} disabled={!title} className="rounded-2xl btn-squish"><Send size={16} /> Submit</Button>
+                  <Button onClick={submitRequest} disabled={!title || submittingRequest} className="rounded-2xl btn-squish">
+                    {submittingRequest ? <><Loader2 size={16} className="animate-spin" /> Submitting...</> : <><Send size={16} /> Submit</>}
+                  </Button>
                 </CardContent>
               </Card>
             </motion.div>
