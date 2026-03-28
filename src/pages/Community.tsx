@@ -321,13 +321,25 @@ const Community = () => {
       toast({ title: "Please log in", description: "You need to be logged in to post.", variant: "destructive" });
       return;
     }
-    const { error } = await supabase.from("community_posts").insert({
-      user_id: user.id, title, content, is_approved: false,
-    });
+    // Get user profile for display name
+    const { data: profile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
+    const authorName = profile?.display_name || title;
+    
+    const { data: newPost, error } = await supabase.from("community_posts").insert({
+      user_id: user.id, title, content, is_approved: true,
+    }).select("*").single();
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Posted! 🎉", description: "Your post will appear after approval." });
+    } else if (newPost) {
+      // Add to feed immediately
+      const postWithMeta: Post = {
+        ...newPost,
+        author_name: authorName,
+        author_avatar: "🧶",
+        comments: [],
+      };
+      setPosts(prev => [postWithMeta, ...prev]);
+      toast({ title: "Post published successfully 🎉" });
       setTitle(""); setContent(""); setShowForm(false);
     }
   };
