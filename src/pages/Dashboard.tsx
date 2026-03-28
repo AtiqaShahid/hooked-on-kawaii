@@ -114,7 +114,19 @@ const Dashboard = () => {
     enabled: !!uid,
   });
 
-  const totalPoints = loyaltyData.reduce((sum: number, p: any) => sum + (p.points || 0), 0);
+  // Craft stories
+  const { data: myStories = [] } = useQuery({
+    queryKey: ["my-stories", uid],
+    queryFn: async () => {
+      if (!uid) return [];
+      const { data } = await supabase.from("craft_stories").select("*").eq("user_id", uid).order("created_at", { ascending: false });
+      return data || [];
+    },
+    enabled: !!uid,
+  });
+
+  const [storyForm, setStoryForm] = useState({ title: "", content: "", image_url: "" });
+  const [showStoryForm, setShowStoryForm] = useState(false);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
