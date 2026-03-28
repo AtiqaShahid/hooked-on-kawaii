@@ -5,6 +5,7 @@ import { ShoppingBag, Heart, Search, Menu, X, Sparkles, ChevronDown, User, LogOu
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import SearchDialog from "@/components/SearchDialog";
 import WishlistDrawer from "@/components/WishlistDrawer";
 
@@ -80,6 +81,13 @@ const Navbar = () => {
   const { totalItems, setIsOpen: setCartOpen } = useCart();
   const { wishlist } = useWishlist();
   const { user, signOut } = useAuth();
+  const [displayName, setDisplayName] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) { setDisplayName(null); return; }
+    supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => { if (data?.display_name) setDisplayName(data.display_name.split(" ")[0]); });
+  }, [user]);
 
   const createPaths = createLinks.map(l => l.path);
   const explorePaths = exploreLinks.map(l => l.path);
@@ -158,7 +166,7 @@ const Navbar = () => {
                     className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-secondary text-secondary-foreground text-sm font-medium transition-all btn-squish hover:shadow-soft"
                   >
                     <User size={16} />
-                    My Account
+                    {displayName || "Account"}
                   </Link>
                   <button
                     onClick={async () => { await signOut(); navigate("/"); }}
@@ -234,7 +242,7 @@ const Navbar = () => {
                 { path: "/about", label: "💕 About" },
                 { path: "/contact", label: "💌 Contact" },
                 ...(user
-                  ? [{ path: "/dashboard", label: "👤 My Account" }]
+                  ? [{ path: "/dashboard", label: `👤 ${displayName || "Account"}` }]
                   : [{ path: "/login", label: "👤 Login / Sign Up" }]
                 ),
               ].map((link, i) => (

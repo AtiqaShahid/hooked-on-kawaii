@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ShoppingBag, MessageSquare, Users, Gift } from "lucide-react";
-import { Link } from "react-router-dom";
+import { ShoppingBag, MessageSquare, Users, Gift, Copy, Check } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useStoreSetting } from "@/hooks/useStoreSettings";
+import { toast } from "@/hooks/use-toast";
 
 const defaultTiers = [
   { name: "Yarn Starter", min: 0, max: 99, emoji: "🧶", perks: ["5% off next order"] },
@@ -15,18 +17,15 @@ const defaultTiers = [
   { name: "Hook Master", min: 600, max: 999999, emoji: "👑", perks: ["20% off", "Free surprise box", "Early access", "Exclusive designs"] },
 ];
 
-const earnWays = [
-  { action: "Make a purchase", points: "+1 per Rs. 100", icon: ShoppingBag },
-  { action: "Write a review", points: "+10 points", icon: MessageSquare },
-  { action: "Refer a friend", points: "+25 points", icon: Users },
-  { action: "Birthday bonus", points: "+50 points", icon: Gift },
-];
-
 const Loyalty = () => {
   const [totalPoints, setTotalPoints] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [referralCopied, setReferralCopied] = useState(false);
+  const [birthdayClaimed, setBirthdayClaimed] = useState(false);
   const { data: savedTiers } = useStoreSetting("loyalty_tiers");
+  const navigate = useNavigate();
 
   const tiers = (savedTiers && Array.isArray(savedTiers) && savedTiers.length > 0)
     ? (savedTiers as typeof defaultTiers)
@@ -37,8 +36,14 @@ const Loyalty = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoading(false); return; }
       setIsLoggedIn(true);
-      const { data } = await supabase.from("loyalty_points").select("points").eq("user_id", user.id);
-      if (data) setTotalPoints(data.reduce((sum, r) => sum + r.points, 0));
+      setUserId(user.id);
+      const { data } = await supabase.from("loyalty_points").select("*").eq("user_id", user.id);
+      if (data) {
+        setTotalPoints(data.reduce((sum, r) => sum + r.points, 0));
+        // Check if birthday bonus already claimed today
+        const today = new Date().toISOString().split("T")[0];
+        setBirthdayClaimed(data.some(r => r.reason === "birthday_bonus" && r.created_at.startsWith(today)));
+      }
       setLoading(false);
     };
     loadPoints();
@@ -55,6 +60,63 @@ const Loyalty = () => {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, []);
+
+  const handleReferral = async () => {
+    if (!userId) { toast({ title: "Please log in", variant: "destructive" }); return; }
+    const url = window.location.origin;
+    await navigator.clipboard.writeText(url);
+    setReferralCopied(true);
+    
+    // Check if already earned referral points today
+    const today = new Date().toISOString().split("T")[0];
+    const { data: existing } = await supabase.from("loyalty_points")
+      .select("id").eq("user_id", userId).eq("reason", "referral").gte("created_at", today);
+    
+    if (!existing?.length) {
+      await supabase.from("loyalty_points").insert({ user_id: userId, points: 25, reason: "referral" });
+      toast({ title: "Referral link copied & +25 points added! 🎉" });
+    } else {
+      toast({ title: "Link copied!", description: "Referral points already earned today." });
+    }
+    setTimeout(() => setReferralCopied(false), 3000);
+  };
+
+  const handleBirthday = async () => {
+    if (!userId) { toast({ title: "Please log in", variant: "destructive" }); return; }
+    
+    const { data: profile } = await supabase.from("profiles").select("birthday").eq("user_id", userId).maybeSingle();
+    const today = new Date();
+    const todayStr = `${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    
+    if (!profile?.birthday) {
+      toast({ title: "Set your birthday", description: "Go to Profile settings to add your birthday 🎂" });
+      return;
+    }
+    
+    const bday = new Date(profile.birthday);
+    const bdayStr = `${String(bday.getMonth() + 1).padStart(2, "0")}-${String(bday.getDate()).padStart(2, "0")}`;
+    
+    if (todayStr !== bdayStr) {
+      toast({ title: "🎂 Available on your birthday!", description: "Come back on your special day for +50 bonus points." });
+      return;
+    }
+    
+    if (birthdayClaimed) {
+      toast({ title: "Already claimed!", description: "You've already got your birthday bonus today 🎉" });
+      return;
+    }
+
+    await supabase.from("loyalty_points").insert({ user_id: userId, points: 50, reason: "birthday_bonus" });
+    setBirthdayClaimed(true);
+    toast({ title: "Happy Birthday! 🎂🎉", description: "+50 bonus points added!" });
+  };
+
+  const earnWays = [
+    { action: "Make a purchase", points: "+1 per Rs. 100", icon: ShoppingBag, onClick: () => navigate("/shop") },
+    { action: "Write a review", points: "+10 points", icon: MessageSquare, onClick: () => navigate("/shop") },
+    { action: "Refer a friend", points: "+25 points", icon: Users, onClick: handleReferral },
+    { action: "Birthday bonus", points: "+50 points", icon: Gift, onClick: handleBirthday },
+  ];
 
   const currentTier = tiers.find(t => totalPoints >= t.min && totalPoints <= t.max) || tiers[0];
   const nextTier = tiers[tiers.indexOf(currentTier) + 1];
@@ -104,9 +166,14 @@ const Loyalty = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
             {earnWays.map((w, i) => (
               <motion.div key={w.action} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-                <Card className="rounded-3xl border-border/50 card-hover text-center">
+                <Card
+                  className="rounded-3xl border-border/50 card-hover text-center cursor-pointer"
+                  onClick={w.onClick}
+                >
                   <CardContent className="p-5">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-3"><w.icon size={22} /></div>
+                    <div className="w-12 h-12 rounded-2xl bg-primary/20 flex items-center justify-center mx-auto mb-3">
+                      {w.action === "Refer a friend" && referralCopied ? <Check size={22} className="text-green-600" /> : <w.icon size={22} />}
+                    </div>
                     <p className="font-display font-semibold text-sm mb-1">{w.action}</p>
                     <p className="text-xs text-muted-foreground">{w.points}</p>
                   </CardContent>

@@ -4,7 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { User, Heart, ShoppingBag, MessageSquare, ThumbsUp, LogOut, Package, Star, Award, Palette, Settings, Edit2, Camera } from "lucide-react";
+import { User, Heart, ShoppingBag, MessageSquare, ThumbsUp, LogOut, Package, Star, Award, Palette, Settings, Edit2, Camera, BookOpen, Plus, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
@@ -114,6 +114,20 @@ const Dashboard = () => {
     enabled: !!uid,
   });
 
+  // Craft stories
+  const { data: myStories = [] } = useQuery({
+    queryKey: ["my-stories", uid],
+    queryFn: async () => {
+      if (!uid) return [];
+      const { data } = await supabase.from("craft_stories").select("*").eq("user_id", uid).order("created_at", { ascending: false });
+      return data || [];
+    },
+    enabled: !!uid,
+  });
+
+  const [storyForm, setStoryForm] = useState({ title: "", content: "", image_url: "" });
+  const [showStoryForm, setShowStoryForm] = useState(false);
+
   const totalPoints = loyaltyData.reduce((sum: number, p: any) => sum + (p.points || 0), 0);
 
   const handleLogout = async () => {
@@ -208,6 +222,7 @@ const Dashboard = () => {
                 { value: "wishlist", icon: Heart, label: "Wishlist" },
                 { value: "rewards", icon: Award, label: "Rewards" },
                 { value: "community", icon: MessageSquare, label: "Community" },
+                { value: "stories", icon: BookOpen, label: "Stories" },
                 { value: "designs", icon: Palette, label: "Designs" },
                 { value: "reviews", icon: Star, label: "Reviews" },
                 { value: "profile", icon: Settings, label: "Profile" },
@@ -408,9 +423,6 @@ const Dashboard = () => {
                         <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                           <span>{new Date(post.created_at).toLocaleDateString()}</span>
                           <span>❤️ {post.likes_count || 0}</span>
-                          <span className={`px-2 py-0.5 rounded-full ${post.is_approved ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-                            {post.is_approved ? "Approved" : "Pending"}
-                          </span>
                         </div>
                       </div>
                       {post.image_url && <img src={post.image_url} alt="" className="w-16 h-16 rounded-xl object-cover ml-4" />}
@@ -425,7 +437,90 @@ const Dashboard = () => {
               </div>
             </TabsContent>
 
-            {/* Designs */}
+            {/* Craft Stories */}
+            <TabsContent value="stories">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="font-display text-xl font-bold">My Craft Stories</h2>
+                  <Button className="rounded-2xl" onClick={() => setShowStoryForm(!showStoryForm)}>
+                    <Plus size={16} className="mr-1" /> Add Craft Story
+                  </Button>
+                </div>
+
+                {showStoryForm && (
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-3xl bg-card shadow-soft p-6 space-y-4">
+                    <input
+                      type="text"
+                      value={storyForm.title}
+                      onChange={e => setStoryForm({ ...storyForm, title: e.target.value })}
+                      placeholder="Story title..."
+                      className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                    <textarea
+                      value={storyForm.content}
+                      onChange={e => setStoryForm({ ...storyForm, content: e.target.value })}
+                      placeholder="Tell the story behind your creation..."
+                      rows={4}
+                      className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none"
+                    />
+                    <input
+                      type="text"
+                      value={storyForm.image_url}
+                      onChange={e => setStoryForm({ ...storyForm, image_url: e.target.value })}
+                      placeholder="Image URL (optional)"
+                      className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50"
+                    />
+                    <Button
+                      className="rounded-2xl"
+                      disabled={!storyForm.title || !storyForm.content}
+                      onClick={async () => {
+                        if (!uid) return;
+                        const slug = storyForm.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+                        const { error } = await supabase.from("craft_stories").insert({
+                          title: storyForm.title,
+                          content: storyForm.content,
+                          slug: slug + "-" + Date.now(),
+                          image_url: storyForm.image_url || null,
+                          user_id: uid,
+                          is_published: true,
+                        });
+                        if (error) {
+                          toast({ title: "Error", description: error.message, variant: "destructive" });
+                        } else {
+                          toast({ title: "Story published! ✨" });
+                          setStoryForm({ title: "", content: "", image_url: "" });
+                          setShowStoryForm(false);
+                          queryClient.invalidateQueries({ queryKey: ["my-stories"] });
+                        }
+                      }}
+                    >
+                      <Send size={16} className="mr-1" /> Publish Story
+                    </Button>
+                  </motion.div>
+                )}
+
+                {myStories.length === 0 && !showStoryForm ? (
+                  <div className="rounded-3xl bg-card shadow-soft p-10 text-center">
+                    <BookOpen size={40} className="mx-auto text-muted-foreground/40 mb-3" />
+                    <p className="text-muted-foreground">No craft stories yet</p>
+                    <p className="text-xs text-muted-foreground mt-1">Share the story behind your crochet creations!</p>
+                  </div>
+                ) : myStories.map((story: any) => (
+                  <div key={story.id} className="rounded-3xl bg-card shadow-soft overflow-hidden">
+                    {story.image_url && (
+                      <img src={story.image_url} alt="" className="w-full h-48 object-cover" />
+                    )}
+                    <div className="p-5">
+                      <h3 className="font-display font-semibold mb-1">{story.title}</h3>
+                      <p className="text-sm text-muted-foreground line-clamp-3">{story.content}</p>
+                      <p className="text-xs text-muted-foreground mt-2">{new Date(story.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+
+
             <TabsContent value="designs">
               <div className="space-y-6">
                 <h2 className="font-display text-xl font-bold">My Design Activity</h2>
