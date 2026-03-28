@@ -156,36 +156,55 @@ const DesignVoting = () => {
           )}
 
           <div className="space-y-4">
-            {requests.map((r, i) => {
-              const hasVoted = votedIds.has(r.id);
-              return (
-                <motion.div key={r.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                  <Card className="rounded-3xl border-border/50">
-                    <CardContent className="p-5 flex items-center gap-4">
-                      <button
-                        onClick={() => vote(r.id)}
-                        className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all btn-squish min-w-[60px] ${
-                          hasVoted
-                            ? "bg-primary/30 text-primary"
-                            : "bg-muted/30 hover:bg-primary/20"
-                        }`}
-                      >
-                        <ThumbsUp size={20} fill={hasVoted ? "currentColor" : "none"} />
-                        <span className="text-sm font-bold">{r.votes_count}</span>
-                      </button>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-display font-semibold">{r.title}</h3>
-                          <Badge className={`rounded-full text-xs ${statusColors[r.status] || ""}`}>{r.status}</Badge>
+            {requestsLoading ? (
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-3xl border border-border/50 p-5 flex items-center gap-4">
+                  <Skeleton className="h-16 w-[60px] rounded-2xl" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-5 w-1/2" />
+                    <Skeleton className="h-4 w-3/4" />
+                  </div>
+                </div>
+              ))
+            ) : requests.length === 0 ? (
+              <div className="text-center py-20">
+                <span className="text-5xl block mb-4">🗳️</span>
+                <p className="font-display text-lg font-semibold mb-2">No design ideas yet</p>
+                <p className="text-muted-foreground text-sm">Be the first to submit one!</p>
+              </div>
+            ) : (
+              requests.map((r, i) => {
+                const hasVoted = votedIds.has(r.id);
+                return (
+                  <motion.div key={r.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                    <Card className="rounded-3xl border-border/50">
+                      <CardContent className="p-5 flex items-center gap-4">
+                        <button
+                          onClick={() => vote(r.id)}
+                          disabled={votingInProgress}
+                          className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all btn-squish min-w-[60px] ${
+                            hasVoted
+                              ? "bg-primary/30 text-primary"
+                              : "bg-muted/30 hover:bg-primary/20"
+                          } ${votingInProgress ? "opacity-50 cursor-not-allowed" : ""}`}
+                        >
+                          <ThumbsUp size={20} fill={hasVoted ? "currentColor" : "none"} />
+                          <span className="text-sm font-bold">{r.votes_count}</span>
+                        </button>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-display font-semibold">{r.title}</h3>
+                            <Badge className={`rounded-full text-xs ${statusColors[r.status] || ""}`}>{r.status}</Badge>
+                          </div>
+                          {r.description && <p className="text-muted-foreground text-sm">{r.description}</p>}
                         </div>
-                        {r.description && <p className="text-muted-foreground text-sm">{r.description}</p>}
-                      </div>
-                      {r.status === "planned" && <TrendingUp size={18} className="text-accent-foreground" />}
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                        {r.status === "planned" && <TrendingUp size={18} className="text-accent-foreground" />}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>
