@@ -242,7 +242,7 @@ const Navbar = () => {
                 { path: "/about", label: "💕 About" },
                 { path: "/contact", label: "💌 Contact" },
                 ...(user
-                  ? [{ path: "/dashboard", label: "👤 My Account" }]
+                  ? [{ path: "/dashboard", label: `👤 ${displayName || "Account"}` }]
                   : [{ path: "/login", label: "👤 Login / Sign Up" }]
                 ),
               ].map((link, i) => (
