@@ -44,15 +44,19 @@ const Login = () => {
     setLoading(true);
 
     if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
-        options: { data: { full_name: name }, emailRedirectTo: window.location.origin },
+        options: { data: { full_name: name } },
       });
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else if (signUpData.session) {
+        toast({ title: "Welcome to HookOnLoop! 🧶" });
+        navigate("/dashboard");
       } else {
-        toast({ title: "Check your email! 📧", description: "Please verify your email to complete signup." });
+        toast({ title: "Account created! 🎉", description: "You can now sign in." });
+        setIsSignUp(false);
       }
     } else {
       const { data: signInData, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
