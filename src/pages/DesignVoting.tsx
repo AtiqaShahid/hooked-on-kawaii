@@ -48,25 +48,46 @@ const DesignVoting = () => {
   }, []);
 
   const vote = async (id: string) => {
-    if (votedIds.has(id)) {
-      toast({ title: "Already voted!", description: "You've already voted for this design." });
-      return;
-    }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       toast({ title: "Please log in", description: "You need an account to vote.", variant: "destructive" });
       return;
     }
+
+    // Toggle: if already voted, remove vote
+    if (votedIds.has(id)) {
+      const { error } = await supabase.from("design_votes").delete().eq("request_id", id).eq("user_id", user.id);
+      if (error) {
+        toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
+        return;
+      }
+      setVotedIds(prev => { const n = new Set(prev); n.delete(id); return n; });
+      setRequests(prev => prev.map(r => r.id === id ? { ...r, votes_count: Math.max(0, r.votes_count - 1) } : r));
+      // Update votes_count in DB
+      const current = requests.find(r => r.id === id);
+      if (current) {
+        await supabase.from("design_requests").update({ votes_count: Math.max(0, current.votes_count - 1) }).eq("id", id);
+      }
+      toast({ title: "Vote removed" });
+      return;
+    }
+
+    // Insert vote
     const { error } = await supabase.from("design_votes").insert({ request_id: id, user_id: user.id });
     if (error) {
       if (error.code === "23505") {
         setVotedIds(prev => new Set(prev).add(id));
-        toast({ title: "Already voted!", description: "You've already voted for this design." });
-      } else toast({ title: "Error", description: error.message, variant: "destructive" });
+        toast({ title: "Already voted!" });
+      } else toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
       return;
     }
     setVotedIds(prev => new Set(prev).add(id));
     setRequests(prev => prev.map(r => r.id === id ? { ...r, votes_count: r.votes_count + 1 } : r));
+    // Update votes_count in DB
+    const current = requests.find(r => r.id === id);
+    if (current) {
+      await supabase.from("design_requests").update({ votes_count: current.votes_count + 1 }).eq("id", id);
+    }
     toast({ title: "Voted! 🎉" });
   };
 
@@ -125,10 +146,9 @@ const DesignVoting = () => {
                     <CardContent className="p-5 flex items-center gap-4">
                       <button
                         onClick={() => vote(r.id)}
-                        disabled={hasVoted}
                         className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all btn-squish min-w-[60px] ${
                           hasVoted
-                            ? "bg-primary/30 text-primary cursor-default"
+                            ? "bg-primary/30 text-primary"
                             : "bg-muted/30 hover:bg-primary/20"
                         }`}
                       >

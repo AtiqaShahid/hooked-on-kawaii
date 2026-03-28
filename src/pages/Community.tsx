@@ -260,16 +260,19 @@ const PostCard = ({ post: initialPost, index }: { post: Post; index: number }) =
 const Community = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [showForm, setShowForm] = useState(false);
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [currentUserName, setCurrentUserName] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Fetch approved posts + user's own posts
-      let query = supabase.from("community_posts").select("*").order("created_at", { ascending: false });
-      
+      if (user) {
+        const { data: profile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
+        setCurrentUserName(profile?.display_name || null);
+      }
+
+      const query = supabase.from("community_posts").select("*").order("created_at", { ascending: false });
       const { data } = await query;
 
       if (!data?.length) {
@@ -277,7 +280,6 @@ const Community = () => {
         return;
       }
 
-      // Fetch comments for real posts
       const postIds = data.map((p: any) => p.id);
       const { data: comments } = await supabase
         .from("community_comments")
@@ -297,7 +299,6 @@ const Community = () => {
         });
       });
 
-      // Fetch author profiles
       const userIds = [...new Set(data.map((p: any) => p.user_id))];
       const { data: profiles } = await supabase.from("profiles").select("user_id, display_name").in("user_id", userIds);
       const profileMap: Record<string, string> = {};
@@ -305,7 +306,7 @@ const Community = () => {
 
       const dbPosts: Post[] = data.map((p: any) => ({
         ...p,
-        author_name: profileMap[p.user_id] || p.title,
+        author_name: profileMap[p.user_id] || "Crochet Lover",
         author_avatar: "🧶",
         comments: commentsByPost[p.id] || [],
       }));
@@ -321,17 +322,15 @@ const Community = () => {
       toast({ title: "Please log in", description: "You need to be logged in to post.", variant: "destructive" });
       return;
     }
-    // Get user profile for display name
     const { data: profile } = await supabase.from("profiles").select("display_name").eq("user_id", user.id).maybeSingle();
-    const authorName = profile?.display_name || title;
+    const authorName = profile?.display_name || "Crochet Lover";
     
     const { data: newPost, error } = await supabase.from("community_posts").insert({
-      user_id: user.id, title, content, is_approved: true,
+      user_id: user.id, title: authorName, content, is_approved: true,
     }).select("*").single();
     if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "Something went wrong", description: "Please try again.", variant: "destructive" });
     } else if (newPost) {
-      // Add to feed immediately
       const postWithMeta: Post = {
         ...newPost,
         author_name: authorName,
@@ -340,7 +339,7 @@ const Community = () => {
       };
       setPosts(prev => [postWithMeta, ...prev]);
       toast({ title: "Post published successfully 🎉" });
-      setTitle(""); setContent(""); setShowForm(false);
+      setContent(""); setShowForm(false);
     }
   };
 
@@ -364,12 +363,16 @@ const Community = () => {
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}>
               <Card className="rounded-3xl border-border/50 mb-8">
                 <CardContent className="p-6 space-y-4">
-                  <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Your name..."
-                    className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                  {currentUserName && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span className="text-lg">🧶</span>
+                      <span>Posting as <strong className="text-foreground">{currentUserName}</strong></span>
+                    </div>
+                  )}
                   <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Tell us about your crochet creation..." rows={4}
                     className="w-full p-3 rounded-2xl bg-muted/30 border border-border/50 text-sm font-body focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none" />
-                  <Button onClick={submitPost} disabled={!title} className="rounded-2xl btn-squish">
-                    <Send size={16} /> Submit
+                  <Button onClick={submitPost} disabled={!content.trim()} className="rounded-2xl btn-squish">
+                    <Send size={16} /> Publish
                   </Button>
                 </CardContent>
               </Card>
