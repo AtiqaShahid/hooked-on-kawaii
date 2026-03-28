@@ -105,12 +105,19 @@
     @apply transition-all duration-500 ease-out;
   }
   .card-hover:hover {
-    transform: translateY(-6px);
+    transform: translateY(-8px) scale(1.01);
     box-shadow: var(--shadow-float);
+  }
+  .card-hover:hover img {
+    transform: scale(1.05);
   }
 
   .btn-squish {
-    @apply transition-transform duration-150;
+    @apply transition-all duration-200;
+  }
+  .btn-squish:hover {
+    transform: scale(1.03);
+    box-shadow: var(--shadow-glow);
   }
   .btn-squish:active {
     transform: scale(0.95);
