@@ -29,16 +29,29 @@ const DesignVoting = () => {
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [votedIds, setVotedIds] = useState<Set<string>>(new Set());
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetch = async () => {
+    const load = async () => {
       const { data } = await supabase.from("design_requests").select("*").order("votes_count", { ascending: false });
       if (data) setRequests(data);
+
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUserId(user.id);
+        const { data: votes } = await supabase.from("design_votes").select("request_id").eq("user_id", user.id);
+        if (votes) setVotedIds(new Set(votes.map(v => v.request_id)));
+      }
     };
-    fetch();
+    load();
   }, []);
 
   const vote = async (id: string) => {
+    if (votedIds.has(id)) {
+      toast({ title: "Already voted!", description: "You've already voted for this design." });
+      return;
+    }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       toast({ title: "Please log in", description: "You need an account to vote.", variant: "destructive" });
@@ -46,10 +59,13 @@ const DesignVoting = () => {
     }
     const { error } = await supabase.from("design_votes").insert({ request_id: id, user_id: user.id });
     if (error) {
-      if (error.code === "23505") toast({ title: "Already voted!", description: "You've already voted for this design." });
-      else toast({ title: "Error", description: error.message, variant: "destructive" });
+      if (error.code === "23505") {
+        setVotedIds(prev => new Set(prev).add(id));
+        toast({ title: "Already voted!", description: "You've already voted for this design." });
+      } else toast({ title: "Error", description: error.message, variant: "destructive" });
       return;
     }
+    setVotedIds(prev => new Set(prev).add(id));
     setRequests(prev => prev.map(r => r.id === id ? { ...r, votes_count: r.votes_count + 1 } : r));
     toast({ title: "Voted! 🎉" });
   };
@@ -60,13 +76,15 @@ const DesignVoting = () => {
       toast({ title: "Please log in", variant: "destructive" });
       return;
     }
-    const { error } = await supabase.from("design_requests").insert({ user_id: user.id, title, description: description || null });
+    const { data: newReq, error } = await supabase.from("design_requests").insert({ user_id: user.id, title, description: description || null }).select("*").single();
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Submitted! 🎨", description: "Your design idea has been submitted." });
+      if (newReq) setRequests(prev => [{ ...newReq, votes_count: newReq.votes_count || 0, status: newReq.status || "open" }, ...prev]);
       setTitle("");
       setDescription("");
+      setShowForm(false);
     }
   };
 
@@ -99,26 +117,37 @@ const DesignVoting = () => {
           )}
 
           <div className="space-y-4">
-            {requests.map((r, i) => (
-              <motion.div key={r.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                <Card className="rounded-3xl border-border/50">
-                  <CardContent className="p-5 flex items-center gap-4">
-                    <button onClick={() => vote(r.id)} className="flex flex-col items-center gap-1 p-3 rounded-2xl bg-muted/30 hover:bg-primary/20 transition-all btn-squish min-w-[60px]">
-                      <ThumbsUp size={20} />
-                      <span className="text-sm font-bold">{r.votes_count}</span>
-                    </button>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-display font-semibold">{r.title}</h3>
-                        <Badge className={`rounded-full text-xs ${statusColors[r.status] || ""}`}>{r.status}</Badge>
+            {requests.map((r, i) => {
+              const hasVoted = votedIds.has(r.id);
+              return (
+                <motion.div key={r.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                  <Card className="rounded-3xl border-border/50">
+                    <CardContent className="p-5 flex items-center gap-4">
+                      <button
+                        onClick={() => vote(r.id)}
+                        disabled={hasVoted}
+                        className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all btn-squish min-w-[60px] ${
+                          hasVoted
+                            ? "bg-primary/30 text-primary cursor-default"
+                            : "bg-muted/30 hover:bg-primary/20"
+                        }`}
+                      >
+                        <ThumbsUp size={20} fill={hasVoted ? "currentColor" : "none"} />
+                        <span className="text-sm font-bold">{r.votes_count}</span>
+                      </button>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-display font-semibold">{r.title}</h3>
+                          <Badge className={`rounded-full text-xs ${statusColors[r.status] || ""}`}>{r.status}</Badge>
+                        </div>
+                        {r.description && <p className="text-muted-foreground text-sm">{r.description}</p>}
                       </div>
-                      {r.description && <p className="text-muted-foreground text-sm">{r.description}</p>}
-                    </div>
-                    {r.status === "planned" && <TrendingUp size={18} className="text-accent-foreground" />}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                      {r.status === "planned" && <TrendingUp size={18} className="text-accent-foreground" />}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </div>
