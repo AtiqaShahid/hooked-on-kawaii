@@ -146,10 +146,9 @@ const DesignVoting = () => {
                     <CardContent className="p-5 flex items-center gap-4">
                       <button
                         onClick={() => vote(r.id)}
-                        disabled={hasVoted}
                         className={`flex flex-col items-center gap-1 p-3 rounded-2xl transition-all btn-squish min-w-[60px] ${
                           hasVoted
-                            ? "bg-primary/30 text-primary cursor-default"
+                            ? "bg-primary/30 text-primary"
                             : "bg-muted/30 hover:bg-primary/20"
                         }`}
                       >
