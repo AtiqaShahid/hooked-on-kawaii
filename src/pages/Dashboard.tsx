@@ -208,6 +208,7 @@ const Dashboard = () => {
                 { value: "wishlist", icon: Heart, label: "Wishlist" },
                 { value: "rewards", icon: Award, label: "Rewards" },
                 { value: "community", icon: MessageSquare, label: "Community" },
+                { value: "stories", icon: BookOpen, label: "Stories" },
                 { value: "designs", icon: Palette, label: "Designs" },
                 { value: "reviews", icon: Star, label: "Reviews" },
                 { value: "profile", icon: Settings, label: "Profile" },
