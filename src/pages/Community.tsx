@@ -314,7 +314,7 @@ const Community = () => {
 
       setPosts(dbPosts);
     };
-    fetchPosts();
+    fetchPosts().finally(() => setPostsLoading(false));
   }, []);
 
   const [postSubmitting, setPostSubmitting] = useState(false);
