@@ -265,10 +265,12 @@ const Community = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const { data } = await supabase
-        .from("community_posts")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Fetch approved posts + user's own posts
+      let query = supabase.from("community_posts").select("*").order("created_at", { ascending: false });
+      
+      const { data } = await query;
 
       if (!data?.length) {
         setPosts(MOCK_POSTS);
@@ -295,9 +297,15 @@ const Community = () => {
         });
       });
 
+      // Fetch author profiles
+      const userIds = [...new Set(data.map((p: any) => p.user_id))];
+      const { data: profiles } = await supabase.from("profiles").select("user_id, display_name").in("user_id", userIds);
+      const profileMap: Record<string, string> = {};
+      (profiles || []).forEach((p: any) => { profileMap[p.user_id] = p.display_name || "User"; });
+
       const dbPosts: Post[] = data.map((p: any) => ({
         ...p,
-        author_name: p.title,
+        author_name: profileMap[p.user_id] || p.title,
         author_avatar: "🧶",
         comments: commentsByPost[p.id] || [],
       }));
