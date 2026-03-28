@@ -432,11 +432,13 @@ export type Database = {
           created_at: string
           difficulty: string | null
           download_url: string | null
+          external_url: string | null
           id: string
           image_url: string | null
           is_published: boolean | null
           slug: string
           title: string
+          type: string | null
         }
         Insert: {
           category: string
@@ -444,11 +446,13 @@ export type Database = {
           created_at?: string
           difficulty?: string | null
           download_url?: string | null
+          external_url?: string | null
           id?: string
           image_url?: string | null
           is_published?: boolean | null
           slug: string
           title: string
+          type?: string | null
         }
         Update: {
           category?: string
@@ -456,11 +460,13 @@ export type Database = {
           created_at?: string
           difficulty?: string | null
           download_url?: string | null
+          external_url?: string | null
           id?: string
           image_url?: string | null
           is_published?: boolean | null
           slug?: string
           title?: string
+          type?: string | null
         }
         Relationships: []
       }

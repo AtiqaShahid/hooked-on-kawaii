@@ -3,7 +3,7 @@ import { useNavigate, Outlet } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AdminSidebar from "./AdminSidebar";
-import { Loader2, LogOut } from "lucide-react";
+import { Loader2, LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 
@@ -73,6 +73,9 @@ const AdminLayout = () => {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-muted-foreground hidden sm:block">{user?.email}</span>
+              <Button variant="outline" size="sm" onClick={() => navigate("/")} className="rounded-xl text-muted-foreground hover:text-primary gap-1.5">
+                <ArrowLeft size={14} /> Back to Site
+              </Button>
               <Button variant="ghost" size="sm" onClick={handleLogout} className="rounded-xl text-muted-foreground hover:text-destructive">
                 <LogOut size={16} />
               </Button>
