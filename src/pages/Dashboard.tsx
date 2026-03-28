@@ -128,6 +128,8 @@ const Dashboard = () => {
   const [storyForm, setStoryForm] = useState({ title: "", content: "", image_url: "" });
   const [showStoryForm, setShowStoryForm] = useState(false);
 
+  const totalPoints = loyaltyData.reduce((sum: number, p: any) => sum + (p.points || 0), 0);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast({ title: "Logged out", description: "See you soon! 💕" });
