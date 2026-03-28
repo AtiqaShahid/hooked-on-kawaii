@@ -49,11 +49,14 @@ const DesignVoting = () => {
   }, []);
 
   const vote = async (id: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast({ title: "Please log in", description: "You need an account to vote.", variant: "destructive" });
-      return;
-    }
+    if (votingInProgress) return;
+    setVotingInProgress(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({ title: "Please log in", description: "You need an account to vote.", variant: "destructive" });
+        return;
+      }
 
     // Toggle: if already voted, remove vote
     if (votedIds.has(id)) {
