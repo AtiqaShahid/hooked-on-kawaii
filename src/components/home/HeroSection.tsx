@@ -9,6 +9,9 @@ const YarnBall3D = lazy(() => import("@/components/visuals/YarnBall3D"));
 const HeroSection = () => (
   <section className="relative min-h-screen bg-gradient-hero overflow-hidden flex items-center pt-24">
     <div className="absolute inset-0 stitch-bg opacity-50" />
+    <Suspense fallback={null}>
+      <YarnBall3D />
+    </Suspense>
 
     {/* Floating elements - repositioned to corners/edges to never overlap content */}
     <motion.div

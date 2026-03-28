@@ -70,6 +70,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <FloatingParticles />
             <ScrollToTop />
             <CartDrawer />
             <SocialProofToast />
