@@ -259,6 +259,7 @@ const PostCard = ({ post: initialPost, index }: { post: Post; index: number }) =
 
 const Community = () => {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [postsLoading, setPostsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [content, setContent] = useState("");
   const [currentUserName, setCurrentUserName] = useState<string | null>(null);
