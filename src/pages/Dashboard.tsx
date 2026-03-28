@@ -409,9 +409,6 @@ const Dashboard = () => {
                         <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                           <span>{new Date(post.created_at).toLocaleDateString()}</span>
                           <span>❤️ {post.likes_count || 0}</span>
-                          <span className={`px-2 py-0.5 rounded-full ${post.is_approved ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-                            {post.is_approved ? "Approved" : "Pending"}
-                          </span>
                         </div>
                       </div>
                       {post.image_url && <img src={post.image_url} alt="" className="w-16 h-16 rounded-xl object-cover ml-4" />}
