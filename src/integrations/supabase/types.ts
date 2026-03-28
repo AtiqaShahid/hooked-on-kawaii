@@ -228,6 +228,7 @@ export type Database = {
           slug: string
           time_to_make: string | null
           title: string
+          user_id: string | null
         }
         Insert: {
           content: string
@@ -239,6 +240,7 @@ export type Database = {
           slug: string
           time_to_make?: string | null
           title: string
+          user_id?: string | null
         }
         Update: {
           content?: string
@@ -250,6 +252,7 @@ export type Database = {
           slug?: string
           time_to_make?: string | null
           title?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -769,6 +772,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          birthday: string | null
           created_at: string
           display_name: string | null
           id: string
@@ -778,6 +782,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          birthday?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
@@ -787,6 +792,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          birthday?: string | null
           created_at?: string
           display_name?: string | null
           id?: string
