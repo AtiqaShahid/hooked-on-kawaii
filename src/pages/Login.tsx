@@ -55,9 +55,13 @@ const Login = () => {
         toast({ title: "Check your email! 📧", description: "Please verify your email to complete signup." });
       }
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      const { data: signInData, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
       if (error) {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
+        if (error.message?.toLowerCase().includes("email not confirmed")) {
+          toast({ title: "Email not verified ✉️", description: "Please check your inbox and verify your email before logging in.", variant: "destructive" });
+        } else {
+          toast({ title: "Error", description: error.message, variant: "destructive" });
+        }
       } else {
         toast({ title: "Welcome back! 💕" });
         navigate("/dashboard");

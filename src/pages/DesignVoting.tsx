@@ -31,6 +31,7 @@ const DesignVoting = () => {
   const [description, setDescription] = useState("");
   const [votedIds, setVotedIds] = useState<Set<string>>(new Set());
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [votingInProgress, setVotingInProgress] = useState(false);
 
   useEffect(() => {
     const load = async () => {
