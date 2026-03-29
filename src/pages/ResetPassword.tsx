@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { AUTH_REDIRECTS } from "@/lib/authRedirects";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
@@ -54,15 +55,18 @@ const ResetPassword = () => {
       toast({ title: "Enter your email", variant: "destructive" });
       return;
     }
+
     setResending(true);
     const { error } = await supabase.auth.resetPasswordForEmail(resendEmail.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: AUTH_REDIRECTS.resetPassword,
     });
+
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Reset link sent! 📧", description: "Check your email for a new reset link." });
     }
+
     setResending(false);
   };
 
@@ -109,7 +113,7 @@ const ResetPassword = () => {
           <div className="max-w-md mx-auto text-center">
             <h1 className="font-display text-2xl font-bold mb-4">Reset Link Expired 🔗</h1>
             <p className="text-muted-foreground mb-6">This link is invalid or has expired. Request a new one below.</p>
-            
+
             <form onSubmit={handleResend} className="space-y-4 rounded-3xl bg-card shadow-soft p-6">
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
