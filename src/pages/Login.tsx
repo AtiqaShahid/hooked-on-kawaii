@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Mail, Lock, User as UserIcon } from "lucide-react";
+import { AUTH_REDIRECTS } from "@/lib/authRedirects";
 
 const Login = () => {
   const navigate = useNavigate();

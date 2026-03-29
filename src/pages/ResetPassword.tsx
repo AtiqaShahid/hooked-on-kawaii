@@ -19,27 +19,25 @@ const ResetPassword = () => {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Listen for PASSWORD_RECOVERY event from the hash fragment
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "PASSWORD_RECOVERY") {
+    const hash = window.location.hash;
+    const hasRecoveryToken = hash.includes("type=recovery") || hash.includes("access_token=");
+
+    const checkRecoveryState = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsRecovery(Boolean(session) || hasRecoveryToken);
+      setChecking(false);
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY" || Boolean(session)) {
         setIsRecovery(true);
         setChecking(false);
       }
     });
 
-    // Also check hash for recovery type
-    const hash = window.location.hash;
-    if (hash && hash.includes("type=recovery")) {
-      setIsRecovery(true);
-    }
+    checkRecoveryState();
 
-    // Give it a moment to process the hash
-    const timeout = setTimeout(() => setChecking(false), 2000);
-
-    return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
