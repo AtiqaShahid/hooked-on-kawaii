@@ -67,9 +67,9 @@ const AdminLayout = () => {
           <header className="h-14 flex items-center justify-between border-b border-border/50 bg-card px-4 shrink-0">
             <div className="flex items-center gap-3">
               <SidebarTrigger />
-              <span className="text-sm text-muted-foreground hidden sm:block">
+              <a href="/" className="text-sm text-muted-foreground hidden sm:block hover:text-primary transition-colors hover:underline underline-offset-2">
                 🧶 Crochet World Admin
-              </span>
+              </a>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xs text-muted-foreground hidden sm:block">{user?.email}</span>

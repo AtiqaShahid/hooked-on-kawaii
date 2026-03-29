@@ -15,12 +15,12 @@ const stages = [
   { key: "delivered", label: "Delivered", icon: MapPin, emoji: "💕" },
 ];
 
-type Order = { id: string; total: number; status: string; tracking_stage: string; created_at: string; is_mock?: boolean };
+type OrderItem = { id: string; product_id: string | null; quantity: number; price: number; color: string | null; product_name?: string };
+type Order = { id: string; total: number; status: string; tracking_stage: string; created_at: string; is_mock?: boolean; items?: OrderItem[] };
 
 const MOCK_ORDERS: Order[] = [
-  { id: "demo-a1b2c3d4", total: 4500, status: "processing", tracking_stage: "crocheting", created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), is_mock: true },
-  { id: "demo-e5f6g7h8", total: 1500, status: "shipped", tracking_stage: "shipped", created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), is_mock: true },
-  { id: "demo-i9j0k1l2", total: 8900, status: "delivered", tracking_stage: "delivered", created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(), is_mock: true },
+  { id: "demo-a1b2c3d4", total: 4500, status: "processing", tracking_stage: "crocheting", created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), is_mock: true, items: [{ id: "1", product_id: null, quantity: 2, price: 1500, color: null, product_name: "Crochet Sunflower Keychain" }, { id: "2", product_id: null, quantity: 1, price: 1500, color: null, product_name: "Mini Crochet Bunny" }] },
+  { id: "demo-e5f6g7h8", total: 1500, status: "shipped", tracking_stage: "shipped", created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), is_mock: true, items: [{ id: "3", product_id: null, quantity: 1, price: 1500, color: null, product_name: "Rose Bouquet" }] },
 ];
 
 const OrderTracker = () => {
@@ -29,7 +29,7 @@ const OrderTracker = () => {
   const [usingMock, setUsingMock] = useState(false);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchOrders = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setOrders(MOCK_ORDERS);
@@ -37,16 +37,48 @@ const OrderTracker = () => {
         setLoading(false);
         return;
       }
-      const { data } = await supabase.from("orders").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
-      if (data && data.length > 0) {
-        setOrders(data as Order[]);
+
+      const { data: ordersData } = await supabase
+        .from("orders")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+
+      if (ordersData && ordersData.length > 0) {
+        // Fetch order items with product names for each order
+        const ordersWithItems = await Promise.all(
+          ordersData.map(async (order) => {
+            const { data: items } = await supabase
+              .from("order_items")
+              .select("id, product_id, quantity, price, color")
+              .eq("order_id", order.id);
+
+            const itemsWithNames = await Promise.all(
+              (items || []).map(async (item) => {
+                let product_name = "Unknown Product";
+                if (item.product_id) {
+                  const { data: product } = await supabase
+                    .from("products")
+                    .select("name")
+                    .eq("id", item.product_id)
+                    .single();
+                  if (product) product_name = product.name;
+                }
+                return { ...item, product_name };
+              })
+            );
+
+            return { ...order, items: itemsWithNames } as Order;
+          })
+        );
+        setOrders(ordersWithItems);
       } else {
         setOrders(MOCK_ORDERS);
         setUsingMock(true);
       }
       setLoading(false);
     };
-    fetch();
+    fetchOrders();
   }, []);
 
   const getStageIndex = (stage: string) => stages.findIndex(s => s.key === stage);
@@ -82,9 +114,23 @@ const OrderTracker = () => {
                         <div>
                           <p className="font-display font-semibold">Order #{order.id.slice(0, 8)}</p>
                           <p className="text-sm text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
+                          <p className="text-xs text-muted-foreground capitalize">Status: {order.status}</p>
                         </div>
                         <p className="font-display font-bold text-lg">Rs. {order.total.toLocaleString()}</p>
                       </div>
+
+                      {/* Product list */}
+                      {order.items && order.items.length > 0 && (
+                        <div className="mb-4 p-3 rounded-2xl bg-muted/40">
+                          <p className="text-xs font-semibold text-muted-foreground mb-2">Products:</p>
+                          {order.items.map((item) => (
+                            <div key={item.id} className="flex justify-between text-sm py-0.5">
+                              <span className="font-body text-foreground">• {item.product_name} {item.color ? `(${item.color})` : ""}</span>
+                              <span className="text-muted-foreground">x{item.quantity}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                       <div className="relative">
                         {/* Progress bar */}
