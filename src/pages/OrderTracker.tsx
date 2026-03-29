@@ -114,9 +114,23 @@ const OrderTracker = () => {
                         <div>
                           <p className="font-display font-semibold">Order #{order.id.slice(0, 8)}</p>
                           <p className="text-sm text-muted-foreground">{new Date(order.created_at).toLocaleDateString()}</p>
+                          <p className="text-xs text-muted-foreground capitalize">Status: {order.status}</p>
                         </div>
                         <p className="font-display font-bold text-lg">Rs. {order.total.toLocaleString()}</p>
                       </div>
+
+                      {/* Product list */}
+                      {order.items && order.items.length > 0 && (
+                        <div className="mb-4 p-3 rounded-2xl bg-muted/40">
+                          <p className="text-xs font-semibold text-muted-foreground mb-2">Products:</p>
+                          {order.items.map((item) => (
+                            <div key={item.id} className="flex justify-between text-sm py-0.5">
+                              <span className="font-body text-foreground">• {item.product_name} {item.color ? `(${item.color})` : ""}</span>
+                              <span className="text-muted-foreground">x{item.quantity}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
 
                       <div className="relative">
                         {/* Progress bar */}

@@ -29,7 +29,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/login`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
