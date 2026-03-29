@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Lock, Eye, EyeOff, Loader2 } from "lucide-react";
+import { Lock, Eye, EyeOff, Loader2, Mail, RefreshCw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,28 +17,54 @@ const ResetPassword = () => {
   const [loading, setLoading] = useState(false);
   const [isRecovery, setIsRecovery] = useState(false);
   const [checking, setChecking] = useState(true);
+  const [resendEmail, setResendEmail] = useState("");
+  const [resending, setResending] = useState(false);
 
   useEffect(() => {
     const hash = window.location.hash;
-    const hasRecoveryToken = hash.includes("type=recovery") || hash.includes("access_token=");
-
-    const checkRecoveryState = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsRecovery(Boolean(session) || hasRecoveryToken);
-      setChecking(false);
-    };
+    const params = new URLSearchParams(hash.replace("#", ""));
+    const hasRecoveryToken = params.get("type") === "recovery" || Boolean(params.get("access_token"));
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY" || Boolean(session)) {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsRecovery(true);
+        setChecking(false);
+      } else if (event === "SIGNED_IN" && session && hasRecoveryToken) {
         setIsRecovery(true);
         setChecking(false);
       }
     });
 
+    const checkRecoveryState = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session && hasRecoveryToken) {
+        setIsRecovery(true);
+      }
+      setTimeout(() => setChecking(false), 1500);
+    };
+
     checkRecoveryState();
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const handleResend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resendEmail.trim()) {
+      toast({ title: "Enter your email", variant: "destructive" });
+      return;
+    }
+    setResending(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(resendEmail.trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Reset link sent! 📧", description: "Check your email for a new reset link." });
+    }
+    setResending(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +84,7 @@ const ResetPassword = () => {
       const { error } = await supabase.auth.updateUser({ password });
       if (error) throw error;
       toast({ title: "Password updated! 🎉", description: "You can now log in with your new password." });
+      await supabase.auth.signOut();
       navigate("/login", { replace: true });
     } catch (e: any) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
@@ -78,10 +105,32 @@ const ResetPassword = () => {
     return (
       <div className="min-h-screen">
         <Navbar />
-        <div className="pt-28 pb-20 px-6 text-center">
-          <h1 className="font-display text-2xl font-bold mb-4">Invalid Reset Link</h1>
-          <p className="text-muted-foreground mb-6">This link is invalid or has expired. Please request a new password reset.</p>
-          <Button onClick={() => navigate("/login")} className="rounded-2xl">Go to Login</Button>
+        <div className="pt-28 pb-20 px-6">
+          <div className="max-w-md mx-auto text-center">
+            <h1 className="font-display text-2xl font-bold mb-4">Reset Link Expired 🔗</h1>
+            <p className="text-muted-foreground mb-6">This link is invalid or has expired. Request a new one below.</p>
+            
+            <form onSubmit={handleResend} className="space-y-4 rounded-3xl bg-card shadow-soft p-6">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                <Input
+                  type="email"
+                  value={resendEmail}
+                  onChange={(e) => setResendEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                  className="pl-10 rounded-2xl h-12 border-border/50"
+                />
+              </div>
+              <Button type="submit" disabled={resending} className="w-full rounded-2xl h-12 btn-squish">
+                {resending ? <Loader2 className="animate-spin mr-2" size={18} /> : <RefreshCw className="mr-2" size={18} />}
+                Resend Reset Link
+              </Button>
+              <button type="button" onClick={() => navigate("/login")} className="block w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors">
+                Back to Login
+              </button>
+            </form>
+          </div>
         </div>
         <Footer />
       </div>
