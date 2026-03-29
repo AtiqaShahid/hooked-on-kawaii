@@ -76,7 +76,7 @@ const AdminLogin = () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/admin/login`,
+        redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) throw error;
       toast({ title: "Check your email", description: "Password reset link sent." });
