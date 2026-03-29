@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Mail, Lock, User as UserIcon } from "lucide-react";
+import { AUTH_REDIRECTS } from "@/lib/authRedirects";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -29,7 +30,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: AUTH_REDIRECTS.resetPassword,
     });
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
