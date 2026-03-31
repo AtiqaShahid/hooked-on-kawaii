@@ -41,7 +41,7 @@ const AllReviews = lazy(() => import("./pages/AllReviews"));
 const Login = lazy(() => import("./pages/Login"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Checkout = lazy(() => import("./pages/Checkout"));
-const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
