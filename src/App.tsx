@@ -114,7 +114,7 @@ const App = () => (
                 <Route path="/login" element={<Login />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/checkout" element={<Checkout />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
+                {/* Password reset removed — using phone OTP */}
 
                 {/* Admin */}
                 <Route path="/admin/login" element={<AdminLogin />} />
