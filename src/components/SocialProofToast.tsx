@@ -1,60 +1,68 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 
 type ProofItem = { product_name: string; city: string; name: string };
 
-const PAKISTANI_NAMES = [
+const NAMES = [
   "Ayesha", "Fatima", "Hira", "Zainab", "Amna", "Sana", "Mahnoor", "Iqra",
   "Maryam", "Noor", "Rabia", "Saima", "Sidra", "Anum", "Bushra", "Kiran",
   "Mehreen", "Nimra", "Urooj", "Areeba", "Laiba", "Rida", "Aliza", "Hania",
+  "Ali", "Ahmed", "Hassan", "Usman", "Bilal", "Hamza", "Omar", "Saad",
 ];
 
-const PAKISTANI_CITIES = [
+const CITIES = [
   "Lahore", "Karachi", "Islamabad", "Rawalpindi", "Faisalabad",
   "Multan", "Peshawar", "Quetta", "Sialkot", "Hyderabad",
   "Gujranwala", "Bahawalpur", "Sargodha", "Abbottabad", "Mardan",
 ];
 
-const pickName = (idx: number) => PAKISTANI_NAMES[idx % PAKISTANI_NAMES.length];
-const pickCity = (idx: number) => PAKISTANI_CITIES[idx % PAKISTANI_CITIES.length];
+const pick = <T,>(arr: T[]) => arr[Math.floor(Math.random() * arr.length)];
+const randDelay = () => 1000 + Math.random() * 9000; // 1–10s
 
 const SocialProofToast = () => {
   const [current, setCurrent] = useState<ProofItem | null>(null);
   const [show, setShow] = useState(false);
+  const productsRef = useRef<string[]>([]);
+  const lastShownRef = useRef<string>("");
+  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+
+  const pickProduct = useCallback(() => {
+    const products = productsRef.current;
+    if (products.length === 0) return null;
+    if (products.length === 1) return products[0];
+    let chosen: string;
+    do {
+      chosen = pick(products);
+    } while (chosen === lastShownRef.current);
+    lastShownRef.current = chosen;
+    return chosen;
+  }, []);
+
+  const showNext = useCallback(() => {
+    const productName = pickProduct();
+    if (!productName) return;
+    setCurrent({ product_name: productName, name: pick(NAMES), city: pick(CITIES) });
+    setShow(true);
+    setTimeout(() => {
+      setShow(false);
+      timerRef.current = setTimeout(showNext, randDelay());
+    }, 4000);
+  }, [pickProduct]);
 
   useEffect(() => {
-    const fetchProof = async () => {
+    const fetchProducts = async () => {
       const { data } = await supabase
-        .from("social_proof_log")
-        .select("city, product:products(name)")
-        .order("created_at", { ascending: false })
-        .limit(10);
-
+        .from("products")
+        .select("name")
+        .eq("is_active", true);
       if (!data?.length) return;
-
-      const items = data.map((d: any, i: number) => ({
-        product_name: d.product?.name || "a crochet item",
-        city: pickCity(i),
-        name: pickName(i),
-      }));
-
-      let idx = 0;
-      const showNext = () => {
-        setCurrent(items[idx % items.length]);
-        setShow(true);
-        setTimeout(() => setShow(false), 4000);
-        idx++;
-      };
-
-      const timer = setInterval(showNext, 15000);
-      setTimeout(showNext, 5000);
-
-      return () => clearInterval(timer);
+      productsRef.current = data.map((p) => p.name);
+      timerRef.current = setTimeout(showNext, 3000 + Math.random() * 4000);
     };
-
-    fetchProof();
-  }, []);
+    fetchProducts();
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, [showNext]);
 
   return (
     <AnimatePresence>
