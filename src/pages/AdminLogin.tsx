@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { AUTH_REDIRECTS } from "@/lib/authRedirects";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -13,8 +14,10 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isReset, setIsReset] = useState(false);
   const [checking, setChecking] = useState(true);
 
+  // Check if already logged in as admin
   useEffect(() => {
     const checkExisting = async () => {
       const { data: { session } } = await supabase.auth.getSession();
@@ -35,10 +38,13 @@ const AdminLogin = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Client-side validation
     if (password.length < 8) {
       toast({ title: "Password too short", description: "Minimum 8 characters required.", variant: "destructive" });
       return;
     }
+
     setLoading(true);
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
@@ -48,6 +54,7 @@ const AdminLogin = () => {
         .from("user_roles")
         .select("role")
         .eq("user_id", data.user.id);
+
       if (roleError) throw roleError;
 
       const isAdmin = roles?.some((r: any) => r.role === "admin");
@@ -60,6 +67,22 @@ const AdminLogin = () => {
       navigate("/admin/dashboard", { replace: true });
     } catch (e: any) {
       toast({ title: "Login Failed", description: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: AUTH_REDIRECTS.resetPassword,
+      });
+      if (error) throw error;
+      toast({ title: "Check your email", description: "Password reset link sent." });
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -84,10 +107,12 @@ const AdminLogin = () => {
           <div className="text-center mb-8">
             <img src="/logo.png" alt="Crochet World" width={48} height={48} className="w-12 h-12 mx-auto mb-3" />
             <h1 className="font-display text-2xl font-bold">Crochet World Admin</h1>
-            <p className="text-muted-foreground text-sm mt-1">Sign in to manage your store</p>
+            <p className="text-muted-foreground text-sm mt-1">
+              {isReset ? "Reset your password" : "Sign in to manage your store"}
+            </p>
           </div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={isReset ? handleReset : handleLogin} className="space-y-4">
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
               <Input
@@ -99,30 +124,41 @@ const AdminLogin = () => {
                 required
               />
             </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-              <Input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-10 pr-10 rounded-2xl h-12 border-border/50"
-                required
-                minLength={8}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
+
+            {!isReset && (
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-10 pr-10 rounded-2xl h-12 border-border/50"
+                  required
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            )}
+
             <Button type="submit" disabled={loading} className="w-full rounded-2xl h-12 btn-squish">
               {loading ? <Loader2 className="animate-spin mr-2" size={18} /> : null}
-              Sign In
+              {isReset ? "Send Reset Link" : "Sign In"}
             </Button>
           </form>
+
+          <button
+            onClick={() => setIsReset(!isReset)}
+            className="w-full text-center text-sm text-muted-foreground hover:text-foreground mt-4 transition-colors"
+          >
+            {isReset ? "Back to login" : "Forgot password?"}
+          </button>
         </div>
       </motion.div>
     </div>
