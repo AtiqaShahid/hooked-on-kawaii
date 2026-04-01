@@ -341,10 +341,10 @@ const AdminDashboard = () => {
       {/* Quick Actions */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
         {[
-          { label: "Add Product", icon: Plus, path: "/admin/products", color: "bg-primary/20 text-primary" },
+          { label: "Add Product", icon: Plus, path: "/admin/products", color: "bg-primary/20 text-foreground" },
           { label: "Manage Orders", icon: ShoppingCart, path: "/admin/orders", color: "bg-secondary/30 text-secondary-foreground" },
           { label: "Run Sale", icon: Percent, path: "/admin/products", color: "bg-accent/30 text-accent-foreground" },
-          { label: "Reviews", icon: Star, path: "/admin/reviews", color: "bg-primary/30 text-primary" },
+          { label: "Reviews", icon: Star, path: "/admin/reviews", color: "bg-primary/30 text-foreground" },
           { label: "Collections", icon: Layers, path: "/admin/collections", color: "bg-secondary/20 text-secondary-foreground" },
           { label: "Settings", icon: Settings, path: "/admin/settings", color: "bg-muted text-muted-foreground" },
         ].map((action) => (
