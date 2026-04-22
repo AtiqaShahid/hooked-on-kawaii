@@ -70,7 +70,7 @@ The goal is a living crochet ecosystem, not a static storefront.
 ## 🚀 Getting Started
 
 ```bash
-git clone <repository-url>
+git clone (https://github.com/AtiqaShahid/hooked-on-kawaii.git)
 cd hooked-on-kawaii
 
 Open:
