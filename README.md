@@ -1,6 +1,6 @@
 # 🌸 Hooked on Kawaii
 
-A playful, aesthetic, and emotionally engaging web experience inspired by kawaii culture. This project focuses on creating a **cute, interactive, and visually comforting interface** that blends modern frontend design with expressive UI styling.
+A cute, aesthetic frontend web experience inspired by handmade crochet culture and kawaii design principles. The project focuses on **emotional UI, playful interaction, and a soft visual storytelling experience**.
 
 ---
 
@@ -11,40 +11,91 @@ https://hooked-on-kawaii.vercel.app/
 
 ## 📌 About the Project
 
-Hooked on Kawaii is a concept-driven frontend project built around the idea of **“digital cuteness as experience”** rather than just visuals.
+Hooked on Kawaii is a themed e-commerce style frontend concept built around crochet crafts, community engagement, and personalized product discovery.
 
-The website explores:
-- Soft, playful UI aesthetics  
-- Cute-themed design language (kawaii-inspired styling)  
-- Emotion-driven user interaction  
-- Light storytelling through interface design  
+The website is designed to feel:
+- Soft, cute, and emotionally engaging  
+- Community-driven and interactive  
+- Product + experience focused rather than just a static shop  
 
-The goal is to make the user feel a sense of **joy, comfort, and visual delight** while navigating the site.
+It blends storytelling with functional UI patterns like quizzes, customization tools, and gifting flows.
+
+---
+
+## 🧩 Website Structure
+
+### 🏠 Navigation Bar
+- Home  
+- Shop  
+- Collections  
+- Create  
+- Explore  
+
+---
+
+### 🎀 Create Section (Key Feature)
+
+This is the interactive customization hub of the website:
+
+- 🎁 **Gift Builder** → Create personalized crochet gift bundles  
+- 🧶 **Custom Crochet** → Customize crochet items based on preferences  
+- 🎯 **Style Quiz** → Helps users discover their aesthetic/style match  
+
+---
+
+### 🌐 Explore Dropdown
+
+- 👥 Community → User interaction and shared space  
+- 📚 Learn Crochet → Educational crochet content  
+- ✨ Craft Stories → Inspirational handmade stories  
+- ⭐ Rewards → User engagement rewards system  
+- 🖼️ Gallery → Visual showcase of crochet work  
+- 🗳️ Vote on Designs → Community-driven design selection  
+
+---
+
+### 🏡 Hero / Landing Section
+- Brand introduction (“Crochet Magic Awaits” style header)
+- Emotional hook line about handmade creations
+- Visual-first aesthetic showcase
+
+---
+
+### 🧺 Shop / Collections Section
+- Product/category-based browsing
+- Crochet items grouped by theme/style
+
+---
+
+### 💬 Footer / Supporting Sections
+- Brand message
+- Community engagement links
+- Basic informational links
 
 ---
 
 ## 🎯 Key Features
 
-- 🌸 Kawaii-inspired visual design system  
-- 🎨 Soft color palette with cute aesthetics  
-- 🧸 Playful UI components and layout structure  
-- 📱 Fully responsive design for all screen sizes  
-- ✨ Smooth hover effects and micro-interactions  
-- 🧭 Simple, intuitive navigation flow  
-- 💖 Emotion-focused user experience  
+- 🌸 Soft kawaii-inspired UI design  
+- 🧶 Crochet-themed interactive ecosystem  
+- 🎁 Personalization through quizzes and builders  
+- 🧠 Community-driven engagement features  
+- 📱 Fully responsive layout  
+- ✨ Smooth transitions and micro-interactions  
+- 🧭 Clear navigation flow with grouped user journeys  
 
 ---
 
 ## 🧠 Design Thinking
 
-This project is built using strong UX principles with a focus on emotional engagement:
+This project is structured around UX principles:
 
-- **Affordance:** Buttons, cards, and elements clearly suggest interaction  
-- **Constraints:** Minimal clutter to maintain visual softness and clarity  
-- **Mapping:** Logical flow between sections for easy exploration  
-- **Causality:** Immediate feedback on user interaction (hover, click, transitions)  
+- **Affordance:** Interactive tools (quiz, builder) clearly suggest usage  
+- **Constraints:** Limited visual noise to maintain softness  
+- **Mapping:** Logical separation between Shop, Create, Explore  
+- **Causality:** Immediate feedback on interactions (hover, selection, navigation)  
 
-The design prioritizes **feel over complexity**, making the experience memorable rather than technical.
+The goal is to make the experience feel like a **living creative crochet ecosystem rather than a normal store**.
 
 ---
 
@@ -57,51 +108,13 @@ The design prioritizes **feel over complexity**, making the experience memorable
 
 ---
 
-## 📂 Project Structure
-/hooked-on-kawaii
-├── index.html
-├── shop.html
-├── collections.html
-│
-├── create/
-│   ├── gift-builder.html
-│   ├── custom-crochet.html
-│   ├── style-quiz.html
-│
-├── explore/
-│   ├── community.html
-│   ├── learn-crochet.html
-│   ├── craft-stories.html
-│   ├── rewards.html
-│   ├── gallery.html
-│   ├── vote-designs.html
-│
-├── assets/
-│   ├── images/
-│   ├── icons/
-│   ├── illustrations/
-│
-├── styles.css
-├── script.js
----
-
 ## 🚀 What I Learned
 
-- Designing emotion-driven interfaces using aesthetic principles  
-- Working with themed UI systems (kawaii / cute design language)  
-- Improving consistency in color, spacing, and typography  
-- Enhancing micro-interactions for better user engagement  
-- Building responsive, visually coherent landing pages  
-
----
-
-## 💡 Future Improvements
-
-- Add animated character-based interactions  
-- Introduce scroll-based storytelling sections  
-- Add sound/micro-feedback for interactions  
-- Expand into multi-page kawaii experience site  
-- Integrate theme switching (cute modes / moods)  
+- Designing multi-feature frontend ecosystems  
+- Structuring navigation-heavy UI with clarity  
+- Building interactive concept flows (quiz, builder, personalization)  
+- Improving UX consistency across multiple sections  
+- Blending storytelling with e-commerce UI patterns  
 
 ---
 
