@@ -60,9 +60,7 @@ The design prioritizes **feel over complexity**, making the experience memorable
 ## 📂 Project Structure
 /hooked-on-kawaii
 ├── index.html
-
 ├── shop.html
-
 ├── collections.html
 ├── create/
 │ ├── gift-builder.html
