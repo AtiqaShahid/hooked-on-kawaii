@@ -30,8 +30,17 @@ const CrochetOfTheWeek = () => {
           <div className="absolute inset-0 stitch-bg opacity-30" />
           <div className="relative grid md:grid-cols-2 gap-10 items-center">
             <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="aspect-square rounded-3xl overflow-hidden shadow-soft">
-              <img src={resolveImageUrl(featured.image_url)} alt={featured.name} onError={handleImageError} className="w-full h-full object-cover" />
+              <ProductImage
+                src={featured.image_url}
+                alt={featured.name}
+                categorySlug={featured.category?.slug}
+                emoji={featured.category?.emoji || undefined}
+                className="w-full h-full"
+                imgClassName="w-full h-full object-cover"
+                showLabel
+              />
             </motion.div>
+
             <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <div className="flex gap-2 mb-4">
                 <span className="px-3 py-1.5 rounded-2xl bg-peach text-foreground text-xs font-bold font-body">Crochet of the Week</span>
