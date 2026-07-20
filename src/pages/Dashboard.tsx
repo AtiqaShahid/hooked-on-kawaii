@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ProductImage from "@/components/ui/ProductImage";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -349,7 +350,7 @@ const Dashboard = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {wishlistItems.map((item: any) => (
                       <div key={item.id} className="rounded-3xl bg-card shadow-soft overflow-hidden">
-                        <img src={item.products?.image_url || "/placeholder.svg"} alt="" className="w-full h-40 object-cover" />
+                        <ProductImage src={item.products?.image_url} alt={item.products?.name || ""} className="w-full h-40" imgClassName="w-full h-40 object-cover" />
                         <div className="p-4">
                           <h3 className="font-medium text-sm mb-1">{item.products?.name}</h3>
                           <p className="text-primary font-display font-bold">PKR {item.products?.price}</p>

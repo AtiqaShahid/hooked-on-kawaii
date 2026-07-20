@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { Link, useNavigate } from "react-router-dom";
-import { resolveImageUrl, handleImageError } from "@/lib/imageUtils";
+
 
 const EMOJI_MAP: Record<string, string> = {
   bouquets: "💐", keychains: "🔑", toys: "🧸", decor: "🌼",

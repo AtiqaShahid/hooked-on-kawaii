@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import type { DbProduct } from "@/hooks/useSupabaseData";
-import { resolveImageUrl, handleImageError } from "@/lib/imageUtils";
+import ProductImage from "@/components/ui/ProductImage";
 
 const badgeColors: Record<string, string> = {
   "Bestseller": "bg-pink text-primary-foreground",
@@ -55,13 +55,15 @@ const ProductCard = ({ product, index = 0 }: { product: DbProduct; index?: numbe
       <Link to={`/product/${product.id}`} className="block group">
         <div className="bg-card rounded-3xl overflow-hidden shadow-soft card-hover">
           <div className="relative aspect-square bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden">
-            <img
-              src={resolveImageUrl(product.image_url)}
+            <ProductImage
+              src={product.image_url}
               alt={product.name}
-              onError={handleImageError}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              loading="lazy"
+              categorySlug={catSlug}
+              emoji={product.category?.emoji || undefined}
+              className="absolute inset-0 w-full h-full"
+              imgClassName="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
+
             <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
               {(product.badges || []).map((badge) => (
                 <span key={badge} className={`px-2.5 py-1 rounded-2xl text-xs font-semibold font-body ${badgeColors[badge] || "bg-muted text-foreground"}`}>
