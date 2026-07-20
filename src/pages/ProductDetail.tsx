@@ -86,13 +86,17 @@ const ProductDetail = () => {
 
           <div className="grid md:grid-cols-2 gap-10 lg:gap-16">
             <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="aspect-square rounded-3xl bg-gradient-to-br from-primary/20 to-secondary/20 overflow-hidden shadow-soft">
-              <img
-                src={resolveImageUrl(product.image_url)}
+              <ProductImage
+                src={product.image_url}
                 alt={product.name}
-                onError={handleImageError}
-                className="w-full h-full object-cover"
+                categorySlug={(product as any).category?.slug}
+                emoji={(product as any).category?.emoji}
+                className="w-full h-full"
+                imgClassName="w-full h-full object-cover"
+                showLabel
               />
             </motion.div>
+
 
             <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }}>
               <div className="flex flex-wrap gap-2 mb-4">
