@@ -22,6 +22,20 @@ const PAYMENT_ICONS: Record<PaymentMethod, React.ReactNode> = {
   bank_transfer: <Building2 size={20} />,
 };
 
+const DEFAULT_PAYMENT_METHODS: Record<PaymentMethod, any> = {
+  cod: { enabled: true, label: "Cash on Delivery", description: "Pay on delivery. PKR 500 advance required to confirm.", advance_amount: 500 },
+  jazzcash: { enabled: true, label: "JazzCash / Mobile Wallet", description: "Pay via JazzCash and upload a screenshot of your payment.", account_name: "Atiqa Shahid", account_number: "03091447191" },
+  bank_transfer: { enabled: false, label: "Bank Transfer", description: "Transfer to our bank account." },
+  card: { enabled: false, coming_soon: true, label: "Card Payment", description: "Pay securely using debit or credit card." },
+};
+
+const PAYMENT_LABEL_FALLBACK: Record<PaymentMethod, { label: string; description: string }> = {
+  cod: { label: DEFAULT_PAYMENT_METHODS.cod.label, description: DEFAULT_PAYMENT_METHODS.cod.description },
+  jazzcash: { label: DEFAULT_PAYMENT_METHODS.jazzcash.label, description: DEFAULT_PAYMENT_METHODS.jazzcash.description },
+  bank_transfer: { label: DEFAULT_PAYMENT_METHODS.bank_transfer.label, description: DEFAULT_PAYMENT_METHODS.bank_transfer.description },
+  card: { label: DEFAULT_PAYMENT_METHODS.card.label, description: DEFAULT_PAYMENT_METHODS.card.description },
+};
+
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
