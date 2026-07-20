@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Star, ShoppingBag, Clock } from "lucide-react";
 import { useProducts } from "@/hooks/useSupabaseData";
 import { useCart } from "@/contexts/CartContext";
-import { resolveImageUrl, handleImageError } from "@/lib/imageUtils";
+import ProductImage from "@/components/ui/ProductImage";
 
 const CrochetOfTheWeek = () => {
   const { data: products = [] } = useProducts();
