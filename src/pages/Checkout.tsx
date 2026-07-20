@@ -74,12 +74,20 @@ const Checkout = () => {
     );
   }
 
-  const enabledMethods = paymentConfig
-    ? (Object.entries(paymentConfig) as [PaymentMethod, any][]).filter(([, v]) => v.enabled)
-    : [];
+  const effectivePaymentConfig: Record<string, any> = paymentConfig && Object.keys(paymentConfig).length > 0
+    ? paymentConfig
+    : DEFAULT_PAYMENT_METHODS;
 
-  const selectedConfig = paymentMethod ? paymentConfig?.[paymentMethod] : null;
-  const codAdvance = paymentConfig?.cod?.advance_amount || 500;
+  const enabledMethods = (Object.entries(effectivePaymentConfig) as [PaymentMethod, any][])
+    .filter(([, v]) => v?.enabled)
+    .map(([k, v]) => [k, {
+      ...v,
+      label: v?.label || PAYMENT_LABEL_FALLBACK[k]?.label || k,
+      description: v?.description || PAYMENT_LABEL_FALLBACK[k]?.description || "",
+    }] as [PaymentMethod, any]);
+
+  const selectedConfig = paymentMethod ? effectivePaymentConfig[paymentMethod] : null;
+  const codAdvance = effectivePaymentConfig?.cod?.advance_amount || 500;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
