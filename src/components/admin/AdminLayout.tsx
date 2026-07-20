@@ -27,8 +27,7 @@ const AdminLayout = () => {
 
       const isAdmin = roles?.some((r: any) => r.role === "admin");
       if (!isAdmin) {
-        await supabase.auth.signOut();
-        navigate("/admin/login");
+        navigate("/");
         toast({ title: "Access Denied", description: "Admin privileges required.", variant: "destructive" });
         return;
       }
