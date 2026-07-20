@@ -10,7 +10,7 @@ import { useProduct, useProducts } from "@/hooks/useSupabaseData";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { Skeleton } from "@/components/ui/skeleton";
-import { resolveImageUrl, handleImageError } from "@/lib/imageUtils";
+import ProductImage from "@/components/ui/ProductImage";
 
 const categoryEmojis: Record<string, string> = {
   bouquets: "💐", keychains: "🔑", toys: "🧸", decor: "🌼", accessories: "🎀", flowers: "🌸",
